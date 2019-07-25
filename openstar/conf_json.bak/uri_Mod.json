@@ -1,0 +1,54 @@
+[
+    {
+        "state": "on",
+        "id":"1-static_file",
+        "hostname": ["*",""],
+        "uri":[[".css",".js",".flv",".swf",".woff",
+                 ".txt",".ttf",".svg",".eot",
+                 ".gif",".jpg",".png",".jpeg",".bmp",".ico",".webp"
+               ],
+            "reend_list"
+        ],
+        "action": "allow"
+    },
+    {
+        "state": "on",
+        "id":"2-sensitive_uri",
+        "hostname": ["*",""],
+        "uri": ["\\.(svn/|git/|htaccess$|bash_history$)","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"3-sensitive_file",
+        "hostname": ["*",""],
+        "uri": [[".bak",".inc",".old",".mdb",".sql",".backup",".java",".class"],"reend_list"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"4-backup_file",
+        "hostname": ["*",""],
+        "uri": ["(vhost|bbs|hostname|wwwroot|www|site|root|hytop|flashfxp).*.rar","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"5-management_uri",
+        "hostname": ["*",""],
+        "uri":[
+            ["phpmyadmin","jmx-console","jmxinvokerservlet"],"rein_list"
+        ],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"6-danger_uri",
+        "hostname": ["*",""],
+        "uri": [
+            "/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)",
+            "jio"
+        ],
+        "action": "log"
+    }
+]

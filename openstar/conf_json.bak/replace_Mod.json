@@ -1,0 +1,14 @@
+[
+    {
+        "state": "on",
+        "id":"1-",
+        "uri": ["^/api/ip_dict$","jio"],
+        "hostname": ["localhost5460",""],
+        "replace_list":
+            [
+             ["deny","","denyFUCK"],
+             ["allow","","allowPASS"],
+             ["lzcaptcha\\?key='\\s*\\+ key","jio","lzcaptcha?keY='+key+'&keytoken=@token@'"]
+            ]
+    }
+]

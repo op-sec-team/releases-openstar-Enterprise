@@ -1,0 +1,136 @@
+[
+    {
+        "state": "on",
+        "id":"1-test-deny",
+        "action": "deny",
+        "hostname": ["localhost",""],
+        "uri": ["^/([\\w]{4}\\.html|deny\\.do|你好\\.html)$","jio"]
+    },
+    {
+        "state": "on",
+        "id":"2-rehtml",
+        "action": "rehtml",
+        "rehtml": "<html>hi~!</html>",
+        "hostname": ["localhost",""],
+        "uri": ["/rehtml",""]
+    },
+    {
+        "state": "on",
+        "id":"3-refile",
+        "action": "refile",
+        "refile": ["2.txt","text/html"],
+        "hostname": ["localhost",""],
+        "uri": ["/refile",""]
+    },
+    {
+        "state": "off",
+        "id":"4-test-app_ext",
+        "action": "deny",
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/.*","jio"],
+        "app_ext":[
+        ["ip",[["106.37.236.170","1.1.1.1"],"list",true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"5-test-js_debug",
+        "action": "refile",
+        "refile": ["js_debug.txt","text/html"],
+        "hostname": ["localhost",""],
+        "uri": ["/api/debug",""],
+        "app_ext":[
+        ["args",["true","@token@",["cctoken"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"6-test-len",
+        "action": "deny",
+        "hostname": ["localhost",""],
+        "uri": ["/len",""],
+        "app_ext":[
+        ["args",[[5,20],"len",["arg_len"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"7-test-js_time",
+        "action": "refile",
+        "refile":["js_time.txt","text/html"],
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/time",""],
+        "app_ext":[
+        ["args",["^[\\w]{6}$","jio",["keyby"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"8-test-log",
+        "action": "log",
+        "hostname": ["localhost",""],
+        "uri": ["/log",""]
+    },
+    {
+        "state": "on",
+        "id":"9-test-post_js_time",
+        "action": "refile",
+        "refile":["js_time.txt","text/html"],
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/time",""],
+        "app_ext":[
+        ["posts",["^[\\w]{6}$","jio",["p_key"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"10-test-post_form",
+        "action": "deny",
+        "post_form":1024,
+        "hostname": ["localhost",""],
+        "uri": ["/api/test/debug",""],
+        "app_ext":[
+        ["post_form",["\\.(jpg|jpeg|png|webp|gif)$","jio",["image0",2],true],"or"],
+        ["post_form",["(;|-|/)","jio",["image0",2],false],"or"]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"11-test-sign_check",
+        "action": "func",
+        "func": ["sign_check",{
+                "sign":{
+                    "state":"on",
+                    "name":"$headers@x_app_sign",
+                    "tb_formart":[
+                        "$headers@x_app_timestamp",
+                        "$request_uri",
+                        "$headers@x_app_nonce",
+                        ""
+                    ]},
+                "timestamp":{
+                    "name":"$headers@x_app_timestamp",
+                    "abs_time":120
+                    },
+                "nonce":{
+                    "state":"on",
+                    "name":"$headers@x_app_nonce",
+                    "time":60
+                }
+            }],
+        "hostname": ["localhost",""],
+        "uri": ["/sign.test",""]
+    },
+    {
+        "state": "on",
+        "id":"12-test-cap",
+        "action": "func",
+        "func": ["cap",{
+                    "AppID":"xxx",
+                    "AppSecret":"xxxxx",
+                    "form_name":"verify_token"
+                }],
+        "hostname": ["localhost",""],
+        "uri": ["/cap.test",""]
+    }
+]

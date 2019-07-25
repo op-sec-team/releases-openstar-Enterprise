@@ -1,0 +1,17 @@
+{
+    "localhost":{
+        "state":"on",
+        "args_HPP":"on",
+        "posts_HPP":"on"
+    },
+    "localhost5460":{
+        "state":"on",
+        "args_HPP":"on",
+        "posts_HPP":"on"
+    },
+    "www.g.com":{
+        "state":"on",
+        "args_HPP":"on",
+        "posts_HPP":"on"
+    }
+}

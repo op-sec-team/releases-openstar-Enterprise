@@ -1,0 +1,16 @@
+{
+
+  "sign_check":{
+      "description":"checkcafc.sign_check 用于检测 header 头中的 x-chj-cafc 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
+      "file":"checkcafc"
+    },
+  "cap":{
+      "description":"dxcap.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
+      "file":"dxcap"
+  },
+  "test":{
+      "description":"test.test 输出传入的参数：[1,2...]",
+      "file":"test"
+  }
+
+}

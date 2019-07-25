@@ -1,0 +1,132 @@
+{
+    "Mod_state":"on",
+
+    "ngx_status":"on",
+
+    "realIpFrom_Mod":"on",
+
+    "ip_Mod":"on",
+
+    "host_method_Mod":"off",
+
+    "rewrite_Mod":"on",
+
+    "app_Mod":"on",
+
+    "referer_Mod":"on",
+
+    "uri_Mod":"on",
+
+    "header_Mod":"on",
+
+    "useragent_Mod":"on",
+
+    "cookie_Mod":"on",
+
+    "args_Mod":{
+        "state":"on",
+        "HPP_state":"on"
+        },
+
+    "post_Mod":{
+        "state":"on",
+        "HPP_state":"on"
+        },
+
+    "post_form":10240,
+
+    "network_Mod":"on",
+
+    "replace_Mod":"off",
+
+    "debug_Mod":false,
+
+    "baseDir":"/opt/openresty/openstar/",
+
+    "logPath":"/opt/openresty/openstar/logs/",
+
+    "jsonPath":"/opt/openresty/openstar/conf_json/",
+
+    "htmlPath":"/opt/openresty/openstar/index/",
+
+    "redis_Mod":{
+        "state":"on",
+        "ip":"36.110.148.175",
+        "Port":6379,
+        "Password":"9f75a7509e707842a02aaa058c074c7a"
+    },
+    "autoSync":{
+        "state":"Master",
+        "timeAt":10,
+        "master":"127.0.0.1",
+        "slaves": []
+    },
+    "denyMsg":{
+        "state":"on",
+        "msg":"deny by chj-Waf",
+        "http_code":403
+    },
+    "api_sign":{
+        "state":"off",
+        "checkMaster": "off",
+        "authority":{
+            "header_name":"sign",
+            "alg":"MD5",
+            "key":"isoda9823jdsuida8asdjfiaisodfjuds",
+            "format_tb":[
+                    "$uri",
+                    "$http_time",
+                    "fuckyousign"
+                ]
+        }
+    },
+    "log_onLocal":{
+        "state":"on",
+        "path":"/tmp/waf_log.log",
+        "format_tb":[
+            "$remoteIp",
+            "$ip",
+            "$ngx_localtime",
+            "$host",
+            "$server_protocol",
+            "$method",
+            "$useragent",
+            "$referer",
+            "$request_uri",
+            "waf_log:",
+            "$waf_log",
+            "\n"
+        ],
+        "tb_concat":"\t"
+    },
+    "log_onRemote":{
+        "state":"off",
+        "worker_sleep_time":5,
+        "worker_deal_limit":20000,
+        "socketType":"tcp",
+        "sendBufferSize":104857600,
+        "host":"123.59.126.190",
+        "port":16000,
+        "tb_concat":"\t",
+        "format_tb":[
+            "<134>0 2016-12-28T10:48:43.849639+08:00 localhost waflog_tt",
+            "$ngx_now",
+            "$serverIp",
+            "$host",
+            "$remoteIp",
+            "$ip",
+            "$method",
+            "$uri",
+            "$server_protocol",
+            "$query_string",
+            "$status",
+            "$length",
+            "$referer",
+            "$useragent",
+            "$cookie",
+            "waf_log:",
+            "$waf_log",
+            "\n"
+        ]
+    }
+}

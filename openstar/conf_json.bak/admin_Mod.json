@@ -1,0 +1,16 @@
+{
+  "username": "openstar" ,
+  "password": "passopenstar" ,
+  "time": "30" ,
+  "login_uri": "/login.html",
+  "jwt_Mod":{
+        "hmac":"",
+        "appList":{
+            "name1":{
+                "rule":"aaa",
+                "ext1":"bbb",
+                "ext2":"ccc"
+            }
+        }
+    }
+}

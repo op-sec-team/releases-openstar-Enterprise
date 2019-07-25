@@ -1,0 +1,10 @@
+[
+    {
+        "state": "on",
+        "id":"1-test",
+        "action": "set_cookie",
+        "set_cookie":["asjldisdafpopliu8909jk34jk","diy_name"],
+        "hostname": ["localhost",""],
+        "uri": ["/rewrite",""]
+    }
+]
