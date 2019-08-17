@@ -1,5 +1,4 @@
 
--- 非线上 master 版本使用
 local ngx_say = ngx.say
 
 
@@ -10,6 +9,7 @@ local function test(_base_msg , _tb_args)
          re = re + v + "</br>"
      end
      ngx_say(re)
+     return "break"
 end
 _M.test = test
 return _M

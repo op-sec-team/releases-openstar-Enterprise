@@ -100,7 +100,7 @@
         "action": "func",
         "func": ["sign_check",{
                 "sign":{
-                    "state":"on",
+                    "state":"off",
                     "name":"$headers@x_app_sign",
                     "tb_formart":[
                         "$headers@x_app_timestamp",
@@ -113,7 +113,7 @@
                     "abs_time":120
                     },
                 "nonce":{
-                    "state":"on",
+                    "state":"off",
                     "name":"$headers@x_app_nonce",
                     "time":60
                 }

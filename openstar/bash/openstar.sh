@@ -11,7 +11,7 @@ export PATH
 #=================================================
 
 #set -x
-sh_ver="1.3"
+sh_ver="1.3.1"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -152,6 +152,8 @@ function openresty_install(){
 function waf_ngx_conf(){
     ln -sf ${install_path}/openstar/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
+    ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
+    ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
 }
 
 #openstar安装
@@ -257,8 +259,11 @@ function check(){
     chown nobody:nobody ${install_path}/nginx/logs/*
     ln -sf ${install_path}/openstar/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
+    ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
+    ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
     cd ${install_path}/nginx/html && (ls |grep "favicon.ico" || wget https://www.nginx.org/favicon.ico)
 }
+
 
 #开始菜单
 start_menu(){
@@ -315,8 +320,8 @@ start_menu(){
             start_menu # 查看云端 openstar 版本
         ;;
         6)
-            up_view
-            start_menu # 待定
+            up_view # 更新 waf 后台界面
+            start_menu
         ;;
         7)
             start_menu # 待定

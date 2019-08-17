@@ -1,7 +1,7 @@
 [
     {
         "state": "on",
-        "id":"1-",
+        "id":"1-simple",
         "uri": ["^/api/ip_dict$","jio"],
         "hostname": ["localhost5460",""],
         "replace_list":
@@ -9,6 +9,21 @@
              ["deny","","denyFUCK"],
              ["allow","","allowPASS"],
              ["lzcaptcha\\?key='\\s*\\+ key","jio","lzcaptcha?keY='+key+'&keytoken=@token@'"]
+            ]
+    },
+    {
+        "state": "on",
+        "id":"2-func",
+        "uri": ["/api/test/debug",""],
+        "hostname": ["localhost5460",""],
+        "replace_list":
+            [
+             ["replace","func",
+                {
+                    "description":"参数使用demo",
+                    "len":4
+                }
+             ]
             ]
     }
 ]

@@ -11,6 +11,14 @@
   "test":{
       "description":"test.test 输出传入的参数：[1,2...]",
       "file":"test"
+  },
+  "replace":{
+      "description":"replace模块支持 使用插件进行替换操作，调用参数：table",
+      "file":"replace"
+  },
+  "tel_ast":{
+      "description":"replace模块 手机号脱敏 插件，调用参数： table",
+      "file":"rep_tel_ast"
   }
 
 }

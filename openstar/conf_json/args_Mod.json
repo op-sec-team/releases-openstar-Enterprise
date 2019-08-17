@@ -3,7 +3,7 @@
         "state": "on",
         "id":"1-Danger_path",
         "hostname": ["*",""],
-        "args": [["../",":$","${"],"in_list"],
+        "args": [["../",":$"],"in_list"],
         "action": "deny"
     },
     {

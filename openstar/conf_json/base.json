@@ -63,7 +63,7 @@
     },
     "denyMsg":{
         "state":"on",
-        "msg":"deny by chj-Waf",
+        "msg":"deny by openstar-Waf",
         "http_code":403
     },
     "api_sign":{
@@ -72,7 +72,7 @@
         "authority":{
             "header_name":"sign",
             "alg":"MD5",
-            "key":"isoda9823jdsuida8asdjfiaisodfjuds",
+            "key":"isoda9jfiaisodfjuds",
             "format_tb":[
                     "$uri",
                     "$http_time",
