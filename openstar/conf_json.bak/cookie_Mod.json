@@ -3,7 +3,7 @@
         "state": "on",
         "id":"1-Danger_path",
         "hostname": ["*",""],
-        "cookie": [["../",":$","${"],"in_list"],
+        "cookie": [["../",":$","${","/etc/passwd"],"in_list"],
         "action": "deny"
     },
     {
@@ -17,7 +17,7 @@
         "state": "on",
         "id":"3-sql",
         "hostname": ["*",""],
-        "cookie": ["(?:(union(.*?)select))","jio"],
+        "cookie": ["union(.*?)select","jio"],
         "action": "log"
     },
     {
@@ -52,28 +52,21 @@
         "state": "on",
         "id":"8-sql",
         "hostname": ["*",""],
-        "cookie": ["(?:from\\W+information_schema\\W)","jio"],
+        "cookie": ["(from\\W+information_schema\\W)","jio"],
         "action": "log"
     },
     {
         "state": "on",
         "id":"9-sql",
         "hostname": ["*",""],
-        "cookie": ["(?:(?:current_)user|database|schema|connection_id)\\s*\\(","jio"],
+        "cookie": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
         "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"10-sensitive_file",
-        "hostname": ["*",""],
-        "cookie": ["(?:etc\\/\\W*passwd)","jio"],
-        "action": "deny"
     },
     {
         "state": "on",
         "id":"11-sql",
         "hostname": ["*",""],
-        "cookie": ["into(\\s+)+(?:dump|out)file\\s*","jio"],
+        "cookie": ["into(\\s+)+(dump|out)file\\s*","jio"],
         "action": "log"
     },
     {
@@ -94,7 +87,7 @@
         "state": "on",
         "id":"14-Danger_keyword",
         "hostname": ["*",""],
-        "cookie": ["(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
+        "cookie": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
         "action": "deny"
     },
     {

@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.3
+#   Version: 1.4
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.3.1"
+sh_ver="1.4"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -25,11 +25,15 @@ build_path=/opt/down
 install_path=/opt/openresty
 
 # openresty 安装的版本
-install_version=1.13.6.2
+install_or_version=1.13.6.2
 # openresty 对应 nginx 版本说明
 #1.11.2.2 nginx 1.11.2 , 1.11.2.1 nginx 1.11.2 , 1.9.15.1 nginx 1.9.15
 # openresty 下载路径
-openresty_uri=https://openresty.org/download/openresty-${install_version}.tar.gz
+openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar.gz
+
+# tengine 安装的版本
+install_tg_version=2.3.2
+tengine_uri=http://tengine.taobao.org/download/tengine-${install_tg_version}.tar.gz
 
 # centos 6 = remi-release-6.rpm ; centos 7 = remi-release-7.rpm
 # rpm_uri=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
@@ -75,10 +79,11 @@ check_openstar(){
     openstar_status="no"
     nginx_path="no"
     if [[ -f ${install_path}/nginx/sbin/nginx ]]; then
-        or_status=`nohup ${install_path}/nginx/sbin/nginx -v >/tmp/1 2>&1 && grep -oE "[0-9.]+" /tmp/1`
-        echo -e " openresty  版本: ${Green_font_prefix}${or_status}${Font_color_suffix}"
+        or_status=`nohup ${install_path}/nginx/sbin/nginx -v >/tmp/1 2>&1 && grep -oE "\w*/[0-9.]+" /tmp/1|head -n 1`
+        rm -rf /tmp/1
+        echo -e " ngx  版本: ${Green_font_prefix}${or_status}${Font_color_suffix}"
     else
-        echo -e " openresty  状态: ${Red_font_prefix}未安装${Font_color_suffix}${Red_font_prefix}请先安装 openresty ${Font_color_suffix}"
+        echo -e " ngx  状态: ${Red_font_prefix}未安装${Font_color_suffix}${Red_font_prefix}请先安装 openresty ${Font_color_suffix}"
     fi
 
     if cat /etc/profile |grep -q -E -i "openresty"; then
@@ -130,10 +135,10 @@ function openresty_install(){
     fi
     mkdir -p ${build_path}
     cd ${build_path}
-    rm -rf openresty-${install_version}.tar.gz
+    rm -rf openresty-${install_or_version}.tar.gz
     wget ${openresty_uri}
-    tar zxvf openresty-${install_version}.tar.gz
-    cd openresty-${install_version}
+    tar zxvf openresty-${install_or_version}.tar.gz
+    cd openresty-${install_or_version}
     ###############################
     #./configure --prefix=${install_path} --with-http_realip_module --with-http_v2_module --with-http_geoip_module
     ./configure --prefix=/opt/openresty --with-http_realip_module --with-http_v2_module
@@ -146,6 +151,85 @@ function openresty_install(){
     chmod 751 nginx/sbin/nginx
     chmod u+s nginx/sbin/nginx
     cat /etc/profile |grep "openresty" ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
+}
+
+tengine_install(){
+    echo -e "tengine 使用还在测试中，可能一些模块没有编译进去!!!"
+    sleep 2s
+    if [[ "${or_status}" == "no" ]]; then
+        echo -e "${Error} 请先安装openresty !!!" && exit 1
+    fi
+    # backup or_nginx openresty/nginx
+    mv -f ${install_path}/nginx ${install_path}/or_nginx
+    mkdir -p ${build_path} && cd ${build_path}
+    rm -rf tengine-${install_tg_version}.tar.gz
+    wget ${tengine_uri}
+    tar zxvf tengine-${install_tg_version}.tar.gz
+    cd tengine-${install_tg_version}
+    ###############################
+    ./configure --prefix=${install_path}/nginx \
+        --add-module=${build_path}/openresty-1.13.6.2/bundle/headers-more-nginx-module-0.33 \
+        --add-module=${build_path}/openresty-1.13.6.2/bundle/rds-json-nginx-module-0.15 \
+        --with-ld-opt=-Wl,-rpath,${install_path}/luajit/lib \
+        --with-http_lua_module \
+        --with-luajit-inc=${install_path}/luajit/include/luajit-2.1 \
+        --with-luajit-lib=${install_path}/luajit/lib \
+        --with-http_realip_module \
+        --with-http_v2_module \
+        --with-stream \
+        --with-stream_ssl_module \
+        --with-http_ssl_module
+    make -j2
+    make install -j2
+    ##############################
+    chown nobody:nobody -R ${install_path}
+    cd ${install_path}
+    chown root:nobody nginx/sbin/nginx
+    chmod 751 nginx/sbin/nginx
+    chmod u+s nginx/sbin/nginx
+    cat /etc/profile |grep "openresty" ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
+    cp -Rf ${install_path}/or_nginx/conf/conf.d ${install_path}/nginx/conf/
+    cp -Rf ${install_path}/or_nginx/html/view-private ${install_path}/nginx/html/
+}
+
+tengine2or(){
+    now_ng=openresty
+    cg_ng=tengine
+    if [ -d "${install_path}/or_nginx" ]; then
+      now_ng=tengine
+      cg_ng=openresty
+    fi
+    echo && echo -e " 当前是： ${now_ng}
+    ${Green_font_prefix}0.${Font_color_suffix} 切换到 ${cg_ng}
+    ${Green_font_prefix}1.${Font_color_suffix} 返回主界面
+    ————————————————————————————————" && echo
+    read -p " 请输入数字 [0-1]:" num
+    case "$num" in
+        0)
+            if [[ now_ng == "tengine" ]]; then
+                # 备份 tengine
+                mv -f ${install_path}/nginx ${install_path}/tg_nginx
+                mv -f ${install_path}/or_nginx ${install_path}/nginx
+                return
+            elif [[ now_ng == "openresty" ]]; then
+                # 备份 openresty
+                mv -f ${install_path}/nginx ${install_path}/or_nginx
+                mv -f ${install_path}/tg_nginx ${install_path}/nginx
+                return
+            else
+                echo -e "没有安装 tengine ~~~"
+                sleep 2s
+                return
+            fi
+        ;;
+        1)
+            start_menu
+        ;;
+        *)
+        echo -e "${Error}:请输入正确数字 [0-1]"
+        sleep 5s
+        tengine2or
+    esac
 }
 
 #waf对应ngx配置文件覆盖
@@ -209,7 +293,7 @@ openstar_menu(){
 function up_openstar(){
     rm -rf ${install_path}/openstar.bak
     rm -rf ${install_path}/releases-openstar-Enterprise
-    mv ${install_path}/openstar ${install_path}/openstar.bak
+    mv -f ${install_path}/openstar ${install_path}/openstar.bak
     cd ${install_path}
     git clone https://github.com/op-sec-team/releases-openstar-Enterprise
     cp -Rf ./releases-openstar-Enterprise/openstar ${install_path}/
@@ -222,7 +306,7 @@ function up_openstar(){
 function up_view(){
     rm -rf ${install_path}/nginx/html/view-private.bak
     rm -rf ${install_path}/releases-openstar-Enterprise
-    mv ${install_path}/nginx/html/view-private ${install_path}/nginx/html/view-private.bak
+    mv -f ${install_path}/nginx/html/view-private ${install_path}/nginx/html/view-private.bak
     cd ${install_path}
     git clone https://github.com/op-sec-team/releases-openstar-Enterprise
     cp -Rf ./releases-openstar-Enterprise/view-private ${install_path}/nginx/html/
@@ -275,6 +359,9 @@ start_menu(){
     —————————— openresty    ——————————
      ${Green_font_prefix}1.${Font_color_suffix} 安装 openresty
      ${Green_font_prefix}2.${Font_color_suffix} 更新 openresty
+    —————————— tengine      ——————————
+     ${Green_font_prefix}11.${Font_color_suffix} 安装 tengine
+     ${Green_font_prefix}12.${Font_color_suffix} 还原 openresty
     —————————— openstar WAF ——————————
      ${Green_font_prefix}3.${Font_color_suffix} 安装 openstar
      ${Green_font_prefix}4.${Font_color_suffix} 更新 openstar
@@ -337,9 +424,22 @@ start_menu(){
         10)
             exit 1
         ;;
+        11)
+            echo -e "tengine 使用还在测试中，功能暂不开放"
+            sleep 3s
+            exit 1
+            # tengine_install
+            # start_menu
+        ;;
+        12)
+            # tengine2or
+            echo -e "tengine 使用还在测试中，功能暂不开放"
+            sleep 3s
+            exit 1
+        ;;
         *)
         clear
-        echo -e "${Error}:请输入正确数字 [0-10]"
+        echo -e "${Error}:请输入正确数字 [0-12]"
         sleep 5s
         start_menu
         ;;

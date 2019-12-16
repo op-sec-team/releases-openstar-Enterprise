@@ -8,6 +8,7 @@ install_path=/opt/openresty
 if [ "$1" = "start" ];then
 
     mkdir -p ${install_path}/nginx/conf/conf.d
+    mkdir -p ${install_path}/nginx/certs
     chown nobody:nobody -R ${install_path}
     chown root:nobody ${install_path}/nginx/sbin/nginx
     chmod 751 ${install_path}/nginx/sbin/nginx

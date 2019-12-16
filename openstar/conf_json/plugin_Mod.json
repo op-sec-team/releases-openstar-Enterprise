@@ -1,24 +1,28 @@
 {
 
   "sign_check":{
-      "description":"checkcafc.sign_check 用于检测 header 头中的 x-chj-cafc 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
-      "file":"checkcafc"
+      "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
+      "file":"acc_checkcafc"
     },
   "cap":{
-      "description":"dxcap.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
-      "file":"dxcap"
+      "description":"_M.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
+      "file":"acc_dxcap"
   },
   "test":{
-      "description":"test.test 输出传入的参数：[1,2...]",
-      "file":"test"
+      "description":"_M.test 用于插件测试，原样输出传递的参数 调用参数：[1,2...] ",
+      "file":"acc_test"
   },
-  "replace":{
-      "description":"replace模块支持 使用插件进行替换操作，调用参数：table",
-      "file":"replace"
+  "replace_hello":{
+      "description":"_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
+      "file":"rep_replace"
   },
   "tel_ast":{
-      "description":"replace模块 手机号脱敏 插件，调用参数： table",
+      "description":"_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
       "file":"rep_tel_ast"
+  },
+  "options":{
+    "description":"_M.options 用于对options操作 进行添加header头，方便跨域操作，调用参数： table(没有使用)",
+    "file":"acc_options"
   }
 
 }

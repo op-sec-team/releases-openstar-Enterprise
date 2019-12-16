@@ -1,0 +1,18 @@
+{
+  "www.100xp.com_http": {
+    "cname": "",
+    "host": "www.100xp.com",
+    "ips": "1.1.1.1",
+    "isHttp2": false,
+    "isRewrite_https": false,
+    "port": 80,
+    "protocol": "http",
+    "proxy_protocol": "http",
+    "ssl": {
+      "ssl_certificate": "",
+      "ssl_certificate_key": "",
+      "ssl_client_certificate": "",
+      "ssl_verify_client": false
+    }
+  }
+}

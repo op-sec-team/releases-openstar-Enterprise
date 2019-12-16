@@ -18,9 +18,9 @@
         "hostname": ["localhost5460",""],
         "replace_list":
             [
-             ["replace","func",
+             ["replace_hello","func",
                 {
-                    "description":"参数使用demo",
+                    "description":"鍙傛暟浣跨敤demo",
                     "len":4
                 }
              ]

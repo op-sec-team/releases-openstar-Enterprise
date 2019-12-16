@@ -2,7 +2,7 @@
     {
         "state": "on",
         "id":"1-path_crossing",
-        "post": ["../","in"],
+        "post": [["../","/etc/passwd"],"in_list"],
         "hostname": ["*",""],
         "action": "log"
     },
@@ -17,7 +17,7 @@
         "state": "on",
         "id":"3-sql",
         "hostname": ["*",""],
-        "post": ["(?:(union(.*?)select))","jio"],
+        "post": ["union(.*?)select","jio"],
         "action": "log"
     },
     {
@@ -31,61 +31,54 @@
         "state": "on",
         "id":"5-sql",
         "hostname": ["*",""],
-        "post": ["(?:from\\W+information_schema\\W)","jio"],
+        "post": ["from\\W+information_schema\\W","jio"],
         "action": "log"
     },
     {
         "state": "on",
         "id":"6-sql",
         "hostname": ["*",""],
-        "post": ["(?:(?:current_)user|database|schema|connection_id)\\s*\\(","jio"],
+        "post": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"7-sensitive_file",
-        "hostname": ["*",""],
-        "post": ["(?:etc\\/\\W*passwd)","jio"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"8-sql",
+        "id":"7-sql",
         "hostname": ["*",""],
         "post": ["into(\\s+)+(?:dump|out)file\\s*","jio"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"9-sql",
+        "id":"8-sql",
         "hostname": ["*",""],
         "post": ["group\\s+by.+\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"10-Danger_keyword",
+        "id":"9-Danger_keyword",
         "hostname": ["*",""],
-        "post": ["(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
+        "post": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"11-webshell",
+        "id":"10-webshell",
         "hostname": ["*",""],
         "post": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"12-xss",
+        "id":"11-xss",
         "hostname": ["*",""],
         "post": ["\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"13-xss",
+        "id":"12-xss",
         "hostname": ["*",""],
         "post": ["(onmouseover|onerror|onload)\\=\t","jio"],
         "action": "log"

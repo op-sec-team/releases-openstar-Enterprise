@@ -3,7 +3,7 @@
         "state": "on",
         "id":"1-Danger_path",
         "hostname": ["*",""],
-        "args": [["../",":$"],"in_list"],
+        "args": [["../",":$","${","/etc/passwd"],"in_list"],
         "action": "deny"
     },
     {
@@ -17,7 +17,7 @@
         "state": "on",
         "id":"3-sql",
         "hostname": ["*",""],
-        "args": ["(?:(union(.*?)select))","jio"],
+        "args": ["union(.*?)select","jio"],
         "action": "log"
     },
     {
@@ -31,61 +31,54 @@
         "state": "on",
         "id":"5-sql",
         "hostname": ["*",""],
-        "args": ["(?:from\\W+information_schema\\W)","jio"],
+        "args": ["(from\\W+information_schema\\W)","jio"],
         "action": "log"
     },
     {
         "state": "on",
         "id":"6-sql",
         "hostname": ["*",""],
-        "args": ["(?:(?:current_)user|database|schema|connection_id)\\s*\\(","jio"],
+        "args": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"7-sensitive_file",
+        "id":"7-sql",
         "hostname": ["*",""],
-        "args": ["(?:etc\\/\\W*passwd)","jio"],
-        "action": "deny"
+        "args": ["into(\\s+)+(dump|out)file\\s*","jio"],
+        "action": "log"
     },
     {
         "state": "on",
         "id":"8-sql",
-        "hostname": ["*",""],
-        "args": ["into(\\s+)+(?:dump|out)file\\s*","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"9-sql",
         "hostname": ["*",""],
         "args": ["group\\s+by.+\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"10-Danger_keyword",
+        "id":"9-Danger_keyword",
         "hostname": ["*",""],
-        "args": ["(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
+        "args": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"11-webshell",
+        "id":"10-webshell",
         "hostname": ["*",""],
         "args": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"12-xss",
+        "id":"11-xss",
         "hostname": ["*",""],
         "args": ["\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"13-xss",
+        "id":"12-xss",
         "hostname": ["*",""],
         "args": ["(onmouseover|onerror|onload)\\=\t","jio"],
         "action": "log"

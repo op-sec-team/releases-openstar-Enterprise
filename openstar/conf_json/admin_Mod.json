@@ -1,7 +1,7 @@
 {
   "username": "openstar" ,
-  "password": "passopenstar" ,
-  "time": "30" ,
+  "password": "set your password" ,
+  "time": "40" ,
   "login_uri": "/login.html",
   "jwt_Mod":{
         "hmac":"",
