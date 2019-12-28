@@ -67,7 +67,7 @@
         "http_code":403
     },
     "api_sign":{
-        "state":"off",
+        "state":"on",
         "checkMaster": "off",
         "authority":{
             "header_name":"sign",

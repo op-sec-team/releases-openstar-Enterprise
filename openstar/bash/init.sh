@@ -14,6 +14,7 @@ if [ "$1" = "start" ];then
     chmod 751 ${install_path}/nginx/sbin/nginx
     chmod u+s ${install_path}/nginx/sbin/nginx
     chown nobody:nobody ${install_path}/nginx/logs/*
+    mv -f ${install_path}/nginx/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf.bak
     ln -sf ${install_path}/openstar/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf

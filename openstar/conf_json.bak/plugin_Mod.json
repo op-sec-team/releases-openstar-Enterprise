@@ -14,11 +14,11 @@
   },
   "replace_hello":{
       "description":"_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
-      "file":"rep_replace"
+      "file":"body_replace"
   },
   "tel_ast":{
       "description":"_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
-      "file":"rep_tel_ast"
+      "file":"body_tel_ast"
   },
   "options":{
     "description":"_M.options 用于对options操作 进行添加header头，方便跨域操作，调用参数： table(没有使用)",
