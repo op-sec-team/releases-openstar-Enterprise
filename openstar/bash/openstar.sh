@@ -11,7 +11,7 @@ export PATH
 #=================================================
 
 #set -x
-sh_ver="1.4.1"
+sh_ver="1.4.2"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -136,9 +136,8 @@ function openresty_install(){
     rm -rf openresty-${install_or_version} && tar zxvf openresty-${install_or_version}.tar.gz
     cd openresty-${install_or_version}
     ###############################
-    #./configure --prefix=${install_path} --with-http_realip_module --with-http_v2_module --with-http_geoip_module
+    #./configure --prefix=${install_path} --with-ld-opt='-ljemalloc'
     ./configure --prefix=${install_path} \
-                --with-ld-opt='-ljemalloc' \
                 --without-luajit-gc64 \
                 --with-http_realip_module \
                 --with-http_v2_module
