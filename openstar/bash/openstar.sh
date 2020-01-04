@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.4.1
+#   Version: 1.4.3
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.4.2"
+sh_ver="1.4.3"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -21,8 +21,11 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 # 下载目录
 build_path=/opt/down
+mkdir -p ${build_path}
+
 # 安装目录 不能修改 ！！！
 install_path=/opt/openresty
+mkdir -p ${install_path}
 
 # openresty 安装的版本
 install_or_version=1.15.8.2
@@ -118,29 +121,43 @@ Update_Shell(){
     fi
 }
 
+#安装jemalloc最新版本
+jemalloc_install(){
+    cd ${build_path}
+    wget https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 || (echo "${Error}wget jemalloc Error" && exit 1)
+    tar -xvf jemalloc-5.2.1.tar.bz2 || (echo "${Error}tar -xvf jemalloc-xxx.tar.bz2 Error" && exit 1)
+    cd jemalloc-5.2.1
+    ./configure || (echo "${Error}configure jemalloc Error" && exit 1)
+    make && make install
+    echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+    ldconfig
+}
+
+
 #openresty安装
 function openresty_install(){
     if [[ "${release}" == "centos" ]]; then
-        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop goaccess dos2unix jemalloc
+        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop goaccess dos2unix bzip2
     elif [[ "${release}" == "debian" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix jemalloc
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2
     elif [[ "${release}" == "ubuntu" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix jemalloc
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
-    mkdir -p ${build_path}
+    jemalloc_install
     cd ${build_path}
     rm -rf openresty-${install_or_version}.tar.gz
-    wget ${openresty_uri} || (echo "wget openresty Error!!" && exit 1)
+    wget ${openresty_uri} || (echo "${Error}wget openresty Error!!" && exit 1)
     rm -rf openresty-${install_or_version} && tar zxvf openresty-${install_or_version}.tar.gz
     cd openresty-${install_or_version}
     ###############################
-    #./configure --prefix=${install_path} --with-ld-opt='-ljemalloc'
+    #./configure --prefix=${install_path} --with-http_realip_module --with-http_v2_module --with-http_geoip_module
     ./configure --prefix=${install_path} \
+                --with-ld-opt='-ljemalloc' \
                 --without-luajit-gc64 \
                 --with-http_realip_module \
-                --with-http_v2_module
+                --with-http_v2_module || (echo "${Error}configure openresty Error!!" && exit 1)
     gmake
     gmake install
     ##############################
@@ -162,7 +179,7 @@ function waf_ngx_conf(){
 
 #openstar安装
 function openstar_install(){
-    mkdir -p ${install_path} && cd ${install_path}
+    cd ${install_path}
     git clone https://github.com/op-sec-team/releases-openstar-Enterprise || (echo "git clone openstar Error" && exit 1)
     cp -Rf ./releases-openstar-Enterprise/openstar /opt/openresty/
     cp -Rf ./releases-openstar-Enterprise/view-private /opt/openresty/nginx/html/
