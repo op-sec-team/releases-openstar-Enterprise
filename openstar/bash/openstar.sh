@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.4.3
+#   Version: 1.4.4
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.4.3"
+sh_ver="1.4.4"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -72,7 +72,7 @@ check_version(){
     fi
 }
 
-#检查 openstar 安装情况
+#检查 openstar 安装情况 ngx_status / openstar_status / nginx_path
 check_openstar(){
     ngx_status="no"
     openstar_status="no"
@@ -228,11 +228,11 @@ openstar_menu(){
 
 #up openstar
 function up_openstar(){
-    rm -rf ${install_path}/openstar.bak
+    mv -f ${install_path}/openstar.bak ${install_path}/openstar.a
     rm -rf ${install_path}/releases-openstar-Enterprise
     mv -f ${install_path}/openstar ${install_path}/openstar.bak
     cd ${install_path}
-    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(echo "git clone openstar Error! [pls mv openstar.bak openstar]" && exit 1)
+    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/openstar.bak ${install_path}/openstar && echo "git clone openstar Error!" && exit 1)
     cp -Rf ./releases-openstar-Enterprise/openstar ${install_path}/
     cp -f ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
     chown nobody:nobody -R ${install_path}/openstar
@@ -241,11 +241,11 @@ function up_openstar(){
 
 #up openstar
 function up_view(){
-    rm -rf ${install_path}/nginx/html/view-private.bak
+    mv -f ${install_path}/nginx/html/view-private.bak ${install_path}/nginx/html/view-private.a
     rm -rf ${install_path}/releases-openstar-Enterprise
     mv -f ${install_path}/nginx/html/view-private ${install_path}/nginx/html/view-private.bak
     cd ${install_path}
-    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(echo "git clone openstar Error [pls mv view-private.bak view-private]" && exit)
+    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/nginx/html/view-private.bak ${install_path}/nginx/html/view-private && echo "git clone openstar Error" && exit)
     cp -Rf ./releases-openstar-Enterprise/view-private ${install_path}/nginx/html/
     chown nobody:nobody -R ${install_path}/nginx/html/view-private
 }
