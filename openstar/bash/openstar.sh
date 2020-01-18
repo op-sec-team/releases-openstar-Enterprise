@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.4.5
+#   Version: 1.4.6
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.4.5"
+sh_ver="1.4.6"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -140,6 +140,9 @@ Update_Shell(){
 
 #安装jemalloc最新版本
 jemalloc_install(){
+    if [[ -f /usr/local/lib/libjemalloc.so ]]; then
+        echo "jemalloc install" && return
+    fi
     cd ${build_path}
     wget https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 || (echo "${Error}wget jemalloc Error" && exit 1)
     tar -xvf jemalloc-5.2.1.tar.bz2 || (echo "${Error}tar -xvf jemalloc-xxx.tar.bz2 Error" && exit 1)
@@ -171,23 +174,24 @@ luarocks_install(){
 #openresty安装
 function openresty_install(){
     if [[ "${release}" == "centos" ]]; then
-        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop goaccess dos2unix bzip2
+        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
     elif [[ "${release}" == "debian" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
     elif [[ "${release}" == "ubuntu" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
     jemalloc_install
     cd ${build_path}
+    git clone https://github.com/leev/ngx_http_geoip2_module.git || (echo "git clone ngx_http_geoip2_module Error" && exit 1)
     rm -rf openresty-${install_or_version}.tar.gz
     wget ${openresty_uri} || (echo "${Error}wget openresty Error!!" && exit 1)
     rm -rf openresty-${install_or_version} && tar zxvf openresty-${install_or_version}.tar.gz
     cd openresty-${install_or_version}
     ###############################
-    #./configure --prefix=${install_path} --with-http_realip_module --with-http_v2_module --with-http_geoip_module
     ./configure --prefix=${install_path} \
+                --add-module=${build_path}/ngx_http_geoip2_module \
                 --with-ld-opt='-ljemalloc' \
                 --without-luajit-gc64 \
                 --with-http_realip_module \
