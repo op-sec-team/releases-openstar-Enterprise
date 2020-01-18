@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.4.4
+#   Version: 1.4.5
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.4.4"
+sh_ver="1.4.5"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -33,6 +33,9 @@ install_or_version=1.15.8.2
 #1.11.2.2 nginx 1.11.2 , 1.11.2.1 nginx 1.11.2 , 1.9.15.1 nginx 1.9.15
 # openresty 下载路径
 openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar.gz
+
+luarocks_version=3.2.1
+luarocks_uri=http://luarocks.org/releases/luarocks-${luarocks_version}.tar.gz
 
 # centos 6 = remi-release-6.rpm ; centos 7 = remi-release-7.rpm
 # rpm_uri=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
@@ -77,6 +80,7 @@ check_openstar(){
     ngx_status="no"
     openstar_status="no"
     nginx_path="no"
+    luarocks_statue="no"
     if [[ -f ${install_path}/nginx/sbin/nginx ]]; then
         ngx_status=`nohup ${install_path}/nginx/sbin/nginx -v >/tmp/1 2>&1 && grep -oE "\w*/[0-9.]+" /tmp/1|head -n 1`
         rm -rf /tmp/1
@@ -97,6 +101,19 @@ check_openstar(){
         echo -e " openstar   版本: ${Green_font_prefix}${openstar_status}${Font_color_suffix}"
     else
         echo -e " openstar   状态: ${Red_font_prefix}未安装${Font_color_suffix} openstar"
+    fi
+
+    if [[ -f ${install_path}/luarocks/bin/luarocks ]]; then
+        luarocks_statue=`${install_path}/luarocks/bin/luarocks --version |grep -oE  "[0-9.]+"`
+        echo -e " luarocks   版本: ${Green_font_prefix}${luarocks_statue}${Font_color_suffix}"
+        if [[ ! -f /usr/bin/luarocks ]]; then
+            ln -sf ${install_path}/luarocks/bin/luarocks /usr/bin/luarocks
+            echo -e " luarocks  软连接建立:${Green_font_prefix}/usr/bin/luarocks${Font_color_suffix}"
+        else
+            echo -e " luarocks  软连接建立:${Green_font_prefix}/usr/bin/luarocks${Font_color_suffix}"
+        fi
+    else
+        echo -e " luarocks   状态: ${Red_font_prefix}未安装${Font_color_suffix} luarocks"
     fi
 }
 
@@ -131,6 +148,23 @@ jemalloc_install(){
     make && make install
     echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
     ldconfig
+}
+
+luarocks_install(){
+    if [[ -f ${install_path}/luarocks/bin/luarocks ]]; then
+        echo "luarocks install" && return
+    fi
+    cd ${build_path} && rm -rf luarocks-${luarocks_version}.tar.gz
+    wget ${luarocks_uri} || (echo "wget luarocks Error" && exit 1)
+    rm -rf luarocks-${luarocks_version} && tar xvzf luarocks-${luarocks_version}.tar.gz
+    cd luarocks-${luarocks_version}
+    ./configure --prefix=${install_path}/luarocks \
+                --with-lua=${install_path}/luajit/ \
+                --with-lua-include=${install_path}/luajit/include/luajit-2.1 \
+                --lua-suffix='jit' || (echo "configure luarocks Error" && exit 1)
+    make
+    make install
+    ln -sf ${install_path}/luarocks/bin/luarocks /usr/bin/luarocks
 }
 
 
@@ -303,7 +337,7 @@ start_menu(){
      ${Green_font_prefix}4.${Font_color_suffix} 更新 openstar
      ${Green_font_prefix}5.${Font_color_suffix} 查看云端 openstar 版本
      ${Green_font_prefix}6.${Font_color_suffix} 更新 openstar 界面 view
-     ${Green_font_prefix}7.${Font_color_suffix} 待定...
+     ${Green_font_prefix}7.${Font_color_suffix} 安装 luarocks
     —————————— 杂项管理     ——————————
      ${Green_font_prefix}8.${Font_color_suffix}  openstar运行检查
      ${Green_font_prefix}9.${Font_color_suffix}  查看系统信息
@@ -347,6 +381,7 @@ start_menu(){
             start_menu
         ;;
         7)
+            luarocks_install
             start_menu # 待定
         ;;
         8)
