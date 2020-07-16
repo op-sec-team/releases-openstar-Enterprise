@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="css/iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/AdminLTE.min.css" />
+    <link rel="stylesheet" href="css/ionicons.min.css">
+<style>
+    .chart-container {
+        width: 100%;
+    }
+</style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>业务报表</h2>
+                </div>
+            </div>
+
+            <div class="wrapper wrapper-content">
+                <!-- 饼图 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">域名请求总数</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="table-responsive">
+                                <table class="table no-margin">
+                                    <thead>
+                                        <tr>
+                                            <th>请求域名</th>
+                                            <th>请求次数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="rule in customRule">
+                                            <td><a href="#">{{ rule.site }}</a></td>
+                                            <td><span class="label label-danger">{{ rule.total }}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+
+                            <div class="box-footer clearfix">
+                                <a target="_blank" style="float: right;" @click="drawTable('1')">more>></a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 请求总量趋势图 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <div class="col-xs-1"> 
+                                    <a target="_blank" @click="initData( 7,7 )">7天</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="initData( 30,30 )">30天</a> 
+                                </div>
+                                <div class="col-xs-9">
+                                    <i class="fa fa-calendar"></i>&nbsp;开始时间：<input type="text" placeholder="2018-11-05" v-model="sh.date1">
+                                    ~ 结束时间：<input type="text" placeholder="2018-11-08" v-model="sh.date2"> 
+                                    <button type="button" class="btn btn-primary btn-sm"  @click="initData(8, 8)"><i class="fa fa-search"></i></button>
+                                </div>
+                                <div class="col-xs-2">
+                                    最小刻度：<a target="_blank" @click="draw6( '10m' )">10min</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="draw6( '1h' )">1h</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="draw6( '1d' )">1d</a>  
+                                </div>    
+                            </div>
+                            <div class="box-body">
+                                <div id="wafTrend" style="width:100%; height:480px;"></div>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+                
+                <!-- 请求域名趋势图 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <div class="col-xs-1"> 
+                                    <a target="_blank" @click="initData2( 7,7 )">7天</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="initData2( 30,30 )">30天</a> 
+                                </div>
+                                <div class="col-xs-9">
+                                    <i class="fa fa-calendar"></i>&nbsp;开始时间：<input type="text" placeholder="2018-11-05" v-model="sh2.date1">
+                                    ~ 结束时间：<input type="text" placeholder="2018-11-08" v-model="sh2.date2"> 
+                                    <button type="button" class="btn btn-primary btn-sm"  @click="initData2(8, 8)"><i class="fa fa-search"></i></button>
+                                </div>
+                                <div class="col-xs-2">
+                                    最小刻度：<a target="_blank" @click="draw2( '10m' )">10min</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="draw2( '1h' )">1h</a>&nbsp;&nbsp;
+                                    <a target="_blank" @click="draw2( '1d' )">1d</a>  
+                                </div>    
+                            </div>
+                            <div class="box-body">
+                                <div id="dayTrend" style="width:100%; height:480px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+<script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/element-ui.js"></script>
+<script src="config.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/plugins/jquery.metisMenu.js"></script>
+<script type="text/javascript" src="js/jq-common.js"></script>
+<script src="js/echarts.min.js"></script>
+<script src="js/common.js"></script>
+
+<script>
+
+    var vdata = new Vue({
+    el: '#wrapper',
+    data: function () {
+        return {
+            showCluster: false,
+            sh: {
+                date1: '',
+                date2: ''
+            },
+            data: '',
+            checkSign: '',
+            // 域名请求总数
+            customRule:[],
+            // 请求总量趋势图
+            sh: {
+                date1: '',
+                date2: ''
+            },
+            waf_start_day: 0,
+            waf_end_day: 0,
+            waf_request: [],
+            option: {
+                title: {
+                    left: 'left',
+                    text: '请求总量',
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: []
+                },
+                yAxis: {
+                    type: 'value',
+                    boundaryGap: [0, '100%']
+                },
+                dataZoom: [{
+                    type: 'inside',
+                    start: 0,
+                    end: 10
+                }, {
+                    start: 0,
+                    end: 10,
+                    handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                    handleSize: '80%',
+                    handleStyle: {
+                        color: '#fff',
+                        shadowBlur: 3,
+                        shadowColor: 'rgba(0, 0, 0, 0.6)',
+                        shadowOffsetX: 2,
+                        shadowOffsetY: 2
+                    }
+                }],
+                series: [
+                    {
+                        name:'模拟数据',
+                        type:'line',
+                        smooth:true,
+                        symbol: 'none',
+                        sampling: 'average',
+                        itemStyle: {
+                            color: 'rgb(255, 70, 131)'
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: 'rgb(255, 158, 68)'
+                            }, {
+                                offset: 1,
+                                color: 'rgb(255, 70, 131)'
+                            }])
+                        },
+                        data: []
+                    },
+                ]
+            },
+            // 网站趋势
+            sh2: {
+                date1: '',
+                date2: ''
+            },
+            waf_start_day2: 0,
+            waf_end_day2: 0,
+            site_request_Data: [],
+            option2: {
+                title: {
+                    text: ''
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    x:'right',
+                    y:'top',
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        saveAsImage : {show: true},
+                        dataView:{show: true},
+                    }
+                },
+                legend: {
+                    type: 'scroll',
+                    data: [],
+                    top: 3,
+                    left: 10,
+                    right: 80
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis:{
+                    type: 'category',
+                    boundaryGap: false,
+                    data:[]
+                },
+                yAxis : [
+                    {
+                        type : 'value'
+                    }
+                ],
+                series : [
+                ]
+            },    
+        }
+    },
+    watch: {
+        checkSign: function (val) {
+            if (val == "sign error") {
+                window.location = '/login.html';
+            }
+        }
+    },
+    mounted() {
+        this.drawTable(0);
+        this.draw6("init"); 
+        this.draw2("init");
+    },
+    updated: function () {
+
+    },
+    destroyed() {
+        this.showCluster = false;
+    },
+    methods: {
+        // 域名请求总数表格
+        drawTable(tt) {
+            var that = this;
+            var result;
+
+            function check(tt) {
+                if (a) {
+                    // 获取数据
+                    var customRule_data = result.gl_host;
+                    var test = new Array();
+                    for(var i in customRule_data){    
+                        test.push({ site: String( i.split(" ")[0] ), total : parseInt( customRule_data[i] ) } );    
+                    }    
+                    if(0 == parseInt(tt)){
+                        that.customRule = test.slice(0,5);
+                    }else{
+                        that.customRule = test;
+                    }
+                }
+            }
+            var baseUri = URL + '/api/v2/data_Mod/global';
+            var a;
+            $.get(baseUri, {}, function(data) {
+                a = data;
+                if (data.code == 'ok') {
+                    result = data.msg;
+                } else {
+                    if (data.msg == "sign error") {
+                        that.checkSign = "sign error";
+                    }
+                    that.$notify({
+                        type: 'warning',
+                        title: '提示',
+                        message: data.msg,
+                        duration: 4000
+                    });
+                }
+                check(tt);
+            });
+        },
+        // 请求总量趋势
+        draw6(scale){
+            // 第一次加载
+            if(this.waf_start_day == 0){
+                var _sDate = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 7);
+                var _eDate = new Date();
+            } else {
+                var _sDate = new Date(this.waf_start_day); //默认 X_list会改变时间的变量,所以新new一个对象,保证不会改变原来的时间变量
+                var _eDate = new Date(this.waf_end_day);
+            }
+            var stime = DateFormt( _sDate, "yyyy-MM-dd" ) ;
+            var etime = DateFormt( _eDate, "yyyy-MM-dd" ) ;
+            if("init" == String(scale)){
+                var baseUri = URL + '/api/v2/data_Mod/trendx?key=request&stime=' + stime + '&etime=' + etime ;
+                var waf_request;
+                waf_request = wafReq(baseUri, "get", {});
+                this.waf_request = waf_request;
+            }
+            mDate = {
+                "xData": [],
+                "waf_request": [],
+            }
+            // console.log(this.waf_request);
+            switch(String(scale)){
+                case '1d':
+                    // 获取1d刻度的数据
+                    mTime = X_list( _sDate, _eDate, "1d" );
+                    for(var i in mTime) {
+                        var data = 0 ;
+                        // 1天内的时间段对应的数据累加
+                        var dateArr = mTime[i] ;
+                        for(var j in dateArr){
+                            var t = dateArr[j];
+                            data = data + (this.waf_request[t] || 0) ;
+                        }
+                        mDate["xData"].push( i );
+                        mDate["waf_request"].push( data ) ;
+                    }
+                    break;
+                case '1h':
+                    // 获取1h刻度的数据
+                    // console.log(_sDate, _eDate);
+                    mTime = X_list( _sDate, _eDate, "1h" );
+                    for(var i in mTime) {
+                        var data = 0 ;
+                        // 1小时内的时间段对应的数据累加
+                        var dateArr = mTime[i] ;
+                        for(var j in dateArr){
+                            var t = dateArr[j];
+                            data = data + (this.waf_request[t] || 0) ;
+                        }
+                        mDate["xData"].push( i );
+                        mDate["waf_request"].push( data ) ;
+                    }
+                    break;
+                case '10m':
+                    // 获取10min刻度的数据
+                    mTime = X_list( _sDate, _eDate, "10m" )
+                    for(var i in mTime) {
+                        var t = mTime[i] ;
+                        var data = this.waf_request[t] ;
+                        mDate["xData"].push(t);
+                        mDate["waf_request"].push( data ) ;
+
+                    }
+                    break;
+                default:
+                    // 获取10min刻度的数据
+                    mTime = X_list( _sDate, _eDate, "10m" )
+                    for(var i in mTime) {
+                        var t = mTime[i] ;
+                        var data = this.waf_request[t] ;
+                        mDate["xData"].push(t);
+                        mDate["waf_request"].push( data ) ;
+
+                    }
+                    break;
+            }
+            // 图表配置
+            let echartsDOM = document.getElementById('wafTrend');
+            let myEcharts = echarts.init(echartsDOM);
+            this.option.xAxis.data = mDate["xData"];
+            this.option.series[0].data = mDate["waf_request"];
+            myEcharts.setOption( this.option );
+        },
+        // 请求总量初始化天数
+        initData(st, et){
+            // 7天的数据
+            if(st == 7){
+                this.waf_start_day = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 7);
+                this.waf_end_day = new Date();
+                this.draw6("init");
+            } else if(st == 30){
+                this.waf_start_day = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30);
+                this.waf_end_day = new Date();
+                this.draw6("init");
+            } else{
+                var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+                var str = this.sh.date1;
+                var str2 = this.sh.date2;
+                var arr = reg.exec(str);
+                
+                var from_date, end_date ;
+                var vildate = false;
+                if (reg.test(str)&&RegExp.$2<=12&&RegExp.$3<=31){
+                    from_date = new Date(str + " 00:00:00" ) ;
+                    vildate = true;
+                }
+                if (reg.test(str)&&RegExp.$2<=12&&RegExp.$3<=31){
+                    end_date = new Date(str2 + " 00:00:00" ) ;
+                    vildate = true;
+                }
+                
+                if(!vildate){
+                    this.$notify({
+                        type: 'warning',
+                        title: '提示',
+                        message: "请输入正确的时间格式",
+                        duration: 4000
+                    });
+                }
+                if(end_date>from_date){
+                    this.waf_start_day = from_date;
+                    this.waf_end_day = end_date;
+                    this.draw6("init");
+                }else{
+                    this.$notify({
+                        type: 'warning',
+                        title: '提示',
+                        message: "结束时间小于开始时间",
+                        duration: 4000
+                    });
+                }
+            }
+        },
+        // 网站趋势
+        draw2(scale) {
+            if(this.waf_start_day2 == 0){
+                var _sDate = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 7);
+                var _eDate = new Date();
+            } else {
+                var _sDate = new Date(this.waf_start_day2); //默认 X_list会改变时间的变量,所以新new一个对象,保证不会改变原来的时间变量
+                var _eDate = new Date(this.waf_end_day2);
+            }
+            var stime = DateFormt( _sDate, "yyyy-MM-dd" ) ;
+            var etime = DateFormt( _eDate, "yyyy-MM-dd" ) ;
+            // 根据时间初始化数据
+            if("init" == String(scale)){
+                //获取域名, title字段
+                var baseUri = URL + '/api/v2/data_Mod/trendx?key=host_Mod_name' ;
+                var sites;
+                var data = [];
+                sites = wafReq(baseUri, "get", {});
+                //获取域名对应的数据
+                for(var domain in sites){
+                    var DomainUri = URL + '/api/v2/data_Mod/trendx?key='+ domain +'&stime=' + stime + '&etime=' + etime;    
+                    var siteData;
+                    siteData = wafReq(DomainUri, "get", {});
+                    var t = {}
+                    t[domain] = siteData;
+                    data.push(t);
+                }
+                this.site_request_Data = data; //保存{域名：{时间：数据}}
+            }
+            
+            var t1 = [];    // 标题
+            var t2 = [];    // 时间刻度
+            var t3 = [];     // 时间刻度对应的值
+            switch(String(scale)){
+                case '1d':
+                    // 获取1d刻度的数据
+                    mTime = X_list( _sDate, _eDate, "1d" );
+                    // 遍历显示的line
+                    for(var domainDict in this.site_request_Data){
+                        for(var domain in this.site_request_Data[domainDict]){
+                            var title = domain.split(" ")[0];     
+                            var x = [];                                      // 时间刻度
+                            var y = [];                      
+                            for(var i in mTime) {
+                                // 1天内的时间段对应的数据累加
+                                var dateArr = mTime[i] ;
+                                var data = 0 ;
+                                for(var j in dateArr){
+                                    var t = dateArr[j];
+                                    data = data + (this.site_request_Data[domainDict][domain][t] || 0) ;
+                                }
+                                x.push( i );
+                                y.push( data ) ;
+                            }
+                            var tt = { name: title , type: 'line', data: y }; // 时间刻度对应的值
+                            t1.push(title);
+                            t2 = x;
+                            t3.push( tt );
+                        }
+                    }
+                    break;
+                case '1h':
+                    // 获取1h刻度的数据
+                    mTime = X_list( _sDate, _eDate, "1h" );
+                    // 遍历显示的line
+                    for(var domainDict in this.site_request_Data){
+                        for(var domain in this.site_request_Data[domainDict]){
+                            var title = domain.split(" ")[0];     
+                            var x = [];                                      // 时间刻度
+                            var y = [];                      
+                            for(var i in mTime) {
+                                // 1小时内的时间段对应的数据累加
+                                var dateArr = mTime[i] ;
+                                var data = 0 ;
+                                for(var j in dateArr){
+                                    var t = dateArr[j];
+                                    data = data + (this.site_request_Data[domainDict][domain][t] || 0) ;
+                                }
+                                x.push( i );
+                                y.push( data ) ;
+                            }
+                            var tt = { name: title , type: 'line', data: y }; // 时间刻度对应的值
+                            t1.push(title);
+                            t2 = x;
+                            t3.push( tt );
+                        }
+                    }
+                    break;
+                case '10m':
+                    // 获取10min刻度的数据
+                    mTime = X_list( _sDate, _eDate, "10m" ) ;
+                    for(var domainDict in this.site_request_Data){
+                        for(var domain in this.site_request_Data[domainDict]){
+                            var title = domain.split(" ")[0];     
+                            var x = [];                                      // 时间刻度
+                            var y = [];                      
+                            for(var i in mTime) {
+                                var t = mTime[i] ;
+                                var data = this.site_request_Data[domainDict][domain][t] || 0 ;
+                                x.push( t );
+                                y.push( data ) ;
+                            }
+                            var tt = { name: title , type: 'line', data: y }; // 时间刻度对应的值
+                            t1.push(title);
+                            t2 = x;
+                            t3.push( tt );
+                        }
+                    }
+                    break;
+                default:
+                    // 获取10min刻度的数据
+                    mTime = X_list( _sDate, _eDate, "10m" ) ;
+                    // 遍历显示的line
+                    for(var domainDict in this.site_request_Data){
+                        for(var domain in this.site_request_Data[domainDict]){
+                            var title = domain.split(" ")[0];     
+                            var x = [];                                      // 时间刻度
+                            var y = [];                      
+                            for(var i in mTime) {
+                                var t = mTime[i] ;
+                                var data = this.site_request_Data[domainDict][domain][t] || 0 ;
+                                x.push( t );
+                                y.push( data ) ;
+                            }
+                            var tt = { name: title , type: 'line', data: y }; // 时间刻度对应的值
+                            t1.push(title);
+                            t2 = x;
+                            t3.push( tt );
+                        }
+                    }
+                    break;
+            }
+            // console.log(t1, t2, t3);
+            // 图表配置
+            let echartsDOM = document.getElementById('dayTrend');
+            let myEcharts = echarts.init(echartsDOM);
+            this.option2.legend.data = t1;
+            this.option2.xAxis.data = t2;
+            this.option2.series = t3;
+            myEcharts.setOption(this.option2);    
+        },
+        // 网站趋势初始化天数
+        initData2(st, et){
+            // 7天的数据
+            if(st == 7){
+                this.waf_start_day2 = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 7);
+                this.waf_end_day2 = new Date();
+                this.draw2("init");
+            } else if(st == 30){
+                this.waf_start_day2 = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30);
+                this.waf_end_day2 = new Date();
+                this.draw2("init");
+            } else{
+                var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+                var str = this.sh2.date1;
+                var str2 = this.sh2.date2;
+                var arr = reg.exec(str);
+                
+                var from_date, end_date ;
+                var vildate = false;
+                if (reg.test(str)&&RegExp.$2<=12&&RegExp.$3<=31){
+                    from_date = new Date(str + " 00:00:00" ) ;
+                    vildate = true;
+                }
+                if (reg.test(str)&&RegExp.$2<=12&&RegExp.$3<=31){
+                    end_date = new Date(str2 + " 00:00:00" ) ;
+                    vildate = true;
+                }
+                
+                if(!vildate){
+                    this.$notify({
+                        type: 'warning',
+                        title: '提示',
+                        message: "请输入正确的时间格式",
+                        duration: 4000
+                    });
+                }
+                if(end_date>from_date){
+                    this.waf_start_day2 = from_date;
+                    this.waf_end_day2 = end_date;
+                    this.draw2("init");
+                }else{
+                    this.$notify({
+                        type: 'warning',
+                        title: '提示',
+                        message: "结束时间小于开始时间",
+                        duration: 4000
+                    });
+                }
+            }
+        }
+    },
+});
+
+</script>
+</body>
+
+</html>

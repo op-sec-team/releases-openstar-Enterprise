@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+          
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-4">
+                    <h2>全局规则</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="/global/index.html">全局规则</a>
+                        </li>
+                        <li class="active">
+                            <strong>IP规则配置</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="col-sm-2 col-sm-offset-6" style="padding-top: 4%;">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="row">
+                    <div class="col-lg-11">
+                        <div class="ibox float-e-margins">
+                            <div class="panel blank-panel">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="ibox-content">
+                                            <div class="col-sm-12" style="padding:0px;margin-bottom: 10px;">
+                                                <div class="col-sm-5" style="padding-right: 0px;padding-left: 0px;">
+                                                    <el-input placeholder="请输入搜索内容" v-model="searchQuery">
+                                                    </el-input>
+                                                </div>
+                                                <div class="col-sm-1 col-sm-offset-6">
+                                                    <a class="btn btn-sm btn-primary" @click="showRule()"> 添加规则  </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12" style="padding:0px;margin-bottom: 10px;">
+                                                <div class="flex-row flex-between">
+                                                    <div>
+                                                        <span>IP规则配置: </span>
+                                                        <el-radio v-model="state" label="on" @change="ruleIpSwitch" style="margin-left: 15px;">开启</el-radio>
+                                                        <el-radio v-model="state" label="off" @change="ruleIpSwitch" style="margin-left: 15px;">关闭</el-radio>
+                                                    </div>
+                                                    <div>
+                                                        <span>当前数量: {{ tableData.length }} </span>
+                                                        <span class="blue-fonts" style="margin-left: 20px;">版本号：<span class="green-fonts">{{ G_version }}</span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <el-table :data="tables" border style="width: 100%">
+                                                <el-table-column prop="host" label="域名">
+                                                </el-table-column>
+                                                <el-table-column prop="ip" label="ip" width="160">
+                                                </el-table-column>
+                                                <el-table-column prop="option" label="动作" width="160">
+                                                </el-table-column>
+                                                <el-table-column label="操作" width="100">
+                                                    <template scope="scope">
+                                                        <el-button size="mini" type="danger" @click="deleteRealIp(scope.row,scope.$index)">删除</el-button>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                            <!-- <div style="text-align:center;margin-top:10px">
+                                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <!-- 添加编辑规则 -->
+                                    <el-dialog :visible.sync="dialogTableVisible" width="800px" :close-on-click-modal="false">
+                                        <h3 slot="title">
+                                            {{title}}
+                                        </h3>
+                                        <div class="modal-body col-sm-12">
+                                            <div class="col-sm-8">
+                                                <div class="form-group row">
+                                                    <span class="col-sm-4 form-control-static">
+                                                        域名：
+                                                    </span>
+                                                    <div class="col-sm-8">
+                                                        <el-input v-model="host" placeholder="请输入内容"></el-input>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <span class="col-sm-4 form-control-static">
+                                                        ip：
+                                                    </span>
+                                                    <div class="col-sm-8">
+                                                        <el-input v-model="ip" placeholder="请输入内容"></el-input>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <span class="col-sm-4 form-control-static">
+                                                        拦截时长：
+                                                    </span>
+                                                    <div class="col-sm-8">
+                                                        <el-input v-model="time" placeholder="请输入内容"></el-input>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <span class="col-sm-4 form-control-static">
+                                                        匹配动作：
+                                                    </span>
+                                                    <div class="col-sm-8">
+                                                        <el-select v-model="option" placeholder="请选择">
+                                                            <el-option v-for="item in action_options" :key="item.value" :label="item.label" :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div style="border: 1px solid #ccc; height: 200px;overflow: auto;">
+                                                    <div class="form-control-static">
+                                                        <p>
+                                                            <span class="red-fonts"> * </span>该规则是配置ip操作，当域名为 "*" 星号字符串时表示对所有域名剩下，否则仅对配置的域名生效。
+                                                        </p>
+                                                        <p>
+                                                            <span class="red-fonts"> * </span>ip 不支持ip段仅支持单ip
+                                                        </p>
+                                                        <p>
+                                                            <span class="red-fonts"> * </span>单位秒，0表示永久
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div slot="footer" class="dialog-footer">
+                                            <el-button @click="dialogTableVisible = false">关闭</el-button>
+                                            <el-button type="primary" @click="addRealIp()">应用</el-button>
+                                        </div>
+                                    </el-dialog>
+                                    <!-- 删除规则 -->
+                                    <el-dialog title="" :visible.sync="deleteDialogVisible" width="30%" center :close-on-click-modal="false">
+                                        <h2>确定要删除该配置？</h2>
+                                        <h2 class="text-info">ip规则</h2>
+                                        <h2 class="red-fonts">{{row.host}}_{{row.ip}}</h2>
+                                        <span slot="footer" class="dialog-footer">
+                                            <el-button type="primary" @click="deleteRealIp()">确 定</el-button>
+                                            <el-button @click="deleteDialogVisible = false">取 消</el-button>
+                                        </span>
+                                    </el-dialog>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;"><span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script>
+         var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    showCluster: false,
+                    checkSign: '',
+                    count: 0,
+                    state: '',
+                    G_version: '',
+                    tableData: [],
+                    row: '',
+                    index: '',
+                    action_options: [{
+                            value: 'deny',
+                            label: 'deny',
+                        },
+                        {
+                            value: 'allow',
+                            label: 'allow',
+                        },
+                        {
+                            value: 'log',
+                            label: 'log',
+                        },
+                    ],
+                    dialogTableVisible: false,
+                    deleteDialogVisible: false,
+                    // btnMsg: '',
+                    // 添加规则
+                    title: '',
+                    host: '',
+                    ip: '',
+                    time: '',
+                    option: '',
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                    // 搜索
+                    searchQuery: '',
+                }
+            },
+            watch:{
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const val = this.searchQuery
+                    if (val) {
+                        return this.tableData.filter(item => {
+                            if(item.host.includes(val) || item.ip.includes(val) || item.option.includes(val)) {
+                                return item
+                            }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getIpData();
+            },
+            destroyed(){
+                this.showCluster = false;
+            },
+            methods: {
+                getIpData() {
+                    var that = this;
+                    $.post(URL + '/api/v2/ip_dict', {
+                        action: 'get',
+                        ip: 'all_ip'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            var table = [];
+                            that.count = data.msg.count;
+                            that.state = data.msg.state.state;
+                            that.G_version = data.msg.state.G_version;
+                            for (var i in data.msg) {
+                                if (i !== "state" && i !== "count") {
+                                    var obj = {};
+                                    var tmp = i.split('_');
+                                    if (tmp.length == 1) {
+                                        obj.host = "*"
+                                        obj.ip = tmp[0]
+                                    } else {
+                                        obj.host = tmp[0]
+                                        obj.ip = tmp[1]
+                                    }
+                                    obj.option = data.msg[i];
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                        } else {
+                            if( data.msg == "sign error" ) {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({                                 type: 'warning',                                 title: '提示',                                 message: data.msg,                                 duration: 4000                             });
+                        }
+                    })
+                },
+                // 显示添加规则弹出框
+                showRule() {
+                    this.title = '添加';
+                    this.host = '*';
+                    this.ip = '';
+                    this.time = '';
+                    this.option = 'deny';
+                    this.dialogTableVisible = true;
+                },
+                addRealIp() {
+                    var that = this;
+                    if (this.host === '*') {
+                        hostIp = that.ip;
+                    } else {
+                        hostIp = that.host + '_' + that.ip;
+                    }
+                    $.post(URL + '/api/v2/ip_dict', {
+                        action: 'set',
+                        ip: hostIp,
+                        value: that.option,
+                        time: Number(that.time)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({                                     type: 'success',                                     title: '提示',                                     message: '应用成功',                                     duration: 4000                             });
+                            that.dialogTableVisible = false;
+                            that.getIpData();
+                            // window.location.reload();
+                        } else {
+                            if( data.msg == "sign error" ) {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({                                 type: 'warning',                                 title: '提示',                                 message: data.msg,                                 duration: 4000                             });
+                        }
+                    })
+                },
+                deleteRealIp(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.deleteDialogVisible = true;
+                    } else {
+                        var that = this;
+                        if (that.row.host === '*') {
+                            hostIp = that.row.ip;
+                        } else {
+                            hostIp = that.row.host + '_' + that.row.ip;
+                        }
+                        $.post(URL + '/api/v2/ip_dict', {
+                            action: 'del',
+                            ip: hostIp,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({                                     type: 'success',                                     title: '提示',                                     message: '删除成功',                                     duration: 4000                                 });
+                                that.tableData.splice(that.index, 1);
+                                that.getIpData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({                                 type: 'warning',                                 title: '提示',                                 message: data.msg,                                 duration: 4000                             });
+                            }
+                        })
+                        this.deleteDialogVisible = false;
+                    }
+                },
+                ruleIpSwitch() {
+                    const that = this;
+                    value = {
+                        state: that.state,
+                        G_version: that.G_version,
+                    }
+                    $.post(URL + '/api/v2/config_dict', {
+                        mod: 'base',
+                        action: 'set',
+                        id: 'ip_Mod',
+                        value: JSON.stringify(value),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveMod() {
+                    var that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'ip_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({                                     type: 'success',                                     title: '提示',                                     message: '保存成功',                                     duration: 4000                             });
+                        } else { 
+                            if( data.msg == "sign error" ) {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({                                 type: 'warning',                                 title: '提示',                                 message: data.msg,                                 duration: 4000                             });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

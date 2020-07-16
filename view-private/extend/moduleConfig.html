@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-header {
+            display: flex;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .dialog-header .dialog-type {
+            margin-left: 10px;
+            color: #f56c6c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="header-left">
+                    <h2>扩展配置</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="#">扩展配置</a>
+                        </li>
+                        <li class="active">
+                            <strong>配置文件管理</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <el-table :data="tableData" border style="width: 100%">
+                                <el-table-column prop="file_name" label="模版文件" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.file_name }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="dis" label="说明" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.dis }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="path" label="文件位置" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.path }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="160">
+                                    <template scope="scope">
+                                        <el-button size="mini" type="danger" plain @click="showAddDialog(scope.row, true)">编辑</el-button>
+                                        <el-button size="mini" type="success" plain @click="showAddDialog(scope.row)">查看</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+
+                            <!-- <div style="text-align:center;margin-top:10px">
+                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="addVisible" width="800px" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{title}}
+                </h3>
+                <div class="dialog-header">
+                    <span>查看</span>
+                    <span class="dialog-type">{{ modType }}</span>
+                </div>
+                <div>
+                    <el-input v-model="nginxMsg" :disabled="isDisable" type="textarea" :autosize="{ minRows: 15, maxRows: 15}"></el-input>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="addVisible = false">取消</el-button>
+                    <el-button v-if="!isDisable" type="primary" @click="addModuleConfig()">保存</el-button>
+                </div>
+            </el-dialog>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/base64.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    count: 0,
+                    tableData: [],
+                    addVisible: false,
+                    modType: '', // 编辑类型
+                    // 添加规则
+                    title: '',
+                    nginxMsg: '',
+                    isDisable: false,
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            created() {
+                this.getModuleConfigData();
+            },
+            methods: {
+                getModuleConfigData() {
+                    var that = this;
+                    var table = [];
+                    $.post(URL + '/api/v2/nginx_Mod/get_conf', {}, function (data) {
+                        if (data.code == 'ok') {
+                            var table = [];
+                            for (var i in data.msg) {
+                                var obj = {};
+                                obj.type = i;
+                                obj.file_name = data.msg[i].file_name;
+                                obj.dis = data.msg[i].dis;
+                                obj.path = data.msg[i].path;
+                                table.push(obj);
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加规则弹出框
+                showAddDialog(obj, flag) {
+                    if (flag) {
+                        this.title = '编辑';
+                        this.isDisable = false;
+                    } else {
+                        this.title = '查看';
+                        this.isDisable = true;
+                    }
+                    this.modType = obj.type;
+                    this.getDetail();
+                },
+                getDetail() {
+                    var that = this;
+                    $.post(URL + '/api/v2/nginx_Mod/get_conf', {
+                        file: that.modType,
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.nginxMsg = new Base64().decode(data.msg);
+                            that.addVisible = true;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                addModuleConfig() {
+                    var that = this;
+                    $.post(URL + '/cluster/v2/nginx_Mod/edit_conf', {
+                        file: that.modType,
+                        value: encodeURIComponent(new Base64().encode(that.nginxMsg)),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                            that.addVisible = false;
+                            that.getModuleConfigData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveMod() {
+                    var that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

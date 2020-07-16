@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <link href="../css/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-center {
+            justify-content: center;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .ibox-search {
+            margin-bottom: 20px;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-body {
+            display: flex;
+        }
+        .dialog-body-right {
+            min-width: 200px;
+            max-width: 200px;
+            margin-left: 20px;
+        }
+        .del-title {
+            text-align: center;
+        }
+        .del-name {
+            text-align: center;
+            font-weight: 900;
+        }
+        .table-save {
+            width: 190px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="header-left">
+                    <h2>CDN规则</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="#">CDN规则</a>
+                        </li>
+                        <li class="active">
+                            <strong>缓存proxy_cache配置</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <el-input v-model="searchQuery" placeholder="请输入搜索内容" prefix-icon="el-icon-search" style="width: 280px;"></el-input>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="button" @click="showAddDialog('add')">添加</button>
+                                </div>
+                            </div>
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <span>内容缓存配置: </span>
+                                    <el-radio v-model="state" label="on" @change="changeSwitch" style="margin-left: 15px;">on</el-radio>
+                                    <el-radio v-model="state" label="off" @change="changeSwitch" style="margin-left: 15px;">off</el-radio>
+                                </div>
+                                <div>
+                                    <span>当前数量: {{ tableData.length }} </span>
+                                    <span class="blue-fonts" style="margin-left: 20px;">版本号：<span class="green-fonts">{{ G_version }}</span></span>
+                                </div>
+                            </div>
+                            <el-table :data="tables" border style="width: 100%">
+                                <el-table-column
+                                    label="ID"
+                                    width="50">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.name }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="jsonData" label="证书名称" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.jsonData }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="270">
+                                    <template scope="scope">
+                                        <span class="btn btn-xs btn-danger top" @click="delData(scope.row, scope.$index)">删除</span>
+                                        <span v-bind:class="{ 'disabled': scope.$index ==0 }" class="btn btn-xs btn-warning up" @click="up(scope.$index)">上移</span>
+                                        <span v-bind:class="{ 'disabled': scope.$index == tableData.length-1 }" class="btn btn-xs btn-warning down" @click="down(scope.$index)">下移</span>
+                                        <span v-bind:class="{ 'disabled': scope.$index ==0 }" class="btn btn-xs btn-warning top" @click="upIndex(scope.$index)">置顶</span>
+                                        <span v-bind:class="{ 'disabled': scope.$index == tableData.length-1 }" class="btn btn-xs btn-warning bottom" @click="downIndex(scope.$index)">置底</span>
+                                        <span class="btn btn-xs btn-primary" @click="showAddDialog('edit', scope.row)">编辑</span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <div class="flex-row flex-center">
+                                <div class="table-save">
+                                    <button class="btn btn-primary btn-block" type="button" @click="saveTable()">应用</button>
+                                </div>
+                            </div>
+
+                            <!-- <div style="text-align:center;margin-top:10px">
+                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="addVisible" width="800px" class="dialog-add" @open="openDialog" @close="closeDialog" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{title}}
+                </h3>
+                <div class="dialog-body">
+                    <div id="jsoneditor" style="width: 500px; height: 500px;"></div>
+                    <div class="dialog-body-right">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"hostname":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"tag":["all_Mod"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# tag 也可以没有<br/>
+                        }
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="addData()">应用</el-button>
+                    <el-button @click="addVisible = false">取消</el-button>
+                </div>
+            </el-dialog>
+            <!-- 删除规则 -->
+            <el-dialog title="" :visible.sync="delVisible" width="500px" center :close-on-click-modal="false">
+                <h2 class="del-title">确定要删除该配置？</h2>
+                <h2 class="del-name blue-fonts">内容缓存规则</h2>
+                <h2 class="del-name red-fonts">{{ row.name }}</h2>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delData()">确 定</el-button>
+                    <el-button @click="delVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/base64.js"></script>
+    <script src="../js/jsoneditor.min.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    searchQuery: '', // 搜索内容
+                    tableData: [],
+                    count: 0,
+                    state: 'on',
+                    G_version: '',
+                    // 添加规则
+                    addVisible: false,
+                    title: '',
+                    addForm: {
+                        name: '',
+                        jsonData: {}
+                    },
+                    // 删除dialog
+                    row: '', // 删除行
+                    index: '', // 删除id
+                    delVisible: false,
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                    // jsoneditor
+                    editor: null
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const search = this.searchQuery
+                    if (search) {
+                        return this.tableData.filter(data => {
+                        if (data.name.includes(search) || JSON.stringify(data.jsonData).includes(search)) {
+                            return data
+                        }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getData();
+            },
+            mounted() {
+            },
+            methods: {
+                openDialog() {
+                    this.$nextTick(()=>{
+                        this.initJsonEditor();
+                    })
+                },
+                closeDialog() {
+                    this.editor.destroy();
+                },
+                initJsonEditor() {
+                    // create the editor
+                    const container = document.getElementById("jsoneditor")
+                    const options = {
+                        mode: 'code',
+                        modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
+                    }
+                    this.editor = new JSONEditor(container, options)
+                    // set json
+                    const initialJson = this.addForm.jsonData;
+                    this.editor.set(initialJson)
+                },
+                getData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'get',
+                        mod: 'proxy_cache_Mod'
+                    }, function (data) {
+                        that.count = data.msg.count;
+                        that.state = data.msg.state;
+                        that.G_version = data.msg.G_version;
+                        if (data.code == 'ok') {
+                            let table = [];
+                            for (let i in data.msg) {
+                                if (i !== "count" && i !== "state" && i !== "G_version") {
+                                    let obj = {};
+                                    obj.name = i;
+                                    obj.jsonData = data.msg[i];
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加弹出框
+                showAddDialog(type, obj) {
+                    if (type === 'edit') {
+                        this.title = '编辑';
+                        this.addForm.name = Number(obj.name);
+                        this.addForm.jsonData = obj.jsonData;
+                    } else if (type === 'add') {
+                        this.title = '添加';
+                        this.addForm.name = '';
+                        this.addForm.jsonData = {};
+                    }
+                    this.addVisible = true;
+                },
+                addData() {
+                    const that = this;
+                    let obj = {};
+                    that.addForm.jsonData = this.editor.get()
+                    if ( this.title ===  '添加') {
+                        obj = {
+                            action: 'add',
+                            mod: 'proxy_cache_Mod',
+                            value: JSON.stringify(that.addForm.jsonData)
+                        }
+                    } else {
+                        obj = {
+                            action: 'set',
+                            mod: 'proxy_cache_Mod',
+                            value: JSON.stringify(that.addForm.jsonData),
+                            id: that.addForm.name
+                        }
+                    }
+                    $.post(URL + '/api/v2/config_dict', obj, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                            that.addVisible = false;
+                            that.getData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delData(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.delVisible = true;
+                    } else {
+                        const that = this;
+                        $.post(URL + '/api/v2/config_dict', {
+                            action: 'del',
+                            mod: 'proxy_cache_Mod',
+                            id: that.row.name,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.delVisible = false;
+                    }
+                },
+                upIndex(index) {
+                    if (index == 0) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, 0, "up");
+                },
+                up(index) {
+                    if (index == 0) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, index - 1);
+                },
+                down(index) {
+                    if (index == this.tableData.length - 1) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, index + 1);
+                },
+                downIndex(index) {
+                    if (index == this.tableData.length - 1) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, 0, 'down');
+                },
+                swapItems(arr, index1, index2, direction) {
+                    if (direction == 'up') { //置顶
+                        arr.unshift(arr[index1]);
+                        arr.splice(index1 + 1, 1);
+                        return arr;
+                    }
+                    if (direction == 'down') { //置底
+                        arr.push(arr[index1]);
+                        arr.splice(index1, 1);
+                        return arr;
+                    }
+                    arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+                    return arr;
+                },
+                changeSwitch() {
+                    const that = this;
+                    value = {
+                        state: that.state,
+                        G_version: that.G_version,
+                    }
+                    $.post(URL + '/api/v2/config_dict', {
+                        mod: 'base',
+                        action: 'set',
+                        id: 'proxy_cache_Mod',
+                        value: JSON.stringify(value),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveTable() {
+                    const that = this;
+                    let value = [];
+                    for (let i in that.tableData) {
+                        value.push(that.tableData[i].jsonData)
+                    }
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'set',
+                        mod: 'proxy_cache_Mod',
+                        value: JSON.stringify(value),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                            that.getData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveMod() {
+                    const that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

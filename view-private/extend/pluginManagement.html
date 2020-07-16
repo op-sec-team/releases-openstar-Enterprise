@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .ibox-search {
+            margin-bottom: 20px;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-header {
+            display: flex;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .dialog-header .dialog-type {
+            margin-left: 10px;
+            color: #f56c6c;
+        }
+        .text-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .dialog-add /deep/ .el-form-item {
+            margin-bottom: 10px;
+        }
+        .dialog-textarea /deep/ .el-form-item__label {
+            width: 100% !important;
+        }
+        .dialog-textarea /deep/ .el-form-item__content {
+            margin-left: 0 !important;
+        }
+        .del-title {
+            text-align: center;
+        }
+        .del-name {
+            text-align: center;
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="header-left">
+                    <h2>扩展配置</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="#">扩展配置</a>
+                        </li>
+                        <li class="active">
+                            <strong>插件管理</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <el-input v-model="searchQuery" placeholder="请输入搜索内容" prefix-icon="el-icon-search" style="width: 280px;"></el-input>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="button" @click="showAddDialog()">添加插件</button>
+                                </div>
+                            </div>
+                            <el-table :data="tables" border style="width: 100%">
+                                <el-table-column
+                                    type="index"
+                                    label="ID"
+                                    width="50">
+                                </el-table-column>
+                                <el-table-column prop="name" label="函数名称" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.name }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="file" label="文件名称" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.file }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="disk_file" label="载入状态" min-width="90">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.disk_file }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="contents" label="函数内容" min-width="160">
+                                    <template scope="scope">
+                                        <div class="text-ellipsis">
+                                            {{ scope.row.contents }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="description" label="描述" min-width="160">
+                                    <template scope="scope">
+                                        <div class="text-ellipsis">
+                                            {{ scope.row.description }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="160">
+                                    <template scope="scope">
+                                        <el-button size="mini" type="danger" plain @click="delPluginManagement(scope.row, scope.$index)">删除</el-button>
+                                        <el-button size="mini" type="success" plain @click="showAddDialog(scope.row)">编辑</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+
+                            <!-- <div style="text-align:center;margin-top:10px">
+                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="addVisible" width="800px" class="dialog-add" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{title}}
+                </h3>
+                <el-form label-width="100px" label-position="left" :model="addForm" >
+                    <el-form-item label="函数名称：">
+                      <el-input v-model="addForm.name" :disabled="title !== '添加' ? true : false"></el-input>
+                    </el-form-item>
+                    <el-form-item label="文件名称：">
+                      <el-input v-model="addForm.file"></el-input>
+                    </el-form-item>
+                    <el-form-item label="描述：" class="dialog-textarea">
+                      <el-input v-model="addForm.description" type="textarea" :autosize="{ minRows: 4, maxRows: 4}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="函数内容：" class="dialog-textarea">
+                      <el-input v-model="addForm.contents" type="textarea" :autosize="{ minRows: 10, maxRows: 10}"></el-input>
+                    </el-form-item>
+                  </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="addPluginManagement()">保存</el-button>
+                    <el-button @click="addVisible = false">取消</el-button>
+                </div>
+            </el-dialog>
+            <!-- 删除规则 -->
+            <el-dialog title="" :visible.sync="delVisible" width="500px" center :close-on-click-modal="false">
+                <h2 class="del-title">确定要删除该插件？</h2>
+                <h2 class="del-name red-fonts">{{ row.name }}</h2>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delPluginManagement()">确 定</el-button>
+                    <el-button @click="delVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/base64.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    searchQuery: '', // 搜索内容
+                    count: 0,
+                    tableData: [],
+                    // 添加规则
+                    addVisible: false,
+                    title: '',
+                    addForm: {
+                        name: '',
+                        file: '',
+                        contents: '',
+                        description: ''
+                    },
+                    // 删除dialog
+                    row: '', // 删除行
+                    index: '', // 删除id
+                    delVisible: false
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const search = this.searchQuery
+                    if (search) {
+                        return this.tableData.filter(data => {
+                        if (data.name.includes(search) || data.file.includes(search) || data.contents.includes(search) || data.description.includes(search)) {
+                            return data
+                        }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getPluginManagementData();
+            },
+            methods: {
+                getPluginManagementData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/plugin_Mod/get', {
+                        id: 'all_Mod'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            let table = [];
+                            that.count = data.msg.ccount;
+                            for (let i in data.msg) {
+                                if (i !== "count") {
+                                    let obj = {};
+                                    obj.name = i;
+                                    obj.file = data.msg[i].file;
+                                    obj.disk_file = data.msg[i].disk_file;
+                                    obj.contents = new Base64().decode(data.msg[i].contents);
+                                    obj.description = data.msg[i].description;
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加规则弹出框
+                showAddDialog(obj) {
+                    if (obj) {
+                        this.title = '编辑';
+                        this.addForm.name = obj.name;
+                        this.addForm.file = obj.file;
+                        this.addForm.contents = obj.contents;
+                        this.addForm.description = obj.description;
+                    } else {
+                        this.title = '添加';
+                        this.addForm.name = '';
+                        this.addForm.file = '';
+                        this.addForm.contents = '';
+                        this.addForm.description = '';
+                    }
+                    this.addVisible = true;
+                },
+                addPluginManagement() {
+                    const that = this;
+                    let url = '';
+                    const value = {
+                        file: this.addForm.file,
+                        description: encodeURIComponent(new Base64().encode(this.addForm.description)),
+                        contents: encodeURIComponent(new Base64().encode(this.addForm.contents))
+                    };
+                    if ( this.title ===  '添加') {
+                        url = URL + '/cluster/v2/plugin_Mod/add'
+                    } else {
+                        url = URL + '/cluster/v2/plugin_Mod/set'
+                    }
+                    $.post(url, {
+                        id: this.addForm.name,
+                        value: JSON.stringify(value)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                            that.addVisible = false;
+                            that.getPluginManagementData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delPluginManagement(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.delVisible = true;
+                    } else {
+                        const that = this;
+                        $.post(URL + '/cluster/v2/plugin_Mod/del', {
+                            id: that.row.name,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getPluginManagementData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.delVisible = false;
+                    }
+                },
+                saveMod() {
+                    const that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

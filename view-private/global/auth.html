@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+	<style>
+		.flex-row {
+			display: flex;
+		}
+		.flex-between {
+			justify-content: space-between;
+		}
+	</style>
+</head>
+
+<body>
+<div id="wrapper">
+<div id="page-wrapper" class="gray-bg">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-4">
+			<h2>全局规则</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a href="/global/index.html">全局规则</a>
+				</li>
+				<li class="active">
+					<strong>授权认证配置</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content">
+	    <div class="row">
+	        <div class="col-lg-11">
+				<div class="row">
+					<h3>当前状态: {{ Status }}</h3>
+					<div class="row" style="margin-left:20px;margin-top: 20px;">
+						<span>SN: </span><label for=""> {{ SN }}</label>
+					</div>
+					<div class="row" style="margin-left:20px;margin-top: 20px;">
+						<span style="width: 10%;">CODE:</span>
+						<el-input placeholder="Shi23udsiun2ksHKUI" style="width: 50%;" v-model="Code"></el-input>
+						<el-button type="primary" size="small" style="width: 10%;" @click="forgetCode" >忘记code</el-button>
+					</div>
+					<div class="row" style="margin-left:20px;margin-top: 20px;">
+						<span>TYPE: </span><label for=""> {{ Type }}</label>
+					</div>
+					<div class="row" style="margin-left:20px;margin-top: 20px;">
+						<span>MSG:</span>
+						<textarea rows="8" style="width: 100%;" v-model="Msg" >{{ Msg }}</textarea>
+					</div>
+					<el-button type="primary" style="margin-left:auto;margin-right: auto;width: 200px;" @click="changeData" >修改</el-button>
+				</div>
+				<div class="row" style="margin-top: 30px;" v-if="isSHow">
+					<h3>自助绑定主域名</h3>
+					<div class="row" style="margin-left:20px;margin-top: 20px;">
+						<span style="color: red;">
+							(用户只能自助绑定一次，比如绑定了主域名 abc.com)，那么添加域名时就只能添加www.abc.com, img.abc.com 这样的域名，就不能添加 aaa.com类的域名，自助绑定可以写5个域名</br>
+						eg: abc.com, aaa.com, haha.com, ...</br>
+						这5个域名使用英文的逗号进行区分即可
+						</span>
+						<textarea rows="8" style="width: 100%;" v-model="initDomain">
+						</textarea>
+						<el-button type="primary" style="margin-left:auto;margin-right: auto;width: 200px;" @click="bindDomain" >绑定</el-button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-1">
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+<script src="../js/vue.js"></script>
+<script src="../js/element-ui.js"></script>
+<script src="../config.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+<script type="text/javascript" src="../js/jq-common.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/qs/6.5.1/qs.min.js"></script>
+<script>
+	 var vdata = new Vue({
+		el: '#wrapper',
+		data: function () {
+			return {
+				isSHow: false,
+				showCluster: false,
+				checkSign: '',
+				Status: "",
+				SN: "",
+				Code: "",
+				Type: "",
+				Msg: "",
+				initDomain:"",
+			}
+		},
+		watch:{
+			checkSign: function(val) {
+				if(val == "sign error"){
+					window.location = '/login.html';
+				}
+			},
+		},
+		computed: {
+		},
+		mounted() {
+			this.initReq();
+			this.initStatus();
+		},
+		destroyed(){
+			this.showCluster = false;
+		},
+		methods: {
+			// 获取状态
+			initStatus() {
+				var that = this;
+				$.get(URL + '/api/v2/sn_Mod/get', {"action":"sn"}, function (data) {
+				    if (data.code == 'ok') {
+				        that.Status = data.msg
+				    } else {
+				        if (data.msg == "sign error") {
+				            that.checkSign = "sign error";
+				        }
+				        that.$notify({
+				            type: 'warning',
+				            title: '提示',
+				            message: data.msg,
+				            duration: 4000
+				        });
+				    }
+				})
+			},
+			// 初始化请求
+			initReq() {
+				var that = this;
+				$.get(URL + '/api/v2/sn_Mod/get', {}, function (data) {
+				    if (data.code == 'ok') {
+				        that.SN = data.msg.reg.sn;
+						that.Code = data.msg.reg.code;
+						that.Type = data.msg.reg.type;
+						that.Msg = data.msg.reg.msg;
+						if (data.msg.reg["state"] == "" || data.msg.reg["state"] == undefined ) {
+							that.isSHow = true
+							console.log("aaaaa");
+						}
+				    } else {
+				        if (data.msg == "sign error") {
+				            that.checkSign = "sign error";
+				        }
+				        that.$notify({
+				            type: 'warning',
+				            title: '提示',
+				            message: data.msg,
+				            duration: 4000
+				        });
+				    }
+				})
+			},
+			// 忘记code
+			forgetCode() {
+				var that = this;
+				$.get(URL + '/api/v2/sn_Mod/get', {"action":"get_code"}, function (data) {
+				    if (data.code == 'ok') {
+				        that.Code = data.msg;
+						that.SN = data.sn;
+				    } else {
+				        if (data.msg == "sign error") {
+				            that.checkSign = "sign error";
+				        }
+				        that.$notify({
+				            type: 'warning',
+				            title: '提示',
+				            message: data.msg,
+				            duration: 4000
+				        });
+				    }
+				});
+			},
+			// 绑定
+			bindDomain(){
+				var that = this;
+				$.post(URL + '/api/v2/sn_Mod/initHost', {"domain_list": that.initDomain}, function (data) {
+				    if (data.code == 'ok') {
+						that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '绑定成功',
+                                duration: 4000
+                            });
+				    } else {
+				        if (data.msg == "sign error") {
+				            that.checkSign = "sign error";
+				        }
+				        that.$notify({
+				            type: 'warning',
+				            title: '提示',
+				            message: data.msg,
+				            duration: 4000
+				        });
+				    }
+				});
+			},
+			// 修改
+			changeData(){
+				var that = this;
+				let value1 = JSON.stringify( {"code": that.Code, "msg": that.Msg} );
+				// value.append(value, value1);
+				// $.ajax({
+				// 	type: "post",
+				// 	url: URL + "/api/v2/sn_Mod/set",
+				// 	dateType: "json",
+				// 	contentType : "application/json",
+				// 	data: "value="+value1,
+				// 	success:function(result){
+				// 		console.log("test", result );
+				// 	},
+				// 	error:function(result){
+				// 	}
+				// });
+				$.post(URL + '/api/v2/sn_Mod/set', { value: value1 }, function (data) {
+				    if (data.code == 'ok') {
+				        console.log("test", data.code);
+				        that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '修改成功',
+                                duration: 4000
+                            });
+				    } else {
+				        if (data.msg == "sign error") {
+				            that.checkSign = "sign error";
+				        }
+				        that.$notify({
+				            type: 'warning',
+				            title: '提示',
+				            message: data.msg,
+				            duration: 4000
+				        });
+				    }
+				});
+			}
+		},
+	});
+</script>
+</body>
+</html>

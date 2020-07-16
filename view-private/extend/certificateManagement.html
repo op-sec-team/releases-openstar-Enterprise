@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .ibox-search {
+            margin-bottom: 20px;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-header {
+            display: flex;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .dialog-header .dialog-type {
+            margin-left: 10px;
+            color: #f56c6c;
+        }
+        .text-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .dialog-add /deep/ .el-form-item {
+            margin-bottom: 10px;
+        }
+        .dialog-textarea /deep/ .el-form-item__label {
+            width: 100% !important;
+        }
+        .dialog-textarea /deep/ .el-form-item__content {
+            margin-left: 0 !important;
+        }
+        .del-title {
+            text-align: center;
+        }
+        .del-name {
+            text-align: center;
+            font-weight: 900;
+        }
+        .dialog-key {
+            margin-left: 20px;
+        }
+        .dialog-key i {
+            color: #FF0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="header-left">
+                    <h2>扩展配置</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="#">扩展配置</a>
+                        </li>
+                        <li class="active">
+                            <strong>证书管理</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <el-input v-model="searchQuery" placeholder="请输入搜索内容" prefix-icon="el-icon-search" style="width: 280px;"></el-input>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="button" @click="showAddDialog('add')">添加证书</button>
+                                </div>
+                            </div>
+                            <el-table :data="tables" border style="width: 100%">
+                                <el-table-column
+                                    type="index"
+                                    label="ID"
+                                    width="50">
+                                </el-table-column>
+                                <el-table-column prop="name" label="证书名称" min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.name }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="des" label="描述" min-width="160">
+                                    <template scope="scope">
+                                        <div class="text-ellipsis">
+                                            {{ scope.row.des }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="e_time" label="过期时间" min-width="160">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.e_time }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="270">
+                                    <template scope="scope">
+                                        <el-button size="mini" type="warning" plain @click="showAddDialog('check', scope.row)">查看证书</el-button>
+                                        <el-button size="mini" type="success" plain @click="showAddDialog('edit', scope.row)">修改证书</el-button>
+                                        <el-button size="mini" type="danger" plain @click="delCertificateManagement(scope.row, scope.$index)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+
+                            <!-- <div style="text-align:center;margin-top:10px">
+                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="addVisible" width="800px" class="dialog-add" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{title}}
+                </h3>
+                <el-form label-width="100px" label-position="left" :model="addForm" >
+                    <el-form-item label="证书名称：">
+                      <el-input v-model="addForm.name" :disabled="title === '添加证书' ? false : true" style="width: 280px;"></el-input>
+                      <span class="dialog-key"><i>*</i> certs_key</span>
+                    </el-form-item>
+                    <el-form-item label="证书：" class="dialog-textarea">
+                      <el-input v-model="addForm.ssl_certificate" :disabled="title !== '查看证书' ? false : true" type="textarea" :autosize="{ minRows: 6, maxRows: 6}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="私钥：" class="dialog-textarea">
+                      <el-input v-model="addForm.ssl_certificate_key" :disabled="title !== '查看证书' ? false : true" type="textarea" :autosize="{ minRows: 6, maxRows: 6}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="描述：" class="dialog-textarea">
+                      <el-input v-model="addForm.des" :disabled="title !== '查看证书' ? false : true" type="textarea" :autosize="{ minRows: 3, maxRows: 3}"></el-input>
+                    </el-form-item>
+                  </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" v-if="title !== '查看证书'" @click="addCertificateManagement()">保存</el-button>
+                    <el-button @click="addVisible = false">取消</el-button>
+                </div>
+            </el-dialog>
+            <!-- 删除规则 -->
+            <el-dialog title="" :visible.sync="delVisible" width="500px" center :close-on-click-modal="false">
+                <h2 class="del-title">确定要删除该插件？</h2>
+                <h2 class="del-name red-fonts">{{ row.name }}</h2>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delCertificateManagement()">确 定</el-button>
+                    <el-button @click="delVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/base64.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    searchQuery: '', // 搜索内容
+                    tableData: [],
+                    // 添加规则
+                    addVisible: false,
+                    title: '',
+                    addForm: {
+                        name: '',
+                        des: '',
+                        e_time: '',
+                        ssl_certificate_key: '',
+                        domain: '',
+                        ssl_certificate: ''
+                    },
+                    // 删除dialog
+                    row: '', // 删除行
+                    index: '', // 删除id
+                    delVisible: false
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const search = this.searchQuery
+                    if (search) {
+                        return this.tableData.filter(data => {
+                        if (data.name.includes(search) || data.des.includes(search) || data.e_time.includes(search)) {
+                            return data
+                        }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getCertificateManagementData();
+            },
+            methods: {
+                getCertificateManagementData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/certs_Mod/get', {
+                        certs_key: 'all_certs_key'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            let table = [];
+                            for (let i in data.msg) {
+                                    let obj = {};
+                                    obj.name = i;
+                                    obj.des = data.msg[i].des;
+                                    obj.e_time = data.msg[i].e_time;
+                                    obj.ssl_certificate_key = new Base64().decode(data.msg[i].ssl_certificate_key);
+                                    obj.domain = data.msg[i].domain;
+                                    obj.ssl_certificate = new Base64().decode(data.msg[i].ssl_certificate);
+                                    table.push(obj);
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加弹出框
+                showAddDialog(type, obj) {
+                    if (type === 'edit') {
+                        this.title = '修改证书';
+                        this.addForm.name = obj.name;
+                        this.addForm.ssl_certificate = obj.ssl_certificate;
+                        this.addForm.ssl_certificate_key = obj.ssl_certificate_key;
+                        this.addForm.des = obj.des;
+                    } else if (type === 'add') {
+                        this.title = '添加证书';
+                        this.addForm.name = '';
+                        this.addForm.ssl_certificate = '';
+                        this.addForm.ssl_certificate_key = '';
+                        this.addForm.des = '';
+                    } else if (type === 'check') {
+                        this.title = '查看证书';
+                        this.addForm.name = obj.name;
+                        this.addForm.ssl_certificate = obj.ssl_certificate;
+                        this.addForm.ssl_certificate_key = obj.ssl_certificate_key;
+                        this.addForm.des = obj.des;
+                    }
+                    this.addVisible = true;
+                },
+                addCertificateManagement() {
+                    const that = this;
+                    let url = '';
+                    const value = {
+                        des: this.addForm.des,
+                        ssl_certificate: encodeURIComponent(new Base64().encode(this.addForm.ssl_certificate)),
+                        ssl_certificate_key: encodeURIComponent(new Base64().encode(this.addForm.ssl_certificate_key))
+                    };
+                    if ( this.title ===  '添加证书') {
+                        url = URL + '/cluster/v2/certs_Mod/add'
+                    } else {
+                        url = URL + '/cluster/v2/certs_Mod/set'
+                    }
+                    $.post(url, {
+                        certs_key: this.addForm.name,
+                        value: JSON.stringify(value)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                            that.addVisible = false;
+                            that.getCertificateManagementData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delCertificateManagement(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.delVisible = true;
+                    } else {
+                        const that = this;
+                        $.post(URL + '/cluster/v2/certs_Mod/del', {
+                            certs_key: that.row.name,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getCertificateManagementData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.delVisible = false;
+                    }
+                },
+                saveMod() {
+                    const that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

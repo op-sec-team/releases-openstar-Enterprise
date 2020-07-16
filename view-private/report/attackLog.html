@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <link href="../css/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-center {
+            justify-content: center;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .ibox-search {
+            margin-bottom: 20px;
+        }
+        .search-item {
+            margin-right: 20px;
+            line-height: 40px;
+        }
+        .search-name {
+            display: inline-block;
+            min-width: 80px;
+        }
+        .search-text {
+            min-width: 110px;
+            line-height: 40px;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .list-content {
+            background: #FFFFFF;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 2px;
+            margin-bottom: 20px;
+        }
+        .list-content:last-child {
+            margin-bottom: 0;
+        }
+        .list-content:before {
+            content: "";
+            background: #409eff;
+            width: 6px;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        .list-left {
+            min-width: 230px;
+            max-width: 230px;
+            border-right: 1px solid #EBEBEB;
+            padding: 24px 20px;
+            background: rgba(1, 32, 75, 0.04);
+            font-size: 16px;
+            justify-content: space-between;
+            flex-direction: column;
+        }
+        .list-left i {
+            margin-right: 10px;
+        }
+        .list-left div:first-child {
+            height: 48px;
+            line-height: 24px;
+            margin-bottom: 22px;
+            color: #409EFF;
+            font-weight: bold;
+        }
+        .list-left div:nth-child(2) {
+            line-height: 24px;
+        }
+        .list-right {
+            flex: 1;
+            padding: 24px 20px;
+        }
+        .list-detail {
+            margin-bottom: 10px;
+        }
+        .list-detail:last-child {
+            margin-bottom: 0;
+        }
+        .list-detail span {
+            line-height: 24px;
+        }
+        .list-detail span:first-child {
+            color: #409EFF;
+        }
+        .list-detail span:last-child {
+            word-wrap: break-word;
+            white-space: normal;
+            word-break: break-all;
+        }
+        .list-none {
+            font-size: 18px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>攻击日志</h2>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <el-input v-model="searchQuery" placeholder="请输入搜索内容" prefix-icon="el-icon-search" style="width: 280px;"></el-input>
+                                </div>
+                            </div>
+                            <div class="ibox-search flex-row flex-between">
+                                <div class="flex-row">
+                                    <div class="search-item">
+                                        <span class="search-name">服务器选择: </span>
+                                        <el-select v-model="search.select" placeholder="请选择">
+                                            <el-option
+                                                v-for="(item, index) in options"
+                                                :key="index"
+                                                :value="index"
+                                                :label="item.label">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="search-item flex-row">
+                                        <span class="search-name">日志条数: </span>
+                                        <el-input v-model="search.input" placeholder="请输入内容"></el-input>
+                                    </div>
+                                    <span class="search-text"><span class="red-fonts">* </span>最多查询2W条</s>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="button" @click="searchData()">查询</button>
+                                </div>
+                            </div>
+                            <div class="list" v-if="filterTable && filterTable.length">
+                                <div class="list-content flex-row" v-for="(item, index) in filterTable.slice((currentPage - 1) * pagesize, currentPage * pagesize)" :key="index">
+                                    <div class="list-left flex-row">
+                                        <div><i class="iconfont icon-bijiben"></i>{{ item[3] }}</div>
+                                        <div><i class="iconfont icon-shijian"></i>{{ item[2] }}</div>
+                                    </div>
+                                    <div class="list-right">
+                                        <div class="list-detail">
+                                            <span>URL：</span>
+                                            <span>{{ item[7] }}</span>
+                                        </div>
+                                        <div class="list-detail">
+                                            <span>IP：</span>
+                                            <span>{{ item[1] }}</span>
+                                        </div>
+                                        <div class="list-detail">
+                                            <span>攻击信息：</span>
+                                            <span>{{ item[9] }}</span>
+                                        </div>
+                                        <div class="list-detail">
+                                            <span>浏览器信息：</span>
+                                            <span>{{ item[6] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="text-align: center;margin-top: 20px;">
+                                    <el-pagination
+                                      background
+                                      layout="total, prev, pager, next, jumper"
+                                      :total="total"
+                                      @current-change="currentChange">
+                                    </el-pagination>
+                                </div>
+                            </div>
+                            <div class="list-none" v-else>
+                                暂无数据
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    searchQuery: '', // 搜索内容
+                    search: {
+                        select: 0,
+                        input: '100'
+                    },
+                    options: [],
+                    tableData: [],
+                    filterTable: [],
+                    total: 0,
+                    pagesize:10,
+                    currentPage:1
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+                searchQuery: function(val) {
+                    const that = this;
+                    if (that.searchQuery && that.tableData[that.search.select]) {
+                        that.searchMethods();
+                    }
+                },
+                'search.select': {
+                    handler: function (val) {
+                        const that = this;
+                        that.filterTable = that.tableData[val];
+                        that.searchMethods();
+                    },
+                    deep: true
+                }
+            },
+            created() {
+                this.getData();
+            },
+            mounted() {
+            },
+            methods: {
+                getData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/cluster/v2/data_Mod/waflog', {
+                        format: true,
+                        num: that.search.input
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            let table = []
+                            let options = []
+                            for (let i in data.msg) {
+                                // 添加搜索下拉框options
+                                let obj = {};
+                                obj.label = i;
+                                options.push(obj);
+                                // 内容
+                                let tableObj = [];
+                                if (data.msg[i].re && data.msg[i].re.length) {
+                                    tableObj = data.msg[i].re;
+                                }
+                                table.push(tableObj);
+                            }
+                            that.options = options;
+                            that.tableData = table;
+                            that.search.select = 0;
+                            that.searchMethods();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                searchMethods() {
+                    const that = this;
+                    that.filterTable = that.tableData[that.search.select].filter((data, index) => {
+                        if (data.toString().includes(that.searchQuery)) {
+                            return data
+                        }
+                    })
+                    that.total = that.filterTable.length;
+                },
+                searchData() {
+                    this.getData();
+                },
+                currentChange(currentPage){
+                    this.currentPage = currentPage;
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

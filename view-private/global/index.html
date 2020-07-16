@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+
+    <style>
+        .hide-expand .el-table__expand-column .cell {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>全局规则</h2>
+                </div>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="row">
+                    <div class="col-lg-11">
+                        <div class="ibox float-e-margins">
+                            <div class="panel blank-panel">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="ibox-content">
+                                            <el-table :data="tableData" style="width: 100%" :row-class-name="getRowClass" border :span-method="colspan">
+                                                <el-table-column type="expand">
+                                                    <template slot-scope="props">
+                                                        <!-- <el-table :data="generalData" style="width: 100%" border :span-method="rowspan"> -->
+                                                        <el-table :data="generalData" style="width: 100%" border>
+                                                            <el-table-column label="普通规则配置" prop="name" align="center">
+                                                            </el-table-column>
+                                                            <el-table-column label="规则条目" prop="count" align="center">
+                                                            </el-table-column>
+                                                            <el-table-column label="规则状态" prop="state" align="center">
+                                                            </el-table-column>
+                                                            <el-table-column label="操作" align="center">
+                                                                <template scope="scope">
+                                                                    <a :href=scope.row.operate class="btn btn-sm btn-primary">编辑规则</a>
+                                                                </template>
+                                                            </el-table-column>
+                                                        </el-table-column>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column label="规则名称" prop="name" align="center">
+                                                </el-table-column>
+                                                <el-table-column label="规则条目" prop="count" align="center">
+                                                </el-table-column>
+                                                <el-table-column label="规则状态" prop="state" align="center">
+                                                </el-table-column>
+                                                <el-table-column label="操作" align="center">
+                                                    <template scope="scope">
+                                                        <a :href=scope.row.operate class="btn btn-sm btn-primary">编辑规则</a>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    showCluster: false,
+                    checkSign: '',
+                    // 普通规则显示隐藏
+                    tableData: [{
+                        name: '配置或者用户真实ip',
+                        count: '',
+                        state: '',
+                        operate: '/global/realIP.html',
+                    }, {
+                        name: 'ip规则配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/ruleIP.html',
+                    }, {
+                        name: '域名，方法过滤',
+                        count: '',
+                        state: '',
+                        operate: '/global/domainFilter.html',
+                    }, {
+                        name: '跳转配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/rewrite.html',
+                    }, {
+                        name: '普通规则配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html',
+                        canExpand: true,
+                    }, {
+                        name: '高级规则配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/advanced.html',
+                    }, {
+                        name: 'CC防护规则配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/cc.html',
+                    }, {
+                        name: '拒绝信息配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/dengMsg.html',
+                    }, {
+                        name: '内容替换规则配置',
+                        count: '',
+                        state: '',
+                        operate: '/global/replace.html',
+                    }],
+                    generalData: [{
+                        name: 'referer',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=referer_Mod',
+                    }, {
+                        name: 'uri',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=uri_Mod',
+                    }, {
+                        name: 'header',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=header_Mod',
+                    }, {
+                        name: 'useragent',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=useragent_Mod',
+                    }, {
+                        name: 'cookie',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=cookie_Mod',
+                    }, {
+                        name: 'args_data',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=args_Mod',
+                    }, {
+                        name: 'post_data',
+                        count: '',
+                        state: '',
+                        operate: '/global/general.html?mod=post_Mod',
+                    }, ],
+                }
+            },
+            watch: {
+                checkSign: function (val) {
+                    if (val == "sign error") {
+                        window.location = '/login.html';
+                    }
+                }
+            },
+            mounted() {
+                this.getData();
+            },
+            destroyed() {
+                this.showCluster = false;
+            },
+            methods: {
+                getData() {
+                    this.getConfigData();
+                    setTimeout(() => {
+                        this.getIpData();
+                    }, 0);
+                },
+                getConfigData() {
+                    var that = this;
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'get',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            var Adata = data.msg;
+                            that.tableData[0].count = Adata.realIpFrom_Mod.count;
+                            that.tableData[0].state = Adata.realIpFrom_Mod.state;
+                            that.tableData[2].count = Adata.host_method_Mod.count;
+                            that.tableData[2].state = Adata.host_method_Mod.state;
+                            that.tableData[3].count = Adata.rewrite_Mod.count;
+                            that.tableData[3].state = Adata.rewrite_Mod.state;
+                            that.tableData[5].count = Adata.app_Mod.count;
+                            that.tableData[5].state = Adata.app_Mod.state;
+                            that.tableData[6].count = Adata.network_Mod.count;
+                            that.tableData[6].state = Adata.network_Mod.state;
+                            that.tableData[7].count = Adata.denyMsg.count;
+                            that.tableData[7].state = Adata.denyMsg.state.state;
+                            that.tableData[8].count = Adata.replace_Mod.count;
+                            that.tableData[8].state = Adata.replace_Mod.state;
+                            that.generalData[0].count = Adata.referer_Mod.count;
+                            that.generalData[0].state = Adata.referer_Mod.state;
+                            that.generalData[1].count = Adata.uri_Mod.count;
+                            that.generalData[1].state = Adata.uri_Mod.state;
+                            that.generalData[2].count = Adata.header_Mod.count;
+                            that.generalData[2].state = Adata.header_Mod.state;
+                            that.generalData[3].count = Adata.useragent_Mod.count;
+                            that.generalData[3].state = Adata.useragent_Mod.state;
+                            that.generalData[4].count = Adata.cookie_Mod.count;
+                            that.generalData[4].state = Adata.cookie_Mod.state;
+                            that.generalData[5].count = Adata.args_Mod.count;
+                            that.generalData[5].state = Adata.args_Mod.state.state;
+                            that.generalData[6].count = Adata.post_Mod.count;
+                            that.generalData[6].state = Adata.post_Mod.state.state;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                getIpData() {
+                    var that = this;
+                    $.post(URL + '/api/v2/ip_dict', {
+                        action: 'get',
+                        ip: 'all_ip'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.tableData[1].count = data.msg.count;
+                            that.tableData[1].state = data.msg.state;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 处理table样式
+                getRowClass: function (row, index) {
+                    if (row.row.canExpand)
+                        return ''
+                    else
+                        return 'hide-expand'
+                },
+                colspan({
+                    row,
+                    column,
+                    rowIndex,
+                    columnIndex
+                }) {
+                    if (rowIndex === 4) {
+                        if (columnIndex === 2) {
+                            return {
+                                rowspan: 1,
+                                colspan: 2
+                            };
+                        } else if (columnIndex === 3) {
+                            return {
+                                rowspan: 0,
+                                colspan: 0
+                            };
+                        }
+                    }
+                },
+                // rowspan({ row, column, rowIndex, columnIndex }) {
+                //     if (columnIndex === 3) {
+                //         if (rowIndex === 0) {
+                //             return {
+                //                 rowspan: 7,
+                //                 colspan: 1
+                //             };
+                //         } else {
+                //             return {
+                //                 rowspan: 0,
+                //                 colspan: 0
+                //             };
+                //         }
+                //     }
+                // },
+            },
+        });
+    </script>
+</body>
+
+</html>

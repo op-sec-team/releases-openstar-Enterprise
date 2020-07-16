@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/iconfont/iconfont.css">
+    <link href="css/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-center {
+            justify-content: center;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .ibox-search {
+            margin-bottom: 20px;
+        }
+        .ibox-host {
+            line-height: 36px;
+            margin-bottom: 20px;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-body {
+            display: flex;
+        }
+        .dialog-body-right {
+            min-width: 200px;
+            max-width: 200px;
+            margin-left: 20px;
+        }
+        .del-title {
+            text-align: center;
+        }
+        .del-name {
+            text-align: center;
+            font-weight: 900;
+        }
+        .table-save {
+            width: 190px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="col-lg-4">
+                    <h2>网站规则</h2>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content" v-if="isEditRule">
+                            <div class="ibox-search flex-row flex-between">
+                                <div>
+                                    <el-input v-model="searchQuery" placeholder="请输入搜索内容" prefix-icon="el-icon-search" style="width: 280px;"></el-input>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="button" @click="showHostDialog()">添加</button>
+                                </div>
+                            </div>
+                            <div class="ibox-search flex-row flex-end">
+                                <div>
+                                    <span>当前数量: {{ tableData.length }} </span>
+                                </div>
+                            </div>
+                            <el-table :data="tables" border style="width: 100%">
+                                <el-table-column
+                                    label="域名"
+                                    min-width="130">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.name }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="jsonData" label="内容" min-width="300">
+                                    <template scope="scope">
+                                        <div>
+                                            {{ scope.row.jsonData }}
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="180">
+                                    <template scope="scope">
+                                        <el-button size="mini" type="danger" @click="delHostDialog(scope.row, scope.$index)">删除</el-button>
+                                        <el-button size="mini" type="primary" @click="openConfigRule(scope.row)">配置规则</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                        <div class="ibox-content" v-else>
+                            <div class="ibox-host flex-row flex-between">
+                                <div>
+                                    <span>域名名称：<span class="blue-fonts">{{ isEditHost }}</span></span>
+                                </div>
+                                <div>
+                                    <button v-if="activeName !== 'clean_cache'" class="btn btn-primary" type="button" @click="showAddDialog('add')">添加</button>
+                                </div>
+                            </div>
+                            <div class="ibox-search flex-row flex-between">
+                                <div class="flex-row">
+                                    <div>
+                                        <span>网站模式: </span>
+                                        <el-radio v-model="config.state" label="on" @change="val => changeSwitch('state', val)">拦截</el-radio>
+                                        <el-radio v-model="config.state" label="off" @change="val => changeSwitch('state', val)" style="margin-left: 15px;">放行</el-radio>
+                                        <el-radio v-model="config.state" label="log" @change="val => changeSwitch('state', val)" style="margin-left: 15px;">日志</el-radio>
+                                    </div>
+                                    <div style="margin-left: 30px;">
+                                        <span>args_HPP: </span>
+                                        <el-radio v-model="config.args_HPP" label="on" @change="val => changeSwitch('args_HPP', val)" style="margin-left: 15px;">on</el-radio>
+                                        <el-radio v-model="config.args_HPP" label="off" @change="val => changeSwitch('args_HPP', val)" style="margin-left: 15px;">off</el-radio>
+                                    </div>
+                                    <div style="margin-left: 30px;">
+                                        <span>posts_HPP: </span>
+                                        <el-radio v-model="config.posts_HPP" label="on" @change="val => changeSwitch('posts_HPP', val)" style="margin-left: 15px;">on</el-radio>
+                                        <el-radio v-model="config.posts_HPP" label="off" @change="val => changeSwitch('posts_HPP', val)" style="margin-left: 15px;">off</el-radio>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- <span>当前数量: {{ tableData.length }} </span> -->
+                                    <span class="blue-fonts" style="margin-left: 20px;">版本号：<span class="green-fonts">{{ config.g_version }}</span></span>
+                                </div>
+                            </div>
+
+                            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+                                <el-tab-pane v-for="item in globalRule" :label="item.tag" :name="item.value"></el-tab-pane>
+                            </el-tabs>
+                            
+                            <div class="col-sm-12" style="padding:0px;margin-bottom: 10px;">
+                                <div class="flex-row flex-end">
+                                    <div>
+                                        <span>当前数量: <span class="red-fonts"> {{ tableData.length }} </span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="activeName === 'realIpFrom_Mod'">
+                                <el-table :data="tableData" key="realIpFrom_Mod" border style="width: 100%">
+                                    <el-table-column
+                                        label="域名"
+                                        min-width="130">
+                                        <template scope="scope">
+                                            <div>
+                                                {{ scope.row.name }}
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="jsonData" label="内容" min-width="300">
+                                        <template scope="scope">
+                                            <div>
+                                                {{ scope.row.jsonData }}
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="操作" width="180">
+                                        <template scope="scope">
+                                            <el-button size="mini" type="danger" @click="delData(scope.row, scope.$index)">删除</el-button>
+                                            <el-button size="mini" type="primary" @click="showAddDialog('edit', scope.row)">编辑</el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                            <div v-if="activeName === 'ip_Mod'">
+                                <el-table :data="tableData" key="ip_Mod" border style="width: 100%">
+                                    <el-table-column prop="host" label="域名" min-width="160">
+                                    </el-table-column>
+                                    <el-table-column prop="ip" label="ip" min-width="160">
+                                    </el-table-column>
+                                    <el-table-column prop="option" label="动作" min-width="160">
+                                    </el-table-column>
+                                    <el-table-column label="操作" width="100">
+                                        <template scope="scope">
+                                            <el-button size="mini" type="danger" @click="deleteRuleIp(scope.row,scope.$index)">删除</el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                            <div v-if="activeName !== 'realIpFrom_Mod' && activeName !== 'ip_Mod' && activeName !== 'clean_cache'">
+                                <el-table :data="tableData" key="app_Mod" border style="width: 100%">
+                                    <el-table-column
+                                        label="ID"
+                                        min-width="130">
+                                        <template scope="scope">
+                                            <div>
+                                                {{ scope.row.name }}
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="jsonData" label="内容" min-width="300">
+                                        <template scope="scope">
+                                            <div>
+                                                {{ scope.row.jsonData }}
+                                            </div>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="操作" width="270">
+                                        <template scope="scope">
+                                            <span class="btn btn-xs btn-danger top" @click="delData(scope.row, scope.$index)">删除</span>
+                                            <span v-bind:class="{ 'disabled': scope.$index ==0 }" class="btn btn-xs btn-warning up" @click="up(scope.$index)">上移</span>
+                                            <span v-bind:class="{ 'disabled': scope.$index == tableData.length-1 }" class="btn btn-xs btn-warning down" @click="down(scope.$index)">下移</span>
+                                            <span v-bind:class="{ 'disabled': scope.$index ==0 }" class="btn btn-xs btn-warning top" @click="upIndex(scope.$index)">置顶</span>
+                                            <span v-bind:class="{ 'disabled': scope.$index == tableData.length-1 }" class="btn btn-xs btn-warning bottom" @click="downIndex(scope.$index)">置底</span>
+                                            <span class="btn btn-xs btn-primary" @click="showAddDialog('edit', scope.row)">编辑</span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <div class="flex-row flex-center">
+                                    <div class="table-save">
+                                        <button class="btn btn-primary btn-block" type="button" @click="saveTable()">应用</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="activeName === 'clean_cache'" class="ibox-content">
+                                <div>
+                                    <span>删除缓存的域名：</span><el-input v-model="cacheHost" placeholder="请输入域名" disabled style="width: 280px;margin-bottom: 20px;"></el-input>
+                                </div>
+                                <div class="dialog-body">
+                                    <div id="jsoneditor" style="width: 100%; height: 500px;"></div>
+                                    <div class="dialog-body-right">
+                                        * eg:<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;[<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/favicon.ico",<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/1.jpg?version=1.0.1"<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+                                    </div>
+                                </div>
+                                <div class="flex-row flex-center">
+                                    <div class="table-save">
+                                        <button class="btn btn-primary btn-block" type="button" @click="delCache()">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 添加网站规则-->
+            <el-dialog :visible.sync="showHostVisible" width="660px" :close-on-click-modal="false">
+                <h3 slot="title">添加网站规则</h3>
+                <div class="form-group" style="margin: 0 auto;">
+                    <div class="form-group row">
+                        <span class="col-sm-2 form-control-static">
+                            域名名称：
+                        </span>
+                        <div class="col-sm-8">
+                            <el-input v-model="host.name" placeholder="请输入内容"></el-input>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <span class="col-sm-2 form-control-static">
+                            拦截开关：
+                        </span>
+                        <div class="col-sm-5 form-control-static">
+                            <el-radio v-model="host.switch" label="on">拦截</el-radio>
+                            <el-radio v-model="host.switch" label="off" style="margin-left: 15px;">放行</el-radio>
+                            <el-radio v-model="host.switch" label="log" style="margin-left: 15px;">日志</el-radio>
+                        </div>
+                        <p class="col-sm-5 form-control-static">
+                            <i class="red-fonts">*</i>配置该域名WAF工作模式
+                        </p>
+                    </div>
+                    <div style="text-align: center;">
+                        <el-button type="primary" @click="addHostname">应用</el-button>
+                        <el-button @click="showHostVisible = false">取消</el-button>
+                    </div>
+                </div>
+            </el-dialog>
+            <!-- 删除网站规则 -->
+            <el-dialog title="" :visible.sync="delHostVisible" width="500px" center :close-on-click-modal="false">
+                <h2 class="del-title">确定要删除该域名规则？</h2>
+                <h2 class="del-name red-fonts">{{ row.name }}</h2>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delHostDialog()">确 定</el-button>
+                    <el-button @click="delHostVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="dialogTableVisible" width="800px" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{ruleIp.title}}
+                </h3>
+                <div class="modal-body col-sm-12">
+                    <div class="col-sm-8">
+                        <div class="form-group row">
+                            <span class="col-sm-4 form-control-static">
+                                域名：
+                            </span>
+                            <div class="col-sm-8">
+                                <el-input v-model="ruleIp.host" placeholder="请输入内容" disabled></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <span class="col-sm-4 form-control-static">
+                                ip：
+                            </span>
+                            <div class="col-sm-8">
+                                <el-input v-model="ruleIp.ip" placeholder="请输入内容"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <span class="col-sm-4 form-control-static">
+                                拦截时长：
+                            </span>
+                            <div class="col-sm-8">
+                                <el-input v-model="ruleIp.time" placeholder="请输入内容"></el-input>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <span class="col-sm-4 form-control-static">
+                                匹配动作：
+                            </span>
+                            <div class="col-sm-8">
+                                <el-select v-model="ruleIp.option" placeholder="请选择">
+                                    <el-option v-for="item in action_options" :key="item.value" :label="item.label" :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div style="border: 1px solid #ccc; height: 200px;overflow: auto;">
+                            <div class="form-control-static">
+                                <p>
+                                    <span class="red-fonts"> * </span>ip 不支持ip段仅支持单ip
+                                </p>
+                                <p>
+                                    <span class="red-fonts"> * </span>单位秒，0表示永久
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogTableVisible = false">关闭</el-button>
+                    <el-button type="primary" @click="addRuleIp()">应用</el-button>
+                </div>
+            </el-dialog>
+            <!-- 删除ip规则 -->
+            <el-dialog title="" :visible.sync="deleteDialogVisible" width="30%" center :close-on-click-modal="false">
+                <h2>确定要删除该配置？</h2>
+                <h2 class="text-info">ip规则</h2>
+                <h2 class="red-fonts">{{row.host}}_{{row.ip}}</h2>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="deleteRuleIp()">确 定</el-button>
+                    <el-button @click="deleteDialogVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+            <!-- 添加编辑规则 -->
+            <el-dialog :visible.sync="addVisible" width="800px" class="dialog-add" @open="openDialog" @close="closeDialog" :close-on-click-modal="false">
+                <h3 slot="title">
+                    {{title}}
+                </h3>
+                <div class="dialog-body">
+                    <div id="jsoneditor" style="width: 500px; height: 500px;"></div>
+                    <div class="dialog-body-right" v-if="activeName === 'realIpFrom_Mod'">
+                        <p>
+                            <span class="red-fonts"> * </span>该规则是配置有使用CDN或者其他中转反向代理的域名，默认情况下，CDN或者其他代理会把用户真实IP放在x-forword-for 或者x-real-ip中，故http头名称则设置为：x_forword_for（"-"需要换成"_"）。 部分CDN放在一个自定义字段中，需要和其确定在那个字段（"-"需要换成"_"）。
+                        </p>
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"ips":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"realipfrom": "http头名称",<br/>
+                        }
+                    </div>
+                    <div class="dialog-body-right" v-if="activeName === 'app_Mod'">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"action": "执行动作",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"执行动作": "动作参数",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"hostname":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;["app_ext": "规则内容(table)"]<br/>
+                        }
+                    </div>
+                    <div class="dialog-body-right" v-if="activeName === 'network_Mod'">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"action":"动作",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"network": "频率规则"<br/>
+                        }
+                    </div>
+                    <div class="dialog-body-right" v-if="activeName === 'add_headers_Mod'">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"hostname":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"add_headers":[["header头名称","内容"]],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"tag":["all_Mod"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# tag 也可以没有<br/>
+                        }
+                    </div>
+                    <div class="dialog-body-right" v-if="activeName === 'limit_rate_Mod'">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"hostname":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"limit_rate":"限速大小",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"tag":["all_Mod"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# tag 也可以没有<br/>
+                        }
+                    </div>
+                    <div class="dialog-body-right" v-if="activeName === 'proxy_cache_Mod'">
+                        {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"state": "规则开关",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"des": "规则描述",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"uri":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"hostname":["匹配内容","匹配符","是否取反"],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;"tag":["all_Mod"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# tag 也可以没有<br/>
+                        }
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="addData()">应用</el-button>
+                    <el-button @click="addVisible = false">取消</el-button>
+                </div>
+            </el-dialog>
+            <!-- 删除规则 -->
+            <el-dialog title="" :visible.sync="delVisible" width="500px" center :close-on-click-modal="false">
+                <div class="del-name" v-if="activeName === 'realIpFrom_Mod'">
+                    <h2 class="del-title">确定要删除该配置？</h2>
+                    <h2 class="del-name blue-fonts">真实ip配置</h2>
+                    <h2 class="del-name red-fonts">{{ row.name }}</h2>
+                </div>
+                <div class="del-name" v-if="activeName === 'app_Mod'">
+                    <h2 class="del-title">确定要删除 <span class="del-name blue-fonts">app_Mod</span> 规则？</h2>
+                    <h2 class="del-name blue-fonts">域名：<span class="red-fonts">{{ isEditHost }}</span></h2>
+                    <h2 class="del-name blue-fonts">系统id：<span class="red-fonts">{{ row.name }}</span></h2>
+                </div>
+                <div class="del-name" v-if="activeName === 'network_Mod'">
+                    <h2 class="del-title">确定要删除 <span class="del-name blue-fonts">network_Mod</span> 规则？</h2>
+                    <h2 class="del-name blue-fonts">域名：<span class="red-fonts">{{ isEditHost }}</span></h2>
+                    <h2 class="del-name blue-fonts">系统id：<span class="red-fonts">{{ row.name }}</span></h2>
+                </div>
+                <div class="del-name" v-if="activeName === 'add_headers_Mod'">
+                    <h2 class="del-title">确定要删除 <span class="del-name blue-fonts">add_headers_Mod</span> 规则？</h2>
+                    <h2 class="del-name blue-fonts">域名：<span class="red-fonts">{{ isEditHost }}</span></h2>
+                    <h2 class="del-name blue-fonts">系统id：<span class="red-fonts">{{ row.name }}</span></h2>
+                </div>
+                <div class="del-name" v-if="activeName === 'limit_rate_Mod'">
+                    <h2 class="del-title">确定要删除 <span class="del-name blue-fonts">limit_rate_Mod</span> 规则？</h2>
+                    <h2 class="del-name blue-fonts">域名：<span class="red-fonts">{{ isEditHost }}</span></h2>
+                    <h2 class="del-name blue-fonts">系统id：<span class="red-fonts">{{ row.name }}</span></h2>
+                </div>
+                <div class="del-name" v-if="activeName === 'proxy_cache_Mod'">
+                    <h2 class="del-title">确定要删除 <span class="del-name blue-fonts">proxy_cache_Mod</span> 规则？</h2>
+                    <h2 class="del-name blue-fonts">域名：<span class="red-fonts">{{ isEditHost }}</span></h2>
+                    <h2 class="del-name blue-fonts">系统id：<span class="red-fonts">{{ row.name }}</span></h2>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="delData()">确 定</el-button>
+                    <el-button @click="delVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/element-ui.js"></script>
+    <script src="config.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="js/jq-common.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/base64.js"></script>
+    <script src="js/jsoneditor.min.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    searchQuery: '', // 搜索内容
+                    tableData: [],
+                    count: 0,
+                    state: 'on',
+                    G_version: '',
+                    // 添加网站规则
+                    showHostVisible: false,
+                    host: {
+                        name: '',
+                        switch: 'on'
+                    },
+                    // 删除网站规则dialog
+                    delHostVisible: false,
+                    row: '', // 删除行
+                    index: '', // 删除id
+                    // ---------------编辑配置页面---------------
+                    isEditRule: true, // 是否为配置规则的template
+                    isEditHost: '',
+                    config: {
+                        g_version: '',
+                        state: '',
+                        args_HPP: '',
+                        posts_HPP: ''
+                    },
+                    rule: {
+                        count: ''
+                    },
+                    activeName: 'realIpFrom_Mod',
+                    globalRule: [
+                        {
+                            tag: '获取真实IP配置',
+                            value: 'realIpFrom_Mod',
+                        },
+                        {
+                            tag: 'IP规则配置',
+                            value: 'ip_Mod',
+                        },
+                        {
+                            tag: '高级规则',
+                            value: 'app_Mod',
+                        },
+                        {
+                            tag: '频率规则',
+                            value: 'network_Mod',
+                        },
+                        {
+                            tag: 'CDN-添加header',
+                            value: 'add_headers_Mod',
+                        },
+                        {
+                            tag: 'CDN-限速配置',
+                            value: 'limit_rate_Mod',
+                        },
+                        {
+                            tag: 'CDN-缓存规则',
+                            value: 'proxy_cache_Mod',
+                        },
+                        {
+                            tag: '清除缓存',
+                            value: 'clean_cache',
+                        }
+                    ],
+                    // 真实ip
+                    addVisible: false,
+                    title: '',
+                    addForm: {
+                        name: '',
+                        jsonData: {}
+                    },
+                    // ruleIP
+                    ruleIp: {
+                        title: '',
+                        host: '',
+                        ip: '',
+                        time: '',
+                        option: '',
+                    },
+                    action_options: [{
+                            value: 'deny',
+                            label: 'deny',
+                        },
+                        {
+                            value: 'allow',
+                            label: 'allow',
+                        },
+                        {
+                            value: 'log',
+                            label: 'log',
+                        },
+                    ],
+                    dialogTableVisible: false,
+                    deleteDialogVisible: false,
+                    // 删除dialog
+                    delVisible: false,
+                    // json编辑器
+                    editor: null,
+                    // cache域名
+                    cacheHost: ''
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const search = this.searchQuery
+                    if (search) {
+                        return this.tableData.filter(data => {
+                        if (data.name.includes(search) || JSON.stringify(data.jsonData).includes(search)) {
+                            return data
+                        }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                if (window.location.search) {
+                    this.isEditHost = window.location.search.split('=')[1];
+                    this.hasHost();
+                    // this.addRuleShow = true;
+                } else {
+                    this.getData();
+                }
+            },
+            mounted() {
+            },
+            methods: {
+                getData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'get',
+                        host: 'all_host'
+                    }, function (data) {
+                        that.count = data.msg.count;
+                        that.state = data.msg.state;
+                        that.G_version = data.msg.G_version;
+                        if (data.code == 'ok') {
+                            let table = [];
+                            for (let i in data.msg) {
+                                if (i !== "count" && i !== "state" && i !== "G_version") {
+                                    let obj = {};
+                                    obj.name = i;
+                                    obj.jsonData = data.msg[i];
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加网站规则弹出框
+                showHostDialog() {
+                    this.host.name = '';
+                    this.host.switch = 'on';
+                    this.showHostVisible = true;
+                },
+                // 首页添加网站规则
+                addHostname() {
+                    var that = this;
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'add',
+                        host: that.host.name,
+                        value: that.host.switch,
+                        id: 'state'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.showHostVisible = false;
+                            that.getData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delHostDialog(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.delHostVisible = true;
+                    } else {
+                        const that = this;
+                        $.post(URL + '/api/v2/host_dict', {
+                            action: 'del',
+                            host: that.row.name,
+                            id: 'all'
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.delHostVisible = false;
+                    }
+                },
+                // ---------------编辑配置页面---------------
+                hasHost() {
+                    const that = this;
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'get',
+                        host: that.isEditHost,
+                        mod: 'realIpFrom_Mod'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.isEditRule = false;
+                            that.getRealIpData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.getData();
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 打开配置页面
+                openConfigRule(row) {
+                    this.isEditRule = false;
+                    this.isEditHost = row.name;
+                    // console.log(row)
+                    this.config.g_version = row.jsonData.g_version
+                    this.config.state = row.jsonData.state
+                    this.config.args_HPP = row.jsonData.args_HPP
+                    this.config.posts_HPP = row.jsonData.posts_HPP
+                    this.getRealIpData();
+                },
+                // 获取规则数据
+                getRealIpData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'get',
+                        mod: that.activeName,
+                        id: that.isEditHost
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            let table = [];
+                            if (data.msg && JSON.stringify(data.msg) !== '{}') {
+                                let obj= {
+                                    name: that.isEditHost,
+                                    jsonData: data.msg
+                                }
+                                table.push(obj);
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 获取ip规则数据
+                getIpData() {
+                    var that = this;
+                    $.post(URL + '/api/v2/ip_dict', {
+                        action: 'get',
+                        host: that.isEditHost
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            var table = [];
+                            that.rule.count = data.msg.count;
+                            // that.state = data.msg.state.state;
+                            // that.G_version = data.msg.state.G_version;
+                            for (var i in data.msg) {
+                                if (i !== "state" && i !== "count") {
+                                    var obj = {};
+                                    var tmp = i.split('_');
+                                    if (tmp.length == 1) {
+                                        obj.host = "*"
+                                        obj.ip = tmp[0]
+                                    } else {
+                                        obj.host = tmp[0]
+                                        obj.ip = tmp[1]
+                                    }
+                                    obj.option = data.msg[i];
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                        } else {
+                            if( data.msg == "sign error" ) {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({ 
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000                  
+                            });
+                        }
+                    })
+                },
+                // 获取规则数据
+                getCommonData() {
+                    const that = this;
+                    let table = [];
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'get',
+                        mod: that.activeName,
+                        host: that.isEditHost
+                    }, function (data) {
+                        that.count = data.msg.count;
+                        that.state = data.msg.state;
+                        that.G_version = data.msg.G_version;
+                        if (data.code == 'ok') {
+                            let table = [];
+                            for (let i in data.msg.mod) {
+                                let obj = {};
+                                obj.name = Number(i) + 1;
+                                obj.jsonData = data.msg.mod[i];
+                                table.push(obj);
+                            }
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 处理tab点击
+                handleClick(tab, index) {
+                    if (tab.name === 'realIpFrom_Mod') {
+                        this.getRealIpData();
+                    } else if (tab.name === 'ip_Mod') {
+                        this.getIpData();
+                    } else if (tab.name === 'clean_cache') {
+                        this.cacheHost = this.isEditHost;
+                        this.openDialog();
+                    } else {
+                        this.getCommonData();
+                    }
+                    this.closeDialog();
+                    // console.log(tab.name, index);
+                },
+                // 显示添加弹出框
+                showAddDialog(type, obj) {
+                    const that = this;
+                    if( that.activeName === 'ip_Mod' ) {
+                        that.showRule();
+                    } else {
+                        if (type === 'edit') {
+                            this.title = '编辑';
+                            this.addForm.name = obj.name;
+                            this.addForm.jsonData = obj.jsonData;
+                        } else if (type === 'add') {
+                            this.title = '添加';
+                            this.addForm.name = '';
+                            this.addForm.jsonData = {};
+                        }
+                        this.addVisible = true;
+                    }
+                },
+                // 显示添加规则弹出框
+                showRule() {
+                    this.ruleIp.title = '添加';
+                    this.ruleIp.host = this.isEditHost;
+                    this.ruleIp.ip = '';
+                    this.ruleIp.time = '';
+                    this.ruleIp.option = 'deny';
+                    this.dialogTableVisible = true;
+                },
+                addData() {
+                    const that = this;
+                    let obj = {};
+                    let url = '';
+                    that.addForm.jsonData = this.editor.get()
+                    if (that.activeName === 'realIpFrom_Mod') {
+                        url = URL + '/api/v2/config_dict';
+                        if ( this.title ===  '添加') {
+                            obj = {
+                                action: 'add',
+                                mod: 'realIpFrom_Mod',
+                                id: that.isEditHost,
+                                value: JSON.stringify(that.addForm.jsonData)
+                            }
+                        } else {
+                            obj = {
+                                action: 'set',
+                                mod: 'realIpFrom_Mod',
+                                id: that.isEditHost,
+                                value: JSON.stringify(that.addForm.jsonData)
+                            }
+                        }
+                    } else {
+                        url = URL + '/api/v2/host_dict';
+                        if ( this.title ===  '添加') {
+                            obj = {
+                                action: 'add',
+                                mod: that.activeName,
+                                host: that.isEditHost,
+                                value: JSON.stringify(that.addForm.jsonData)
+                            }
+                        } else {
+                            obj = {
+                                action: 'set',
+                                mod: that.activeName,
+                                host: that.isEditHost,
+                                id: that.addForm.name,
+                                value: JSON.stringify(that.addForm.jsonData)
+                            }
+                        }
+                    }
+                    
+                    $.post(url, obj, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                            that.addVisible = false;
+                            if (that.activeName === 'realIpFrom_Mod') {
+                                that.getRealIpData();
+                            } else {
+                                that.getCommonData();
+                            }
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delData(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.delVisible = true;
+                    } else {
+                        const that = this;
+                        let url;
+                        let data;
+                        if (that.activeName === 'realIpFrom_Mod') {
+                            url = URL + '/api/v2/config_dict';
+                            data = {
+                                action: 'del',
+                                mod: that.activeName,
+                                id: that.row.name
+                            }
+                        } else {
+                            url = URL + '/api/v2/host_dict';
+                            data = {
+                                action: 'del',
+                                host: that.isEditHost,
+                                mod: that.activeName,
+                                id: that.row.name
+                            }
+                        }
+                        $.post(url, data, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                if (that.activeName === 'realIpFrom_Mod') {
+                                    that.getRealIpData();
+                                } else {
+                                    that.getCommonData();
+                                }
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.delVisible = false;
+                    }
+                },
+                // ruleIp添加删除操作
+                addRuleIp() {
+                    var that = this;
+                    if (this.ruleIp.host === '*') {
+                        hostIp = that.ruleIp.ip;
+                    } else {
+                        hostIp = that.ruleIp.host + '_' + that.ruleIp.ip;
+                    }
+                    $.post(URL + '/cluster/v2/ip_dict', {
+                        action: 'set',
+                        ip: hostIp,
+                        value: that.ruleIp.option,
+                        time: Number(that.ruleIp.time)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({ type: 'success', title: '提示', message: '应用成功', duration: 4000});
+                            that.dialogTableVisible = false;
+                            that.getIpData();
+                        } else {
+                            if( data.msg == "sign error" ) {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({type: 'warning',title: '提示',message: data.msg,duration: 4000});
+                        }
+                    })
+                },
+                deleteRuleIp(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.deleteDialogVisible = true;
+                    } else {
+                        var that = this;
+                        $.post(URL + '/cluster/v2/ip_dict', {
+                            action: 'del',
+                            ip: `${that.row.host}_${that.row.ip}`,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({type: 'success',title: '提示',message: '删除成功',duration: 4000});
+                                that.tableData.splice(that.index, 1);
+                                that.getIpData();
+                            } else {
+                                if( data.msg == "sign error" ) {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({type: 'warning',title: '提示',message: data.msg,duration: 4000});
+                            }
+                        })
+                        this.deleteDialogVisible = false;
+                    }
+                },
+                // 修改开关
+                changeSwitch(type, val) {
+                    // console.log(t, i)
+                    const that = this;
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'set',
+                        id: type,
+                        value: val,
+                        host: that.isEditHost
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // ---------------表格移动逻辑---------------
+                upIndex(index) {
+                    if (index == 0) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, 0, "up");
+                },
+                up(index) {
+                    if (index == 0) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, index - 1);
+                },
+                down(index) {
+                    if (index == this.tableData.length - 1) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, index + 1);
+                },
+                downIndex(index) {
+                    if (index == this.tableData.length - 1) {
+                        return;
+                    }
+                    this.swapItems(this.tableData, index, 0, 'down');
+                },
+                swapItems(arr, index1, index2, direction) {
+                    if (direction == 'up') { //置顶
+                        arr.unshift(arr[index1]);
+                        arr.splice(index1 + 1, 1);
+                        return arr;
+                    }
+                    if (direction == 'down') { //置底
+                        arr.push(arr[index1]);
+                        arr.splice(index1, 1);
+                        return arr;
+                    }
+                    arr[index1] = arr.splice(index2, 1, arr[index1])[0];
+                    return arr;
+                },
+                saveTable() {
+                    const that = this;
+                    let value = [];
+                    for (let i in that.tableData) {
+                        value.push(that.tableData[i].jsonData)
+                    }
+                    $.post(URL + '/api/v2/host_dict', {
+                        action: 'set',
+                        host: that.isEditHost,
+                        mod: that.activeName,
+                        value: JSON.stringify(value),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                            that.getCommonData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                delCache() {
+                    const that = this;
+                    const value = this.editor.get();
+                    $.post(URL + '/cluster/v2/proxy_cache_Mod/purge_del', {
+                        host: that.isEditHost,
+                        purge_list: JSON.stringify(value)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '删除成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // ---------------json-editor配置页面---------------
+                openDialog() {
+                    this.$nextTick(()=>{
+                        this.initJsonEditor();
+                    })
+                },
+                closeDialog() {
+                    if(this.editor) {
+                        this.editor.destroy();
+                    }
+                },
+                initJsonEditor() {
+                    // create the editor
+                    const container = document.getElementById("jsoneditor")
+                    const options = {
+                        mode: 'code',
+                        modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
+                    }
+                    this.editor = new JSONEditor(container, options)
+                    // set json
+                    const initialJson = this.addForm.jsonData;
+                    this.editor.set(initialJson)
+                },
+                // 保存全部按钮
+                saveMod() {
+                    const that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

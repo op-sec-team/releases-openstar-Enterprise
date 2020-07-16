@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+
+<body class="gray-bg">
+    <div id="app" class="middle-box text-center loginscreen  animated fadeInDown">
+        <div>
+            <h2>OPENSTAR WAF</h2>
+            <form class="m-t" role="form" method="post"  :action="action_url">
+                <div class="form-group">
+                    <input type="text" name="username"  class="form-control" placeholder="用户名" required="length[6~50]">
+                </div>
+                <div class="form-group">
+                    <input id="password" type="password" name="password" class="form-control" placeholder="密码" required="">
+                </div>
+                <button id="login" onclick="passwordToMd5()" class="btn btn-primary block full-width m-b">登 录</button>
+            </form>
+        </div>
+    </div>
+</body>
+    <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script src="./js/vue.js"></script>
+    <!-- <script src="./js/element-ui.js"></script> -->
+    <script type="text/javascript" src="./config.js"></script>
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script>
+        // 密码转换成md5
+        function passwordToMd5(){
+            document.getElementById('password').value = md5(document.getElementById('password').value)
+        }
+        var vdata = new Vue({
+            el:'#app',
+            data() {
+                return {
+                    action_url: URL+'/api/v2/admin_Mod/login'
+                }
+            }
+        })
+    </script>
+</html>

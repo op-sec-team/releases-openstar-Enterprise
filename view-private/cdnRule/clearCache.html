@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <link href="../css/jsoneditor.min.css" rel="stylesheet">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-center {
+            justify-content: center;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .header {
+            padding: 0px 25px 10px 25px;
+            background-color: #ffffff;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .header-right {
+            width: 190px;
+        }
+        .main {
+            padding: 20px 0;
+        }
+        .table-left {
+            flex: 1;
+            overflow: auto;
+        }
+        .table-right {
+            margin-left: 20px;
+        }
+        .dialog-body {
+            display: flex;
+        }
+        .dialog-body-right {
+            min-width: 200px;
+            max-width: 200px;
+            margin-left: 20px;
+        }
+        .table-save {
+            width: 190px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="header flex-row flex-between wrapper">
+                <div class="header-left">
+                    <h2>CDN规则</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="#">CDN规则</a>
+                        </li>
+                        <li class="active">
+                            <strong>清除缓存</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="header-right flex-column flex-end">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="main">
+                <div class="flex-row">
+                    <div class="table-left">
+                        <div class="ibox-content">
+                            <div class="dialog-body">
+                                <div id="jsoneditor" style="width: 100%; height: 500px;"></div>
+                                <div class="dialog-body-right">
+                                    * eg:<br/>
+                                    {<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;"www.test.com":[<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/favicon.ico",<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/1.jpg?version=1.0.1"<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp; ],<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;"www.abc.com":[<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/favicon.ico",<br/>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;"/1.jpg"<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex-row flex-center">
+                                <div class="table-save">
+                                    <button class="btn btn-primary btn-block" type="button" @click="delData()">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-right">
+                        <div
+                            style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/base64.js"></script>
+    <script src="../js/jsoneditor.min.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    checkSign: '',
+                    tableData: [],
+                    editor: null
+                }
+            },
+            watch: {
+                checkSign: function(val) {
+                    if(val == "sign error"){
+                        window.location = '/login.html';
+                    }
+                },
+            },
+            mounted() {
+                this.$nextTick(()=>{
+                    this.initJsonEditor();
+                })
+            },
+            methods: {
+                initJsonEditor() {
+                    // create the editor
+                    const container = document.getElementById("jsoneditor")
+                    const options = {
+                        mode: 'code',
+                        modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
+                    }
+                    this.editor = new JSONEditor(container, options)
+                    // set json
+                    const initialJson = {};
+                    this.editor.set(initialJson)
+                },
+                delData() {
+                    const that = this;
+                    const value = this.editor.get();
+                    $.post(URL + '/cluster/v2/proxy_cache_Mod/purge_del', {
+                        purge_list: JSON.stringify(value)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '删除成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveMod() {
+                    const that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/iconfont/iconfont.css">
+    <style>
+        .preview .el-icon-close{
+            font-size: 25px;
+            font-weight: 1300;
+            color: #24292e;
+        }
+        .flex-row {
+            display: flex;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-4">
+                    <h2>全局规则</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="/global/index.html">全局规则</a>
+                        </li>
+                        <li class="active">
+                            <strong>拦截信息配置</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="col-sm-2 col-sm-offset-6" style="padding-top: 4%;">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="row">
+                    <div class="col-lg-11">
+                        <div class="ibox float-e-margins">
+                            <div class="panel blank-panel">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="ibox-content">
+                                            <div class="col-sm-12" style="padding:0px;margin-bottom: 10px;">
+                                                <div class="col-sm-5" style="padding-right: 0px;padding-left: 0px;">
+                                                    <el-input placeholder="请输入搜索内容" v-model="searchQuery">
+                                                    </el-input>
+                                                </div>
+                                                <div class="col-sm-1 col-sm-offset-6">
+                                                    <a class="btn btn-sm btn-primary" @click="showMsg()"> 添加 </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12" style="padding:0px;margin-bottom: 10px;">
+                                                <div class="flex-row flex-between">
+                                                    <div>
+                                                        <span>拦截信息配置: </span>
+                                                        <el-radio v-model="state" label="on" @change="denyMsgSwitch" style="margin-left: 15px;">开启</el-radio>
+                                                        <el-radio v-model="state" label="off" @change="denyMsgSwitch" style="margin-left: 15px;">关闭</el-radio>
+                                                    </div>
+                                                    <div>
+                                                        <span>当前数量: {{ tableData.length }} </span>
+                                                        <span class="blue-fonts" style="margin-left: 20px;">版本号：<span class="green-fonts">{{ G_version }}</span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <el-table :data="tables" border style="width: 100%">
+                                                <el-table-column prop="host" label="域名名称">
+                                                </el-table-column>
+                                                <el-table-column prop="deny_msg" label="拦截信息">
+                                                </el-table-column>
+                                                <el-table-column prop="http_code" label="拦截状态码">
+                                                </el-table-column>
+                                                <el-table-column label="操作" width="140">
+                                                    <template scope="scope">
+                                                        <a class="btn btn-xs btn-danger" @click="deleteMsg(scope.row,scope.$index)" v-if="scope.row.host != '默认' ? true : false">删除</a>
+                                                        <a class="btn btn-xs btn-primary" @click="showMsg(scope.row)" v-if="scope.row.host != '默认' ? true : false">编辑</a>
+                                                        <a class="btn btn-xs btn-warning" @click="previewScope(scope.row.deny_msg)">预览</a>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </div>
+                                    <!-- 添加编辑规则 -->
+                                    <el-dialog :visible.sync="dialogTableVisible" width="700px" :close-on-click-modal="false">
+                                        <h3 slot="title">
+                                            {{title}}
+                                        </h3>
+                                        <div class="modal-body col-sm-12">
+                                            <div class="form-group row">
+                                                <span class="col-sm-2 form-control-static">
+                                                    域名：
+                                                </span>
+                                                <div class="col-sm-6">
+                                                    <el-input v-model="host" placeholder="请输入内容" :disabled=" title === '添加' ? false : true "></el-input>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <span class="col-sm-2 form-control-static">
+                                                    状态码：
+                                                </span>
+                                                <div class="col-sm-6">
+                                                    <el-select v-model="http_code" placeholder="请选择" style="width: 285px;">
+                                                        <el-option :labels="403" :value="403"></el-option>
+                                                        <el-option :labels="404" :value="404"></el-option>
+                                                        <el-option :labels="405" :value="405"></el-option>
+                                                        <el-option :labels="406" :value="406"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <span class="col-sm-12 form-control-static">
+                                                    拦截信息配置：
+                                                </span>
+                                                
+                                                <div class="col-sm-12">
+                                                    <el-input v-model="deny_msg" type="textarea" rows="5"></el-input>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 form-control-static">
+                                                <span @click="previewScope()" class="btn btn-info btn-xs btn-block">预览</span>
+                                            </div>
+                                        </div>
+                                        <div slot="footer" class="dialog-footer">
+                                            <el-button type="primary" @click="addDenyMsg()">应用</el-button>
+                                        </div>
+                                    </el-dialog>
+                                    <!-- 预览界面 -->
+                                    <el-dialog class="preview" :visible.sync="showVisible" fullscreen="true">
+                                        <h3 slot="title">
+                                            预览
+                                        </h3>
+                                        <div v-show="preview" v-html="deny_msg"></div>
+                                    </el-dialog>
+                                    <!-- 删除规则 -->
+                                    <el-dialog title="" :visible.sync="deleteDialogVisible" width="400px" center :close-on-click-modal="false">
+                                        <h2>确定要删除该配置？</h2>
+                                        <h2 class="red-fonts fn-bold">{{row.host}}</h2>
+                                        <h2 class="text-info">自定义拒绝信息</h2>
+                                        <span slot="footer" class="dialog-footer">
+                                            <el-button type="primary" @click="deleteMsg()">确 定</el-button>
+                                            <el-button @click="deleteDialogVisible = false">取 消</el-button>
+                                        </span>
+                                    </el-dialog>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/element-ui.js"></script>
+    <script src="../config.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="../js/jq-common.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    showCluster: false,
+                    checkSign: '',
+                    count: 0,
+                    state: '',
+                    G_version: '',
+                    tableData: [],
+                    row: '',
+                    index: '',
+                    dialogTableVisible: false,
+                    deleteDialogVisible: false,
+                    show_deny_msg: '',
+                    showVisible: false,
+                    // 添加规则
+                    title: '',
+                    host: '',
+                    deny_msg: '',
+                    http_code: 403,
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                    // 搜索
+                    searchQuery: '',
+                    preview: false,
+                    // previewContent: false,
+                }
+            },
+            watch: {
+                // checkSign: function (val) {
+                //     if (val == "sign error") {
+                //         window.location = '/login.html';
+                //     }
+                // },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const val = this.searchQuery
+                    if (val) {
+                        return this.tableData.filter(item => {
+                            if(item.host.includes(val) || item.deny_msg.toString().includes(val) || (item.http_code && item.http_code.toString().includes(val))) {
+                                return item
+                            }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getDengData();
+            },
+            destroyed() {
+                this.showCluster = false;
+            },
+            methods: {
+                previewScope(deny_msg) {
+                    if (deny_msg) {
+                        this.deny_msg = deny_msg;
+                        //this.http_code = http_code;
+                    }
+                    this.preview = true;
+                    this.showVisible = true;
+                },
+                getDengData() {
+                    var that = this;
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'get',
+                        mod: 'denyMsg'
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            var table = [];
+                            that.count = data.msg.count;
+                            that.state = data.msg.state.state;
+                            that.G_version = data.msg.state.G_version;
+                            for (var i in data.msg) {
+                                if (i !== "state" && i !== "count" && i !== 'G_version') {
+                                    var obj = {};
+                                    obj.host = i;
+                                    obj.deny_msg = data.msg[i].deny_msg;
+                                    obj.http_code = data.msg[i].http_code || '';
+                                    table.push(obj);
+                                }
+                            }
+                            table.splice(0, 0, {
+                                host: '默认',
+                                deny_msg: data.msg.state.msg,
+                                http_code: data.msg.state.http_code
+                            });
+                            that.tableData = table;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加规则弹出框
+                showMsg(obj) {
+                    if (obj === undefined) {
+                        this.title = '添加';
+                        this.host = '';
+                        this.deny_msg = '';
+                        this.http_code = 403;
+                        this.preview = false;
+                    } else {
+                        this.title = '编辑';
+                        this.host = obj.host;
+                        this.deny_msg = obj.deny_msg;
+                        this.http_code = obj.http_code;
+                        this.preview = false;
+                    }
+                    this.dialogTableVisible = true;
+                },
+                addDenyMsg() {
+                    var that = this;
+                    let action = '';
+                    let value = {
+                        "deny_msg": that.deny_msg,
+                        "http_code": that.http_code,
+                    };
+                    if (this.title === '添加') {
+                        action = 'add';
+                    } else {
+                        action = 'set';
+                    }
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: action,
+                        mod: 'denyMsg',
+                        id: that.host,
+                        value: JSON.stringify(value),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '添加成功',
+                                duration: 4000
+                            });
+                            that.dialogTableVisible = false;
+                            that.getDengData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                deleteMsg(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.deleteDialogVisible = true;
+                    } else {
+                        var that = this;
+                        $.post(URL + '/api/v2/config_dict', {
+                            action: 'del',
+                            mod: 'denyMsg',
+                            id: that.row.host,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getDengData();
+                            } else {
+                                if (data.msg == "sign error") {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.deleteDialogVisible = false;
+                    }
+                },
+                denyMsgSwitch() {
+                    var that = this;
+                    var value = {
+                        "state": that.state,
+                        "msg": that.tableData[0].deny_msg,
+                        "G_version": that.G_version
+                    };
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'set',
+                        mod: 'base',
+                        id: 'denyMsg',
+                        value: JSON.stringify(value)
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    });
+                },
+                saveMod() {
+                    var that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'denyMsg',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

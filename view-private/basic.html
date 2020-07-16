@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="css/basic.css" />
+    <link rel="stylesheet" type="text/css" href="css/iconfont/iconfont.css">
+    <style>
+        .preview .el-icon-close{
+            font-size: 25px;
+            font-weight: 1300;
+            color: #24292e;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <my-header></my-header>
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>基础管理</h2>
+                </div>
+                <div class="col-sm-2" style="padding-top: 1.5%;">
+                    <button class="btn btn-primary btn-block" type="button" @click="onSaveConfig()">保存</button>
+                </div>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="row">
+                    <div class="col-lg-11">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-content">
+                                <div class="panel blank-panel">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label for="baseDir" class="col-sm-2 control-label">baseDir：</label>
+                                            <div class="col-sm-6">
+                                                <input v-model="basedata.baseDir" type="text" class="form-control" value="/opt/openresty/openstar/">
+                                            </div>
+                                            <p class="col-sm-3 form-control-static">
+                                                <i class="red-fonts">*</i>waf主目录；谨慎修改
+                                            </p>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="logDir" class="col-sm-2 control-label">logDir：</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control" v-model="basedata.logPath">
+                                            </div>
+                                            <p class="col-sm-3 form-control-static">
+                                                <i class="red-fonts">*</i>调试日志目录；谨慎修改
+                                            </p>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="jsonDir" class="col-sm-2 control-label">jsonDir：</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control" v-model="basedata.jsonPath">
+                                            </div>
+                                            <p class="col-sm-3 form-control-static">
+                                                <i class="red-fonts">*</i>规则本地存放目录；谨慎修改
+                                            </p>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="htmlDir" class="col-sm-2 control-label">htmlDir：</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control" v-model="basedata.htmlPath">
+                                            </div>
+                                            <p class="col-sm-3 form-control-static">
+                                                <i class="red-fonts">*</i>app_Mod规则中文件存放目录；谨慎修改
+                                            </p>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label for="denyMsg" class="col-sm-2 control-label">denyMsg：</label>
+                                            <div class="col-sm-10 form-control-static">
+                                                <i class="red-fonts">*</i>默认拦截信息配置；谨慎修改
+                                            </div>
+                                            <div class="col-sm-2 col-sm-offset-2">
+                                                <label class="radio-inline col-sm-1">
+                                                    <el-radio v-model="basedata.denyMsg.state" label="on">开</el-radio>
+                                                </label>
+                                                <!-- <input type="radio" v-model="ischecked" id="inlineRadio1" name="denyMsg" checked> 开 -->
+                                                <!-- <input type="radio" name="denyMsg" v-model="ischecked" id="inlineRadio2"> 关 -->
+                                                <label class="radio-inline col-sm-1">
+                                                    <el-radio v-model="basedata.denyMsg.state" label="off">关</el-radio>
+                                                </label>
+                                                <!-- <label class="radio-inline col-sm-1">
+                                                    <el-radio v-model="basedata.denyMsg.state" label="log">日志</el-radio>
+                                                </label> -->
+                                            </div>
+                                            <p class="col-sm-6 form-control-static">
+                                                <i class="red-fonts">*</i>开启表示启用自定义拦截信息配置，否则仅显示默认拦截信息
+                                            </p>
+                                                                                        <div class="col-sm-10 col-sm-offset-2 form-control-static">
+                                                                                                状态码：<input type="text" v-model="basedata.denyMsg.http_code">
+                                                                                        </div>
+                                            <div class="col-sm-10 col-sm-offset-2 form-control-static">
+                                                默认拦截信息配置：
+                                            </div>
+                                            <div class="col-sm-8 col-sm-offset-2">
+                                                <!-- <textarea  v-model="basedata.denyMsg.msg" class="form-control" rows="5"></textarea> -->
+                                                <el-input type="textarea" rows="5" v-model="basedata.denyMsg.msg"></el-input>
+
+                                            </div>
+                                            <div class="col-sm-2 col-sm-offset-2 form-control-static">
+                                                <span @click="previewScope" class="btn btn-info btn-xs btn-block">预览</span>
+                                                <!-- <div v-show="preview" v-html="basedata.denyMsg.msg"></div> -->
+                                            </div>
+                                        </div>
+                                        <!-- 高级配置  -->
+                                        <div class="panel panel-default">
+                                            <a href="#demo" data-toggle="collapse">
+                                                <div class="panel-heading">
+                                                    <h2> 高级配置</h2>
+                                                </div>
+                                            </a>
+                                            <div id="demo" class="collapse">
+                                                <div>
+                                                    <div class="hr-line-dashed"></div>
+                                                    <div id="myCollapsibleExample" class="form-group">
+                                                        <div class="col-sm-12">
+                                                            <h3 class="col-sm-2 form-control-static red-fonts">WAF防护总开关：</h3>
+                                                            <div class="col-sm-10 form-control-static">
+                                                                <label class="radio-inline">
+                                                                    <el-radio v-model="basedata.Mod_state" label="on">开启</el-radio>
+                                                                    <!-- <input type="radio" name="WAF" id="inlineRadio1" value="on" checked> 开启 -->
+                                                                </label>
+                                                                <label class="radio-inline">
+                                                                    <el-radio v-model="basedata.Mod_state" label="off">关闭</el-radio>
+                                                                    <!-- <input type="radio" name="WAF" id="inlineRadio2" value="off"> 关闭 -->
+                                                                </label>
+                                                                <label class="radio-inline">
+                                                                    <el-radio v-model="basedata.Mod_state" label="log">日志</el-radio>
+                                                                    <!-- <input type="radio" name="WAF" id="inlineRadio2" value="off"> 关闭 -->
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="hr-line-dashed"></div>
+                                                    <div id="myCollapsibleExample" class="form-group">
+                                                        <div class="col-sm-12">
+                                                            <h3 class="col-sm-2 form-control-static">请求统计开关：</h3>
+                                                            <div class="col-sm-10 form-control-static">
+                                                                <label class="radio-inline">
+                                                                    <el-radio v-model="basedata.ngx_status" label="on">开启</el-radio>
+                                                                    <!-- <input type="radio" name="requestStatistics" id="inlineRadio3" value="on" checked> 开启 -->
+                                                                </label>
+                                                                <label class="radio-inline">
+                                                                    <el-radio v-model="basedata.ngx_status" label="off">关闭</el-radio>
+                                                                    <!-- <input type="radio" name="requestStatistics" id="inlineRadio4" value="off"> 关闭 -->
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="hr-line-dashed"></div>
+
+                                                    <div class="col-sm-12 form-control-static" style="padding-left:0;padding-right:0;">
+                                                        <h4 class="col-sm-2">
+                                                            集群配置:
+                                                        </h4>
+                                                        <div class="col-sm-3" style="padding-right:0;padding-left:0;width:350px">
+                                                            <!-- <div class="col-sm-12"> -->
+
+                                                            <div class="col-sm-4 form-control-static" style="width:100px;padding-right:0">
+                                                                <!-- <el-radio v-model="basedata.redis_Mod.state" label="on">开启</el-radio>                                                                                                                                         -->
+                                                                <el-radio v-model="basedata.autoSync.state" label="Master">Master</el-radio>
+                                                            </div>
+                                                            <div class="col-sm-4 form-control-static" style="width:100px;padding-right:0">
+                                                                <!-- <el-radio v-model="basedata.redis_Mod.state" label="off">关闭</el-radio>                                                                                                                                                                                                             -->
+                                                                <el-radio v-model="basedata.autoSync.state" label="Slave">Slave</el-radio>
+                                                            </div>
+                                                            <div class="col-sm-4 form-control-static" style="width:100px;padding-right:0">
+                                                                <!-- <el-radio v-model="basedata.redis_Mod.state" label="off">关闭</el-radio>                                                                                                                                                                                                             -->
+                                                                <!-- <el-radio v-model="basedata.autoSync.state" label="Slave">Slave</el-radio>                                                                                                                                                                                                             -->
+                                                                <el-radio v-model="basedata.autoSync.state" label="off">Off</el-radio>
+                                                            </div>
+
+                                                            <!-- </div> -->
+                                                        </div>
+                                                        <div class="col-sm-5 form-control-static">
+                                                            <i class="red-fonts">*</i> Master表示集群主配， Slave表示集群从机，Off表示单机模式
+                                                        </div>
+
+
+                                                        <!-- <div class="col-sm-3 form-control-static">
+                                                                &nbsp;&nbsp;  s  <i class="red-fonts">  &nbsp;&nbsp;  *</i>集群模式下规则同步时间周期
+                                                            </div> -->
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <!-- <div class="col-sm-10 form-control-static row"> -->
+                                                        <div class="col-sm-12 ">
+                                                            <h4 class="col-sm-2">
+                                                                集群同步周期:
+                                                            </h4>
+                                                            <input v-model="basedata.autoSync.timeAt" class="col-sm-4 form-control" style="width:350px">
+                                                            <div class="col-sm-3 form-control-static" style="padding-left:0px">
+                                                                &nbsp;&nbsp; s
+                                                                <i class="red-fonts"> &nbsp;&nbsp; *</i>集群模式下规则同步时间周期
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                Master IP:
+                                                            </h4>
+                                                            <input class="col-sm-4 form-control" v-model="basedata.autoSync.master" style="width:350px">
+                                                            <div class="form-control-static">
+                                                                <i class="red-fonts"> &nbsp;&nbsp; *</i>集群模式下主服务器的IP
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                Slave IPs:
+                                                            </h4>
+
+                                                            <el-input type="textarea" rows="5" style="width:350px;float:left" v-model="slaves">
+                                                            </el-input>
+                                                            <div class="form-control-static">
+                                                                <i class="red-fonts"> &nbsp;&nbsp; *</i> 集群模式下，主服务器需要进行配置从服务器的ip列表
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                Redis配置:
+                                                            </h4>
+                                                            <div class="col-sm-3" style="width:350px;padding-left:0;padding-right:0">
+                                                                <div class="col-sm-2 form-control-static" style="width:130px;">
+                                                                    <el-radio v-model="basedata.redis_Mod.state" label="on">开启</el-radio>
+                                                                </div>
+                                                                <div class="col-sm-1 form-control-static" style="width:160px;">
+                                                                    <el-radio v-model="basedata.redis_Mod.state" label="off">关闭</el-radio>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-control-static" style="padding-left:0;">
+                                                                <i class="red-fonts "> &nbsp;&nbsp; *</i> 集群模式下，Redis是否使用开关
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                IP:
+                                                            </h4>
+                                                            <input v-model="basedata.redis_Mod.ip" class="col-sm-4 form-control" style="width:350px">
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                Port:
+                                                            </h4>
+                                                            <input v-model="basedata.redis_Mod.Port" class="col-sm-4 form-control" style="width:350px">
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                密码:
+                                                            </h4>
+                                                            <input v-model="basedata.redis_Mod.Password" class="col-sm-4 form-control" style="width:350px">
+                                                        </div>
+                                                    </div>
+                                                    <div class="hr-line-dashed"></div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                本地日志:
+                                                            </h4>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.log_onLocal.state" label="on">启用</el-radio>
+                                                            </div>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.log_onLocal.state" label="off">关闭</el-radio>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                路径配置:
+                                                            </h4>
+                                                            <input class="col-sm-4 form-control" v-model="basedata.log_onLocal.path" style="width:350px">
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2" style="float:left">
+                                                                日志格式化配置:
+                                                            </h4>
+                                                            <el-input type="textarea" rows="5" style="width:350px;float:left" v-model="log_onLocal_format_tb"></el-input>
+
+                                                            <div class="form-control-static" style="width:333px;height:auto;float:left">
+
+                                                                <span @click="showlog = !showlog">
+                                                                    <i class="red-fonts"> &nbsp;&nbsp; *</i>日志格式化支持的变量
+                                                                </span>
+                                                                <div v-if="showlog" style="border-radius:1%;margin:20px;padding:20px;border: 1px solid #ccc; height: auto;" class="form-control-static">
+                                                                    <p>ngx_localtime(时间)</p>
+                                                                    <p>remoteIp(直连ip)</p>
+                                                                    <p>host</p>
+                                                                    <p>ip(从header头取的用户ip)</p>
+                                                                    <p>method(请求的方法)</p>
+                                                                    <p>server_protocol(协议和版本)</p>
+                                                                    <p>status(状态)</p>
+                                                                    <p>request_uri(请求的完整url，包含get的args参数)</p>
+                                                                    <p>useragent,referer,cookie</p>
+                                                                    <p>ip(从header头取的用户ip)</p>
+                                                                    <p>query_string(get的args参数)</p>
+                                                                    <p>headers_data(整个请求头，http2 时为空)</p>
+                                                                    <p>args_data(所有get参数的值)</p>
+                                                                    <p>posts_data(所有post参数的值)</p>
+                                                                    <p>body_bytes_sent(返回内容长度)</p>
+                                                                    <p>waf_log(waf产生的拦截信息)</p>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                连接符:
+                                                            </h4>
+                                                            <div class="col-sm-4" style="padding:0;width:350px">
+                                                                <input type="text" class="form-control" v-model="basedata.log_onLocal.tb_concat">
+                                                            </div>
+                                                            <!-- <select class="col-sm-4  form-control" v-model="basedata.log_onLocal.tb_concat" style="width:350px;">
+                                                                <option :value="basedata.log_onLocal.tb_concat">{{basedata.log_onLocal.tb_concat}}</option>
+                                                            </select> -->
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="hr-line-dashed"></div>
+                                                    <div class="form-group">
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                API鉴权:
+                                                            </h4>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.api_sign.state" label="on">启用</el-radio>
+                                                            </div>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.api_sign.state" label="off">关闭</el-radio>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                检查Master IP:
+                                                            </h4>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.api_sign.checkMaster" label="on">检查</el-radio>
+                                                            </div>
+                                                            <div class="col-sm-2 form-control-static">
+                                                                <el-radio v-model="basedata.api_sign.checkMaster" label="off">不检查</el-radio>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                检查算法:
+                                                            </h4>
+                                                            <select class="col-sm-4  form-control" v-model="basedata.api_sign.authority.alg" style="width:350px;">
+                                                                <option v-for="item in alg_stateList" :value="item.value" :key="item.value">{{item.name}}</option>
+                                                            </select>
+                                                            <!-- <input  class="col-sm-4 form-control" v-model="basedata.autoSync.master"  style="width:350px"> -->
+                                                            <div class="form-control-static">
+                                                                <i class="red-fonts"> &nbsp;&nbsp; *</i>算法支持MD5/HS256/HS512
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2" style="float:left">
+                                                                格式化配置:
+                                                            </h4>
+                                                            <el-input type="textarea" rows="5" style="width:350px;float:left" v-model="authority_format_tb"></el-input>
+
+                                                            <div class="form-control-static" style="width:333px;height:auto;float:left">
+
+                                                                <span @click="showformat = !showformat">
+                                                                    <i class="red-fonts"> &nbsp;&nbsp; *</i>格式化变量：
+                                                                </span>
+                                                                <div v-if="showformat" style="border-radius:1%;margin:20px;padding:20px;border: 1px solid #ccc; height: auto;" class="form-control-static">
+
+                                                                    http_time(从http头中取的时间字段 time) uri(请求的uri)
+                                                                    <br/> useragent,referer,cookie等 常量(自定义的常量，用于增加算法碰撞复杂度)
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="col-sm-12 form-control-static">
+                                                            <h4 class="col-sm-2">
+                                                                密钥:
+                                                            </h4>
+                                                            <div class="col-sm-4" style="padding:0;width:350px">
+                                                                <input type="text" class="form-control" v-model="basedata.api_sign.authority.key">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-2 col-sm-offset-5">
+                                                <div @click="onSetConfig" class="btn btn-primary btn-lg btn-block">应用</div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div style="text-align: center;width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                     <!-- 预览界面 -->
+                     <el-dialog class="preview" :visible.sync="showVisible" fullscreen="true">
+                        <h3 slot="title" style="float: left;">
+                            预览
+                        </h3>
+                        <div v-show="preview" v-html="basedata.denyMsg.msg"></div>
+                    </el-dialog>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/vue.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+    <script src="js/element-ui.js"></script>
+    <script src="js/common.js"></script>
+    <script src="config.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="js/jq-common.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    log_onLocal_format_tb: '',   // basedata.log_onLocal.format_tb
+                    authority_format_tb: '',   // basedata.api_sign.authority.format_tb
+                    slaves: '',
+                    deny_msg:'',
+                    showVisible: false,
+                    form: {
+                        name: '',
+                        region: '',
+                        date1: '',
+                        date2: '',
+                        delivery: false,
+                        type: [],
+                        resource: '',
+                        desc: ''
+                    },
+                    alg_stateList: [
+                        {
+                            value:"MD5",
+                            name:"MD5"
+                        },
+                        {
+                            value:"HS256",
+                            name:"HS256"
+                        },
+                        {
+                            value:"HS512",
+                            name:"HS512"
+                        }
+                    ],
+                    checkSign: '',
+                    preview: false,
+                    showlog: false,
+                    showformat: false,
+                    basedata: {
+                        "jsonPath": "",
+                        "htmlPath": "",
+                        "network_Mod": "",
+                        "Mod_state": "",
+                        "cookie_Mod": "",
+                        "replace_Mod": "",
+                        "api_sign": {
+                            "checkMaster": "",
+                            "authority": {
+                                "key": "",
+                                "format_tb": [],
+                                "header_name": "",
+                                "alg": ""
+                            },
+                            "state": ""
+                        },
+                        "denyMsg": {
+                            "state": "",
+                            "msg": "",
+                            "http_code":""
+                        },
+                        "debug_Mod": '',
+                        "host_method_Mod": "",
+                        "uri_Mod": "",
+                        "rewrite_Mod": "",
+                        "realIpFrom_Mod": "",
+                        "ngx_status": "",
+                        "args_Mod": {"state":"","HPP_state":""},
+                        "log_onLocal": {
+                            "tb_concat": " ",
+                            "format_tb": [],
+                            "path": "",
+                            "state": ""
+                        },
+                        "autoSync": {
+                            "slaves": [],
+                            "timeAt": '',
+                            "state": "",
+                            "master": ""
+                        },
+                        "ip_Mod": "",
+                        "referer_Mod": "",
+                        "header_Mod": "",
+                        "logPath": "",
+                        "redis_Mod": {
+                            "Password": "",
+                            "state": "",
+                            "Port": 6379
+                        },
+                        "log_onRemote": {
+                            "host": "",
+                            "state": "",
+                            "sendBufferSize": '',
+                            "socketType": "",
+                            "worker_sleep_time": '',
+                            "port": '',
+                            "tb_concat": " ",
+                            "format_tb": [],
+                            "worker_deal_limit": ''
+                        },
+                        "useragent_Mod": "",
+                        "baseDir": "",
+                        "post_form": '',
+                        "app_Mod": "",
+                        "post_Mod": {"state":"","HPP_state":""}
+                    }
+                }
+            },
+            watch: {
+                checkSign: function (val) {
+                    if (val == "sign error") {
+                        window.location = '/login.html';
+                    }
+                },
+                basedata: function(v) {
+                    // console.log(v);
+                }
+            },
+            created(){
+                 this.getBase();
+             },
+            methods: {
+                getBase(){
+                    var that =this;
+                    $.post(URL+'/api/v2/config_dict',{
+                        action:'get',
+                        mod:'base'
+                    },function(data){
+                        if (data.code == 'ok'){
+                            that.basedata = data.msg;
+                            that.slaves = JSON.stringify(that.basedata.autoSync.slaves);
+                            that.log_onLocal_format_tb = JSON.stringify(that.basedata.log_onLocal.format_tb);
+                            that.authority_format_tb = JSON.stringify(that.basedata.api_sign.authority.format_tb);
+                        } else{
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                previewScope() {
+                    this.preview = true;
+                    this.showVisible = true;
+                },
+                goGlobalIndex() {
+                    window.location = '/global/index.html'
+                },
+                onSetConfig() {
+                    var that = this;
+                    that.basedata.autoSync.slaves = JSON.parse(that.slaves);
+                    that.basedata.log_onLocal.format_tb = JSON.parse(that.log_onLocal_format_tb);
+                    that.basedata.redis_Mod.Port = parseInt(that.basedata.redis_Mod.Port) || 6379
+                    that.basedata.api_sign.authority.format_tb = JSON.parse(that.authority_format_tb);
+                    // 处理Number类型的数据
+                    if(that.basedata.denyMsg.http_code){
+                        that.basedata.denyMsg.http_code = parseInt(that.basedata.denyMsg.http_code)
+                    }else{
+                        delete that.basedata.denyMsg.http_code
+                    }
+                    if(that.basedata.autoSync.timeAt){
+                        that.basedata.autoSync.timeAt = parseInt(that.basedata.autoSync.timeAt)
+                    }
+                    if(that.basedata.redis_Mod.Port){
+                        that.basedata.redis_Mod.Port = parseInt(that.basedata.redis_Mod.Port)
+                    }
+                    var subdata = JSON.stringify(that.basedata);
+                    $.post(URL + '/api/v2/config_dict', {
+                        action: 'set',
+                        mod: 'base',
+                        value: subdata
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '应用成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                onSaveConfig() {
+                    var that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'all_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

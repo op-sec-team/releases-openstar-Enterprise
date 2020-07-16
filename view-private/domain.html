@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="css/element-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/iconfont/iconfont.css">
+    <style>
+        .flex-row {
+            display: flex;
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .flex-center {
+            justify-content: center;
+        }
+        .flex-end {
+            justify-content: flex-end;
+        }
+        .flex-between {
+            justify-content: space-between;
+        }
+        .border {
+            border-top: 1px solid #ccc;
+        }
+        .form-horizontal .radio-inline {
+            padding-top: 0;
+        }
+        .domain-green {
+            color: #67C23A;
+        }
+        .domain-red {
+            color: #F56C6C;
+        }
+        .domain-search {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .domain-search .btn {
+            margin-bottom: 0;
+        }
+        .ibox-search {
+            line-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-4">
+                    <h2>域名配置</h2>
+                </div>
+                <div class="col-sm-2 col-sm-offset-6" style="padding-top: 1.5%;">
+                    <button class="btn btn-primary btn-block" type="button" @click="saveMod()">保存</button>
+                </div>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <div class="ibox float-e-margins">
+                            <div class="panel blank-panel">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="ibox-content">
+                                            <div class="domain-search">
+                                                <div class="">
+                                                    <el-input placeholder="请输入搜索内容" v-model="searchQuery">
+                                                    </el-input>
+                                                </div>
+                                                <div class="">
+                                                    <a class="btn btn-primary" @click="showHost()">添加域名</a>
+                                                </div>
+                                            </div> 
+                                            <div class="ibox-search flex-row flex-end">
+                                                <div>
+                                                    <span>当前数量: {{ count }} </span>
+                                                </div>
+                                            </div>
+                                            <el-table :data="tables" border style="width: 100%" :filter-key="searchQuery">
+                                                <el-table-column prop="host" label="域名" min-width="120">
+                                                </el-table-column>
+                                                <el-table-column prop="" label="http/https" min-width="160">
+                                                    <template scope="scope">
+                                                        <div>
+                                                            <p>http: {{ scope.row.http }}</p>
+                                                            <p>https: {{ scope.row.https }}</p>
+                                                        </div>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="ips" label="IP/CNAME" min-width="120">
+                                                </el-table-column>
+                                                <el-table-column prop="proxy_protocol" label="源站协议" min-width="110">
+                                                </el-table-column>
+                                                <el-table-column prop="isOpenHttps" label="是否开启https" min-width="115">
+                                                    <template scope="scope">
+                                                        <div>
+                                                            <p v-if="scope.row.isOpenHttps">true</p>
+                                                            <p v-else>false</p>
+                                                        </div>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="" label="文件状态" min-width="110">
+                                                    <template scope="scope">
+                                                        <div>
+                                                            <p v-if="scope.row.disk_file" class="domain-green">true</p>
+                                                            <p v-else class="domain-red">false</p>
+                                                        </div>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column label="操作" width="170">
+                                                    <template scope="scope">
+                                                        <a class="btn btn-xs btn-danger" @click="deleteHost(scope.row,scope.$index)">删除</a>
+                                                        <a class="btn btn-xs btn-primary"  @click="showHost(scope.row)">编辑</a>
+                                                        <a :href="'/rule.html?domain='+scope.row.host" class="btn btn-xs btn-warning">防护配置</a>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                            <!-- <div style="text-align:center;margin-top:10px">
+                                                <el-pagination background :current-page.sync="currentPage" :page-size="pagesize" layout="prev, pager, next, jumper" :total="count"></el-pagination>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                    <!-- 添加编辑规则 -->
+                                    <el-dialog :visible.sync="dialogTableVisible" width="800px" :close-on-click-modal="false">
+                                        <h3 slot="title">
+                                            {{title}}
+                                        </h3>
+                                        <div class="modal-body col-sm-12">
+                                            <div class="col-sm-12">
+                                                <div class="row">
+                                                    <span class="col-sm-3 form-control-static">
+                                                        <i class="red-fonts">*</i>域名：
+                                                    </span>
+                                                    <div class="col-sm-7">
+                                                        <el-input v-model="host" placeholder="请输入内容" :disabled="editRule"></el-input>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="col-sm-3 form-control-static">
+                                                        <i class="red-fonts">*</i>协议：
+                                                    </span>
+                                                    <div class="col-sm-7 form-control-static">
+                                                        <div class="radio-inline" style="padding-left: 0;">
+                                                            <el-radio v-model="isHttp" :label="true">HTTP</el-radio>
+                                                        </div>
+                                                        <div class="flex-row">
+                                                            <span class="form-control-static">
+                                                                <i class="red-fonts">*</i>监听端口：
+                                                            </span>
+                                                            <div class="">
+                                                                <el-input v-model="httpPort" placeholder="请输入内容" disabled></el-input>
+                                                            </div>
+                                                            <span class="form-control-static" style="margin-left: 20px;">
+                                                                <i class="red-fonts">*</i>默认为80端口
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="col-sm-3 form-control-static"></span>
+                                                    <div class="col-sm-7 form-control-static">
+                                                        <el-checkbox v-model="isRewrite_https">强制跳转到HTTPS</el-checkbox>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <label class="col-sm-10">
+                                                        <el-checkbox v-model="isOpenHttps" :label="true">是否启用HTTPS</el-checkbox>
+                                                    </label>
+                                                </div>
+                                                <div class="border"></div>
+                                                <div class="row" v-if="isOpenHttps">
+                                                    <span class="col-sm-3 form-control-static"></span>
+                                                    <div class="col-sm-7 form-control-static flex-row">
+                                                        <span class="form-control-static">
+                                                            <i class="red-fonts">*</i>监听端口：
+                                                        </span>
+                                                        <div class="">
+                                                            <el-input v-model="httpsPort" placeholder="请输入内容" disabled></el-input>
+                                                        </div>
+                                                        <span class="form-control-static" style="margin-left: 20px;">
+                                                            <i class="red-fonts">*</i>默认为443端口
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row" v-if="isOpenHttps">
+                                                    <span class="col-sm-3 form-control-static"></span>
+                                                    <div class="col-sm-7 form-control-static">
+                                                        <el-checkbox v-model="isHttp2">开启HTTP2</el-checkbox>
+                                                    </div>
+                                                </div>
+                                                <div class="row" v-if="isOpenHttps">
+                                                    <span class="col-sm-3 form-control-static"></span>
+                                                    <div class="col-sm-7 form-control-static flex-row">
+                                                        <span class="form-control-static">
+                                                            <i class="red-fonts">*</i>证书配置：
+                                                        </span>
+                                                        <div class="">
+                                                            <el-select v-model="certs_key" placeholder="请选择">
+                                                                <el-option v-for="(item, index) in certs_key_options" :key="index" :label="item" :value="item">
+                                                                </el-option>
+                                                            </el-select>
+                                                        </div>
+                                                        <span class="form-control-static" style="margin-left: 20px;">
+                                                            <i class="red-fonts">*</i>选择证书
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="col-sm-3 form-control-static">
+                                                        <i class="red-fonts">*</i>源站协议：
+                                                    </span>
+                                                    <div class="col-sm-7 form-control-static">
+                                                        <label class="radio-inline">
+                                                            <el-radio v-model="proxy_protocol" label="http">HTTP</el-radio>
+                                                        </label>
+                                                        <label class="radio-inline">
+                                                            <el-radio v-model="proxy_protocol" label="https">HTTPS</el-radio>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="col-sm-3 form-control-static">
+                                                        <i class="red-fonts">*</i>回源设置：
+                                                    </span>
+                                                    <div class="col-sm-8 form-control-static">
+                                                        <label class="radio-inline col-sm-12" style="margin-bottom: 15px;">
+                                                            <el-radio v-model="cname" :label="true">回源到IP/域名</el-radio>
+                                                        </label>
+                                                        <textarea class="col-sm-12" rows="3" v-model="ips"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-offset-9">
+                                                    <a class="btn btn-sm btn-primary" @click="advanceRule()" v-if="advanceShow">高级编辑</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div slot="footer" class="dialog-footer text-center">
+                                            <el-button type="primary" @click="addHost()">应用</el-button>
+                                        </div>
+                                    </el-dialog>
+                                    <!-- 高级编辑 -->
+                                    <el-dialog 
+                                    @close="closedialog"
+                                    :close-on-click-modal="false"
+                                    :visible.sync="advanceDialogVisible" width="800px" >
+                                        <h3 slot="title">
+                                            高级编辑
+                                        </h3>
+                                        <div class="modal-body col-sm-12">
+                                            <div class="form-group row">
+                                                <span class="col-sm-2 form-control-static">
+                                                    域名列表：
+                                                </span>
+                                                <div class="col-sm-6">
+                                                    <el-input v-model="host" :disabled="true"></el-input>
+                                                </div>
+                                                <!-- <span class="col-sm-3 form-control-static">协议：{{protocol}}</span> -->
+                                            </div>
+                                            <textarea class="col-sm-12" rows="15" v-model="advance"></textarea>
+                                        </div>
+                                        <div slot="footer" class="dialog-footer text-center">
+                                            <el-button type="primary" @click="advanceSave()">保存</el-button>
+                                        </div>
+                                    </el-dialog>
+                                    <!-- 删除规则 -->
+                                    <el-dialog title="" :visible.sync="deleteDialogVisible" width="30%" center :close-on-click-modal="false">
+                                        <h2>确定要删除该域名？</h2>
+                                        <h2 class="red-fonts">{{row.host}}</h2>
+                                        <h2 class="red-fonts"><span class="text-info">协议：</span>{{row.isOpenHttps ? 'https' : 'http'}}</h2>
+                                        <span slot="footer" class="dialog-footer">
+                                            <el-button type="primary" @click="deleteHost()">确 定</el-button>
+                                            <el-button @click="deleteDialogVisible = false">取 消</el-button>
+                                        </span>
+                                    </el-dialog>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <div style="width: 40px;border-radius: 5px;padding: 20px 14px;background-color: #409EFF;color: #FFFFFF;text-align: center;">
+                            <span class="el-icon-info"></span>帮助·建议</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/element-ui.js"></script>
+    <script src="config.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/plugins/jquery.metisMenu.js"></script>
+    <script type="text/javascript" src="js/jq-common.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/base64.js"></script>
+    <script>
+        var vdata = new Vue({
+            el: '#wrapper',
+            data: function () {
+                return {
+                    showCluster: false,
+                    checkSign: '',
+                    count: 0,
+                    radio: '',
+                    tableData: [],
+                    protect: '',
+                    row: '',
+                    index: '',
+                    dialogTableVisible: false,
+                    advanceDialogVisible: false,
+                    deleteDialogVisible: false,
+                    // 添加规则
+                    title: '',
+                    protocolShow: true,
+                    host: '',
+                    editRule: false,
+                    isHttp: true,
+                    httpPort: 80,
+                    isRewrite_https: false,
+                    isOpenHttps: false,
+                    isHttp2: true,
+                    certs_key: '',
+                    certs_key_options: [],
+                    httpsPort: 443,
+                    proxy_protocol: 'http',
+                    ips: '',
+                    cname: true,
+
+                    // 高级编辑
+                    advance: '',
+                    advanceShow: true,
+                    // 分页
+                    // pagesize: 10,
+                    // currentPage: 1,
+                    // 搜索
+                    searchQuery: '',
+                }
+            },
+            watch: {
+                // checkSign: function (val) {
+                //     if (val == "sign error") {
+                //         window.location = '/login.html';
+                //     }
+                // },
+            },
+            computed: {
+                // 模糊搜索
+                tables () {
+                    const search = this.searchQuery
+                    if (search) {
+                        return this.tableData.filter(data => {
+                            if (data.host.includes(search) || data.proxy_protocol.includes(search) || JSON.stringify(data.http).includes(search) || JSON.stringify(data.https).includes(search) || data.ips.includes(search)) {
+                                return data
+                            }
+                        })
+                    }
+                    return this.tableData
+                }
+            },
+            created() {
+                this.getHostData();
+            },
+            destroyed() {
+                this.showCluster = false;
+            },
+            methods: {
+                closedialog() {
+                    this.advanceDialogVisible = false;
+                    this.dialogTableVisible = false;
+                },
+                getHostData() {
+                    var that = this;
+                    var table = [];
+                    $.post(URL + '/api/v2/nginx_Mod/get', {
+                        host: 'all_host',
+                        cer: true,
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            // console.log(data.msg)
+                            var table = [];
+                            for (var i in data.msg) {
+                                if (i !== "state" && i !== "count") {
+                                    var obj = {};
+                                    obj.host = data.msg[i].host;
+                                    obj.http = data.msg[i].http;
+                                    obj.proxy_protocol = data.msg[i].proxy_protocol;
+                                    obj.disk_file = data.msg[i].disk_file;
+                                    obj.isOpenHttps = data.msg[i].isOpenHttps;
+                                    obj.ips = data.msg[i].ips.toString();
+                                    obj.ngx_file = data.msg[i].ngx_file;
+                                    obj.https = data.msg[i].https ? data.msg[i].https : {};
+                                    table.push(obj);
+                                }
+                            }
+                            that.tableData = table;
+                            that.count = that.tableData.length;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                // 显示添加规则弹出框
+                showHost(obj) {
+                    if (obj === undefined) {
+                        this.title = '添加';
+                        this.host = '';
+                        this.editRule = false;
+                        this.httpPort = 80;
+                        this.isRewrite_https = false;
+                        this.certs_key = '';
+                        this.isOpenHttps = false;
+                        this.isHttp2 = true;
+                        this.httpsPort = 443;
+                        this.proxy_protocol = 'http';
+                        this.ips = '';
+                        this.advanceShow = false;
+                    } else {
+                        this.title = '编辑';
+                        this.host = obj.host;
+                        this.editRule = true;
+                        this.httpPort = 80;
+                        this.isRewrite_https = obj.http.isRewrite_https;
+                        this.isOpenHttps = obj.isOpenHttps;
+                        this.isHttp2 = obj.https.isHttp2;
+                        this.httpsPort = 443;
+                        this.proxy_protocol = obj.proxy_protocol;
+                        this.ips = obj.ips;
+                        this.advanceShow = true;
+                    }
+                    // 获取下拉内容
+                    this.getCertsKey(obj);
+                },
+                getCertsKey(obj) {
+                    var that = this;
+                    $.post(URL + '/api/v2/certs_Mod/get', {}, function (data) {
+                        if (data.code == 'ok') {
+                            that.certs_key_options = data.msg;
+                            if(obj) {
+                                that.certs_key = obj.https.certs_key;
+                            }
+                            that.dialogTableVisible = true;
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                addHost() {
+                    var that = this;
+                    let url = '';
+                    const data = {
+                        host: that.host,
+                        proxy_protocol: that.proxy_protocol,
+                        ips: that.ips,
+                        http: JSON.stringify({
+                            port: Number(that.httpPort),
+                            isRewrite_https: that.isRewrite_https
+                        }),
+                        isOpenHttps: that.isOpenHttps,
+                        https: JSON.stringify({
+                            certs_key: that.certs_key,
+                            isHttp2: that.isHttp2,
+                            port: that.httpsPort
+                        })
+                    };
+                    console.log(data)
+                    if (this.title === '添加') {
+                        url = URL + '/cluster/v2/nginx_Mod/add';
+                    } else {
+                        url = URL + '/cluster/v2/nginx_Mod/set';
+                    }
+                    $.post(url, data, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                            that.dialogTableVisible = false;
+                            that.getHostData();
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                deleteHost(row, index) {
+                    if (row !== undefined) {
+                        this.row = row;
+                        this.index = index;
+                        this.deleteDialogVisible = true;
+                    } else {
+                        console.log(this.row, this.index);
+                        var that = this;
+                        $.post(URL + '/cluster/v2/nginx_Mod/del', {
+                            host: that.row.host,
+                            protocol: that.row.protocol,
+                        }, function (data) {
+                            if (data.code == 'ok') {
+                                that.$notify({
+                                    type: 'success',
+                                    title: '提示',
+                                    message: '删除成功',
+                                    duration: 4000
+                                });
+                                that.tableData.splice(that.index, 1);
+                                that.getHostData();
+                            } else {
+                                if (data.msg == "sign error") {
+                                    that.checkSign = "sign error";
+                                }
+                                that.$notify({
+                                    type: 'warning',
+                                    title: '提示',
+                                    message: data.msg,
+                                    duration: 4000
+                                });
+                            }
+                        })
+                        this.deleteDialogVisible = false;
+                    }
+                },
+                advanceRule() {
+                    var that = this;
+                    this.advance = '';
+                    $.post(URL + '/api/v2/nginx_Mod/get', {
+                        host: this.host,
+                        protocol: this.protocol,
+                        file: true,
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.advance = new Base64().decode(data.msg);
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                        that.advanceDialogVisible = true;
+                    })
+                },
+                advanceSave() {
+                    var that = this;
+                    $.post(URL + '/cluster/v2/nginx_Mod/set', {
+                        host: that.host,
+                        protocol: that.protocol,
+                        type: true,
+                        value: encodeURIComponent(new Base64().encode(that.advance)),
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.advanceDialogVisible = false;
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '修改成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                },
+                saveMod() {
+                    var that = this;
+                    $.post(URL + '/api/v2/dict_json', {
+                        action: 'save',
+                        mod: 'nginx_Mod',
+                    }, function (data) {
+                        if (data.code == 'ok') {
+                            that.$notify({
+                                type: 'success',
+                                title: '提示',
+                                message: '保存成功',
+                                duration: 4000
+                            });
+                        } else {
+                            if (data.msg == "sign error") {
+                                that.checkSign = "sign error";
+                            }
+                            that.$notify({
+                                type: 'warning',
+                                title: '提示',
+                                message: data.msg,
+                                duration: 4000
+                            });
+                        }
+                    })
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>
