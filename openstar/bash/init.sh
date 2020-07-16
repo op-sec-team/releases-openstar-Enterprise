@@ -2,13 +2,15 @@
 # 该脚本在WAF启动时执行
 # 脚本版本号
 version=0.2
-install_path=/opt/openresty
+install_path=/opt/tengine
 
 
 if [ "$1" = "start" ];then
 
     mkdir -p ${install_path}/nginx/conf/conf.d
+    mkdir -p ${install_path}/nginx/conf/stream
     mkdir -p ${install_path}/nginx/certs
+    mkdir -p /tmp/ngx_cache
     chown nobody:nobody -R ${install_path}
     chown root:nobody ${install_path}/nginx/sbin/nginx
     chmod 751 ${install_path}/nginx/sbin/nginx
@@ -19,7 +21,7 @@ if [ "$1" = "start" ];then
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
-    cat /etc/profile |grep 'openresty' ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
+    cat /etc/profile |grep 'tengine' ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
 
 else
     #pass

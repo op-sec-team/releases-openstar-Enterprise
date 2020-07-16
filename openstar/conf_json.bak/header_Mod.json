@@ -1,8 +1,8 @@
-
 [
     {
         "state": "on",
-        "id":"1-AWVS_Scan",
+        "des":"1-AWVS_Scan",
+        "waf":"scan",
         "action":"deny",
         "uri": ["*",""],
         "hostname": ["*",""],
@@ -10,7 +10,8 @@
     },
     {
         "state": "on",
-        "id":"2-X_Scan",
+        "des":"2-X_Scan",
+        "waf":"scan",
         "action":"log",
         "uri": ["*",""],
         "hostname": ["*",""],

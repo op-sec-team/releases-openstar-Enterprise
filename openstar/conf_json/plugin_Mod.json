@@ -1,7 +1,6 @@
 {
-
   "sign_check":{
-      "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
+      "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置)是否合法（算法碰撞检测）,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
       "file":"acc_checkcafc"
     },
   "cap":{

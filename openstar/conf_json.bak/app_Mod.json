@@ -1,14 +1,16 @@
 [
     {
         "state": "on",
-        "id":"1-test-deny",
+        "des":"1-test-deny",
+        "waf":"other",
         "action": "deny",
         "hostname": ["localhost",""],
         "uri": ["^/([\\w]{4}\\.html|deny\\.do|你好\\.html)$","jio"]
     },
     {
         "state": "on",
-        "id":"2-rehtml",
+        "des":"2-rehtml",
+        "waf":"other",
         "action": "rehtml",
         "rehtml": "<html>hi~!</html>",
         "hostname": ["localhost",""],
@@ -16,7 +18,8 @@
     },
     {
         "state": "on",
-        "id":"3-refile",
+        "des":"3-refile",
+        "waf":"other",
         "action": "refile",
         "refile": ["2.txt","text/html"],
         "hostname": ["localhost",""],
@@ -24,7 +27,8 @@
     },
     {
         "state": "off",
-        "id":"4-test-app_ext",
+        "des":"4-test-app_ext",
+        "waf":"other",
         "action": "deny",
         "hostname": [["www.abc.com","localhost"],"list"],
         "uri": ["/api/.*","jio"],
@@ -34,7 +38,8 @@
     },
     {
         "state": "on",
-        "id":"5-test-js_debug",
+        "des":"5-test-js_debug",
+        "waf":"other",
         "action": "refile",
         "refile": ["js_debug.txt","text/html"],
         "hostname": ["localhost",""],
@@ -45,7 +50,8 @@
     },
     {
         "state": "on",
-        "id":"6-test-len",
+        "des":"6-test-len",
+        "waf":"other",
         "action": "deny",
         "hostname": ["localhost",""],
         "uri": ["/len",""],
@@ -55,7 +61,8 @@
     },
     {
         "state": "on",
-        "id":"7-test-js_time",
+        "des":"7-test-js_time",
+        "waf":"other",
         "action": "refile",
         "refile":["js_time.txt","text/html"],
         "hostname": [["www.abc.com","localhost"],"list"],
@@ -66,14 +73,16 @@
     },
     {
         "state": "on",
-        "id":"8-test-log",
-        "action": "log",
+        "des":"8-test-debug",
+        "waf":"other",
+        "action": "debug",
         "hostname": ["localhost",""],
-        "uri": ["/log",""]
+        "uri": ["/debug",""]
     },
     {
         "state": "on",
-        "id":"9-test-post_js_time",
+        "des":"9-test-post_js_time",
+        "waf":"other",
         "action": "refile",
         "refile":["js_time.txt","text/html"],
         "hostname": [["www.abc.com","localhost"],"list"],
@@ -84,7 +93,8 @@
     },
     {
         "state": "on",
-        "id":"10-test-post_form",
+        "des":"10-test-post_form",
+        "waf":"other",
         "action": "deny",
         "post_form":1024,
         "hostname": ["localhost",""],
@@ -96,7 +106,8 @@
     },
     {
         "state": "on",
-        "id":"11-test-sign_check",
+        "des":"11-test-sign_check",
+        "waf":"other",
         "action": "func",
         "func": ["sign_check",{
                 "sign":{
@@ -123,7 +134,8 @@
     },
     {
         "state": "on",
-        "id":"12-test-cap",
+        "des":"12-test-cap",
+        "waf":"other",
         "action": "func",
         "func": ["cap",{
                     "AppID":"xxx",

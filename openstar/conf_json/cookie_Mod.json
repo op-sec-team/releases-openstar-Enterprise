@@ -1,91 +1,104 @@
 [
     {
         "state": "on",
-        "id":"1-Danger_path",
+        "des":"1-Danger_path",
+        "waf":"Danger_path",
         "hostname": ["*",""],
         "cookie": [["../",":$","${","/etc/passwd"],"in_list"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"2-sql",
+        "des":"2-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["select.+(from|limit)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"3-sql",
+        "des":"3-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["union(.*?)select","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"4-sql",
+        "des":"4-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": [["having","rongjitest"],"rein_list"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"5-sql",
+        "des":"5-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["sleep\\((\\s*)(\\d*)(\\s*)\\)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"6-other",
+        "des":"6-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["benchmark\\((.*)\\,(.*)\\)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"7-base64_decode",
+        "des":"7-base64_decode",
+        "waf":"Danger_keyword",
         "hostname": ["*",""],
         "cookie": [["base64_decode("],"rein_list"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"8-sql",
+        "des":"8-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["(from\\W+information_schema\\W)","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"9-sql",
+        "des":"9-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"11-sql",
+        "des":"11-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["into(\\s+)+(dump|out)file\\s*","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"12-sql",
+        "des":"12-sql",
+        "waf":"sql",
         "hostname": ["*",""],
         "cookie": ["group\\s+by.+\\(","jio"],
         "action": "log"
     },
     {
         "state": "on",
-        "id":"13-struts2",
+        "des":"13-struts2",
+        "waf":"struts2",
         "hostname": ["*",""],
         "cookie": ["xwork.MethodAccessor","in"],
         "action": "deny"
     },
     {
         "state": "on",
-        "id":"14-Danger_keyword",
+        "des":"14-Danger_keyword",
+        "waf":"Danger_keyword",
         "hostname": ["*",""],
         "cookie": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
         "action": "deny"
@@ -93,6 +106,7 @@
     {
         "state": "on",
         "id":"15-webshell",
+        "waf":"webshell",
         "hostname": ["*",""],
         "cookie": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
         "action": "deny"

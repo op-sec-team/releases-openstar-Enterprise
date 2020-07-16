@@ -1,7 +1,7 @@
 [
     {
         "state": "on",
-        "id":"1-simple",
+        "des":"1-simple",
         "uri": ["^/api/ip_dict$","jio"],
         "hostname": ["localhost5460",""],
         "replace_list":
@@ -13,7 +13,7 @@
     },
     {
         "state": "on",
-        "id":"2-func",
+        "des":"2-func",
         "uri": ["/api/test/debug",""],
         "hostname": ["localhost5460",""],
         "replace_list":

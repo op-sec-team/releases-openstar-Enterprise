@@ -13,33 +13,35 @@ local ngx_md5          = ngx.md5
 local table_insert     = table.insert
 local table_concat     = table.concat
 
-local t_dict = ngx.shared.token_dict
+local t_dict    = ngx.shared.token_dict
 local get_value = stool.get_base_msg_by_key
 
-local _M               = { _VERSION = "0.01" }
+local _M        = { _VERSION = "0.01" }
 
 --- 算法计算
 -- _tb_args
--- {
---     "sign":{
---         "state":"on",
---         "name":"$headers@x_app_sign",
---         "tb_formart":[
---             "$headers@x_app_timestamp",
---             "$request_uri",
---             "$headers@x_app_nonce",
---             ""
---         ]},
---     "timestamp":{
---         "name":"$headers@x_app_timestamp",
---         "abs_time":120
---         },
---     "nonce":{
---         "state":"on",
---         "name":"$headers@x_app_nonce",
---         "time":60
---     }
--- }
+--[[
+{
+    "sign":{
+        "state":"on",
+        "name":"$headers@x_app_sign",
+        "tb_formart":[
+            "$headers@x_app_timestamp",
+            "$request_uri",
+            "$headers@x_app_nonce",
+            ""
+        ]},
+    "timestamp":{
+        "name":"$headers@x_app_timestamp",
+        "abs_time":120
+        },
+    "nonce":{
+        "state":"on",
+        "name":"$headers@x_app_nonce",
+        "time":60
+    }
+}
+--]]
 local function sign_check(_base_msg , _tb_args)
     local _lc_time = ngx.time()
     local client_time  = tonumber(get_value(_base_msg,_tb_args.timestamp.name)) or 0

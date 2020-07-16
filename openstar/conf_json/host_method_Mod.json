@@ -1,7 +1,7 @@
 [
     {
         "state":"on",
-        "id":"1-host_allow",
+        "des":"1-host_allow",
         "method":[
             {
                 "POST":true,

@@ -1,14 +1,16 @@
 [
     {
         "state": "on",
-        "id":"1-cookie_guid_cc",
+        "des":"1-cookie_guid_cc",
+        "waf":"cc",
         "network":{"maxReqs":30,"pTime":10,"blackTime":600,"guid":"cookie_userguid"},
         "hostname": [["101.200.122.200","localhost5460"],"list"],
         "uri": ["/api/test/time_t",""]
     },
     {
         "state": "on",
-        "id":"2-ip_cc",
+        "des":"2-ip_cc",
+        "waf":"cc",
         "network":{"maxReqs":1000,"pTime":10,"blackTime":120},
         "hostname": ["*",""],
         "uri": ["*",""]

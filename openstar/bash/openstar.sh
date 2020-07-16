@@ -5,13 +5,13 @@ export PATH
 #=================================================
 #   System Required: CentOS 6/7,Debian 8/9,Ubuntu 16+
 #   Description: 学习 www.94ish.me 后重写的脚本
-#   Version: 1.4.6
+#   Version: 2.0.4
 #   Author: openstar
 #   项目：releases-openstar-Enterprise
 #=================================================
 
 #set -x
-sh_ver="1.4.6"
+sh_ver="2.0.5"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -28,7 +28,7 @@ install_path=/opt/openresty
 mkdir -p ${install_path}
 
 # openresty 安装的版本
-install_or_version=1.15.8.2
+install_or_version=1.15.8.3
 # openresty 对应 nginx 版本说明
 #1.11.2.2 nginx 1.11.2 , 1.11.2.1 nginx 1.11.2 , 1.9.15.1 nginx 1.9.15
 # openresty 下载路径
@@ -36,6 +36,9 @@ openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar
 
 luarocks_version=3.2.1
 luarocks_uri=http://luarocks.org/releases/luarocks-${luarocks_version}.tar.gz
+
+purge_version=2.3
+purge_uri=http://labs.frickle.com/files/ngx_cache_purge-${purge_version}.tar.gz
 
 # centos 6 = remi-release-6.rpm ; centos 7 = remi-release-7.rpm
 # rpm_uri=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
@@ -143,7 +146,7 @@ jemalloc_install(){
     if [[ -f /usr/local/lib/libjemalloc.so ]]; then
         echo "jemalloc install" && return
     fi
-    cd ${build_path}
+    cd ${build_path} && rm -rf jemalloc*
     wget https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 || (echo "${Error}wget jemalloc Error" && exit 1)
     tar -xvf jemalloc-5.2.1.tar.bz2 || (echo "${Error}tar -xvf jemalloc-xxx.tar.bz2 Error" && exit 1)
     cd jemalloc-5.2.1
@@ -157,7 +160,7 @@ luarocks_install(){
     if [[ -f ${install_path}/luarocks/bin/luarocks ]]; then
         echo "luarocks install" && return
     fi
-    cd ${build_path} && rm -rf luarocks-${luarocks_version}.tar.gz
+    cd ${build_path} && rm -rf luarocks*
     wget ${luarocks_uri} || (echo "wget luarocks Error" && exit 1)
     rm -rf luarocks-${luarocks_version} && tar xvzf luarocks-${luarocks_version}.tar.gz
     cd luarocks-${luarocks_version}
@@ -167,24 +170,65 @@ luarocks_install(){
                 --lua-suffix='jit' || (echo "configure luarocks Error" && exit 1)
     make
     make install
-    ln -sf ${install_path}/luarocks/bin/luarocks /usr/bin/luarocks
+    # ln -sf ${install_path}/luarocks/bin/luarocks /usr/bin/luarocks
 }
 
 
 #openresty安装
 function openresty_install(){
     if [[ "${release}" == "centos" ]]; then
-        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
+        yum install epel-release
+        mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+        wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-${version}.repo
+        # yum install -y http://rpms.famillecollet.com/enterprise/remi-release-${version}.rpm
+        yum clean all
+        yum makecache
+        yum install -y wget make gcc readline-devel perl pcre-devel openssl-devel git unzip zip htop dos2unix bzip2
+        yum install -y goaccess libmaxminddb-devel
     elif [[ "${release}" == "debian" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
+        # Debian10  Debian9   Debian8  Debian7
+        # buster    stretch   jessie   wheezy
+        if [[ "${version}" == "10" ]]; then
+            debapt=buster
+        elif [[ "${version}" == "9" ]]; then
+            debapt=stretch
+        elif [[ "${version}" == "8" ]]; then
+            debapt=jessie
+        else
+            debapt=wheezy
+        fi
+        mv /etc/apt/sources.list /etc/apt/sources.list.bak
+        echo -e "deb http://mirrors.aliyun.com/debian ${debapt} main contrib non-free" >/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/debian ${debapt} main contrib non-free" >>/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/debian ${debapt}-updates main contrib non-free" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/debian ${debapt}-updates main contrib non-free" >>/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/debian-security ${debapt}/updates main contrib non-free" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/debian-security ${debapt}/updates main contrib non-free" >>/etc/apt/sources.list
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop dos2unix bzip2
+        apt-get install -y goaccess libmaxminddb-devel
     elif [[ "${release}" == "ubuntu" ]]; then
-        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop goaccess dos2unix bzip2 libmaxminddb-devel
+        mv /etc/apt/sources.list /etc/apt/sources.list.bak
+        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop dos2unix bzip2
+        apt-get install -y goaccess libmaxminddb-devel
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
     jemalloc_install
     cd ${build_path}
-    git clone https://github.com/leev/ngx_http_geoip2_module.git || (echo "git clone ngx_http_geoip2_module Error" && exit 1)
+    git clone --depth=1 https://github.com/leev/ngx_http_geoip2_module.git || (echo "git clone ngx_http_geoip2_module Error" && exit 1)
+    rm -rf ngx_cache_purge-${purge_version}.tar.gz
+    wget ${purge_uri} || (echo "wget purge Error" && exit 1)
+    tar zxvf ngx_cache_purge-${purge_version}.tar.gz
     rm -rf openresty-${install_or_version}.tar.gz
     wget ${openresty_uri} || (echo "${Error}wget openresty Error!!" && exit 1)
     rm -rf openresty-${install_or_version} && tar zxvf openresty-${install_or_version}.tar.gz
@@ -192,13 +236,15 @@ function openresty_install(){
     ###############################
     ./configure --prefix=${install_path} \
                 --add-module=${build_path}/ngx_http_geoip2_module \
+                --add-module=${build_path}/ngx_cache_purge-${purge_version} \
                 --with-ld-opt='-ljemalloc' \
                 --without-luajit-gc64 \
                 --with-http_realip_module \
-                --with-http_v2_module || (echo "${Error}configure openresty Error!!" && exit 1)
+                --with-http_v2_module || (echo "configure openresty Error!!" && exit 1)
     gmake
     gmake install
     ##############################
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     chown nobody:nobody -R ${install_path}
     cd ${install_path}
     chown root:nobody nginx/sbin/nginx
@@ -218,10 +264,11 @@ function waf_ngx_conf(){
 #openstar安装
 function openstar_install(){
     cd ${install_path}
-    git clone https://github.com/op-sec-team/releases-openstar-Enterprise || (echo "git clone openstar Error" && exit 1)
+    git clone --depth=1 https://github.com/op-sec-team/releases-openstar-Enterprise || (echo "git clone openstar Error" && exit 1)
     cp -Rf ./releases-openstar-Enterprise/openstar /opt/openresty/
     cp -Rf ./releases-openstar-Enterprise/view-private /opt/openresty/nginx/html/
     mkdir -p ${install_path}/nginx/conf/conf.d
+    mkdir -p ${install_path}/nginx/conf/stream
     chown nobody:nobody -R ${install_path}/openstar
     chown nobody:nobody -R ${install_path}/nginx/html/view-private
 }
@@ -233,25 +280,35 @@ openstar_menu(){
     ${Green_font_prefix}0.${Font_color_suffix} 保留 nginx.conf waf.conf waf规则(conf_json/.*)
     ${Green_font_prefix}1.${Font_color_suffix} 保留 waf规则(conf_json/.*)
     ${Green_font_prefix}2.${Font_color_suffix} 保留 nginx.conf waf.conf
-    ${Green_font_prefix}3.${Font_color_suffix} 不保留 nginx.conf waf.conf waf规则(conf_json/.*)
+    ${Green_font_prefix}3.${Font_color_suffix} 保留 base.json admin_Mod.json nginx_Mod.json certs_Mod plugin_Mod
     ${Green_font_prefix}4.${Font_color_suffix} 返回主界面
     ————————————————————————————————" && echo
     read -p " 请输入数字 [0-4]:" num
     case "$num" in
         0) # 保留 nginx.conf waf.conf waf规则(conf_json/.*)
+            cp -Rf ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
             cp -Rf ${install_path}/openstar.bak/conf/* ${install_path}/openstar/conf/
             cp -Rf ${install_path}/openstar.bak/conf_json/* ${install_path}/openstar/conf_json/
             return
         ;;
         1) # 保留 waf规则(conf_json/.*)
+            cp -Rf ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
             cp -Rf ${install_path}/openstar.bak/conf_json/* ${install_path}/openstar/conf_json/
             return
         ;;
         2) # 保留 nginx.conf waf.conf
+            cp -Rf ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
             cp -Rf ${install_path}/openstar.bak/conf/* ${install_path}/openstar/conf/
             return
         ;;
-        3) # 不保留 nginx.conf waf.conf waf规则(conf_json/.*)
+        3) # 保留 base.json admin_Mod.json nginx_Mod.json certs_Mod plugin_Mod
+            cp -Rf ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
+            cp -Rf ${install_path}/openstar.bak/conf_json/admin_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/conf_json/base.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/conf_json/nginx_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/conf_json/certs_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/conf_json/plugin_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/lib/plugin/* ${install_path}/openstar/lib/plugin/
             return
         ;;
         4)
@@ -270,7 +327,7 @@ function up_openstar(){
     rm -rf ${install_path}/releases-openstar-Enterprise
     mv -f ${install_path}/openstar ${install_path}/openstar.bak
     cd ${install_path}
-    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/openstar.bak ${install_path}/openstar && echo "git clone openstar Error!" && exit 1)
+    git clone --depth=1 https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/openstar.bak ${install_path}/openstar && echo "git clone openstar Error!" && exit 1)
     cp -Rf ./releases-openstar-Enterprise/openstar ${install_path}/
     cp -f ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
     chown nobody:nobody -R ${install_path}/openstar
@@ -283,7 +340,7 @@ function up_view(){
     rm -rf ${install_path}/releases-openstar-Enterprise
     mv -f ${install_path}/nginx/html/view-private ${install_path}/nginx/html/view-private.bak
     cd ${install_path}
-    git clone https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/nginx/html/view-private.bak ${install_path}/nginx/html/view-private && echo "git clone openstar Error" && exit)
+    git clone --depth=1 https://github.com/op-sec-team/releases-openstar-Enterprise ||(mv -f ${install_path}/nginx/html/view-private.bak ${install_path}/nginx/html/view-private && echo "git clone openstar Error" && exit)
     cp -Rf ./releases-openstar-Enterprise/view-private ${install_path}/nginx/html/
     chown nobody:nobody -R ${install_path}/nginx/html/view-private
 }
@@ -311,6 +368,7 @@ os_msg(){
 #openstar 工作检查
 function check(){
     mkdir -p ${install_path}/nginx/conf/conf.d
+    mkdir -p ${install_path}/nginx/conf/stream
     mkdir -p ${install_path}/nginx/certs
     chown nobody:nobody -R ${install_path}
     chown root:nobody ${install_path}/nginx/sbin/nginx
@@ -323,6 +381,10 @@ function check(){
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
     cd ${install_path}/nginx/html && (ls |grep "favicon.ico" || wget https://www.nginx.org/favicon.ico)
+    cp -rf ${install_path}/nginx/html/favicon.ico ${install_path}/nginx/html/view-private/
+    cp -rf ${install_path}/nginx/html/favicon.ico ${install_path}/nginx/html/view-master/
+    dos2unix ${install_path}/openstar/conf/*.conf
+    dos2unix ${install_path}/openstar/bash/*.sh
 }
 
 
@@ -341,8 +403,8 @@ start_menu(){
      ${Green_font_prefix}4.${Font_color_suffix} 更新 openstar
      ${Green_font_prefix}5.${Font_color_suffix} 查看云端 openstar 版本
      ${Green_font_prefix}6.${Font_color_suffix} 更新 openstar 界面 view
-     ${Green_font_prefix}7.${Font_color_suffix} 安装 luarocks
     —————————— 杂项管理     ——————————
+     ${Green_font_prefix}7.${Font_color_suffix} 安装 luarocks
      ${Green_font_prefix}8.${Font_color_suffix}  openstar运行检查
      ${Green_font_prefix}9.${Font_color_suffix}  查看系统信息
      ${Green_font_prefix}10.${Font_color_suffix} 退出脚本

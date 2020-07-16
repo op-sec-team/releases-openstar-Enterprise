@@ -1,8 +1,8 @@
-
 [
     {
         "state": "off",
-        "id":"1-csrf_test",
+        "des":"1-csrf_test",
+        "waf":"csrf",
         "uri": ["^/abc.do$","jio"],
         "hostname": ["pass.game.com",""],
         "referer": ["^.*/(www\\.hao123\\.com|www3\\.hao123\\.com)$","jio",true],
@@ -10,7 +10,8 @@
     },
     {
         "state": "off",
-        "id":"2-denyFromBaidu_pic",
+        "des":"2-denyFromBaidu_pic",
+        "waf":"stealing-link",
         "uri": ["\\.(gif|jpg|png|jpeg|bmp|webp|ico)$","jio"],
         "hostname": ["localhost",""],
         "referer": ["baidu","in"],

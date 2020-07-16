@@ -7,11 +7,13 @@ local stool   = require "stool"
 
 local _M      = { _VERSION = "0.01" }
 -- _tb_args
--- {
---     "AppID":"xxx",
---     "AppSecret":"xxxxx",
---     "form_name":"verify_token"
--- }
+--[[
+{
+    "AppID":"xxx",
+    "AppSecret":"xxxxx",
+    "form_name":"verify_token"
+}
+--]]
 local function cap(_base_msg , _tb_args)
      local AppID = _tb_args.AppID
      local AppSecret = _tb_args.AppSecret

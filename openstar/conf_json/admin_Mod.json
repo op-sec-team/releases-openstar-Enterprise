@@ -4,13 +4,17 @@
   "time": "40" ,
   "login_uri": "/login.html",
   "jwt_Mod":{
+    "name1":{
         "hmac":"",
-        "appList":{
-            "name1":{
-                "rule":"aaa",
-                "ext1":"bbb",
-                "ext2":"ccc"
-            }
-        }
+        "rule":"admin",
+        "ext1":"bbb",
+        "ext2":"ccc"
+      },
+    "name2":{
+        "hmac":"",
+        "rule":"audit",
+        "ext1":"bbb",
+        "ext2":"ccc"
+      }
     }
 }
