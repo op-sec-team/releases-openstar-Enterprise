@@ -265,8 +265,8 @@ function waf_ngx_conf(){
 function openstar_install(){
     cd ${install_path}
     git clone --depth=1 https://github.com/op-sec-team/releases-openstar-Enterprise || (echo "git clone openstar Error" && exit 1)
-    cp -Rf ./releases-openstar-Enterprise/openstar /opt/openresty/
-    cp -Rf ./releases-openstar-Enterprise/view-private /opt/openresty/nginx/html/
+    cp -Rf ./releases-openstar-Enterprise/openstar ./
+    cp -Rf ./releases-openstar-Enterprise/view-private ./nginx/html/
     mkdir -p ${install_path}/nginx/conf/conf.d
     mkdir -p ${install_path}/nginx/conf/stream
     chown nobody:nobody -R ${install_path}/openstar
