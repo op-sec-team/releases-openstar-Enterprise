@@ -11,7 +11,7 @@ export PATH
 #=================================================
 
 #set -x
-sh_ver="0.0.3"
+sh_ver="0.0.4"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/tengine"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -292,8 +292,8 @@ function waf_ngx_conf(){
 function openstar_install(){
     cd ${install_path}
     git clone --depth=1 -b tengine https://github.com/op-sec-team/releases-openstar-Enterprise || (echo "git clone openstar Error" && exit 1)
-    cp -Rf ./releases-openstar-Enterprise/openstar ./
-    cp -Rf ./releases-openstar-Enterprise/view-private ./nginx/html/
+    cp -Rf ./releases-openstar-Enterprise/openstar ${install_path}/
+    cp -Rf ./releases-openstar-Enterprise/view-private ${install_path}/nginx/html/
     mkdir -p ${install_path}/nginx/conf/conf.d
     mkdir -p ${install_path}/nginx/conf/stream
     chown nobody:nobody -R ${install_path}/openstar

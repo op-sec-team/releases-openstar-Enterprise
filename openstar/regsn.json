@@ -1,13 +1,13 @@
 {
-  "debug": "on",
-  "reg": {
-    "code": "",
-    "e_date": "",
-    "ip": "",
-    "license": "",
-    "msg": "server - 18801180400",
-    "sn": "",
-    "state": "on",
-    "type": 1
-  }
+    "debug":"on",
+    "reg":{
+        "sn":"",
+        "ip":"",
+        "code":"",
+        "type":"",
+        "state":"",
+        "e_date":"",
+        "license":"",
+        "msg":"xxx公司-18801180400"
+    }
 }
