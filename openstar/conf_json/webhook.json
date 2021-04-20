@@ -1,0 +1,9 @@
+{
+    "state":"on",
+    "type":"text",
+    "des":"携带关键字 openstar，钉钉 / 飞书 配置这个关键字即可",
+    "uri_list" : [
+        "https://oapi.dingtalk.com/robot/send?access_token=",
+        "https://open.feishu.cn/open-apis/bot/v2/hook/"
+    ]
+}

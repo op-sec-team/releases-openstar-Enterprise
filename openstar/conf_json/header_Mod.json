@@ -1,0 +1,23 @@
+[
+    {
+        "state": "on",
+        "id":"header_Mod-1001",
+        "des":"AWVS_Scan",
+        "waf":"scan",
+        "action":"deny",
+        "uri": ["*",""],
+        "hostname": ["*",""],
+        "header": ["*","",["Acunetix_Aspect"]]
+    },
+    {
+        "state": "on",
+        "id":"header_Mod-1002",
+        "des":"X_Scan",
+        "waf":"scan",
+        "action":"log",
+        "uri": ["*",""],
+        "hostname": ["*",""],
+        "header": ["*","",["X_Scan_Memo","any"]]
+    }
+
+]

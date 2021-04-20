@@ -1,0 +1,16 @@
+[
+    {
+        "state": "off",
+        "des":"1-logFunc",
+        "app_ext":[
+            ["ip",[["106.37.236.170","1.1.1.1"],"list",true],"and"],
+            ["host",["localhost","",false],"and"],
+            ["uri",[["/logtest","/log.log"],"list",false],"and"]
+        ],
+        "func": ["diylogfunc",{
+                    "path":"/tmp/aaa",
+                    "plugin_name":"zj",
+                    "des":"我是测试插件"
+                }]
+    }
+]

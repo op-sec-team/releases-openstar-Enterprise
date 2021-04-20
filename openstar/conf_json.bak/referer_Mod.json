@@ -1,0 +1,22 @@
+[
+    {
+        "state": "off",
+        "id":"referer_Mod-1001",
+        "des":"1-csrf_test",
+        "waf":"csrf",
+        "uri": ["^/abc.do$","jio"],
+        "hostname": ["pass.game.com",""],
+        "referer": ["^.*/(www\\.hao123\\.com|www3\\.hao123\\.com)$","jio",true],
+        "action":"deny"
+    },
+    {
+        "state": "off",
+        "id":"referer_Mod-1002",
+        "des":"2-denyFromBaidu_pic",
+        "waf":"stealing_link",
+        "uri": ["\\.(gif|jpg|png|jpeg|bmp|webp|ico)$","jio"],
+        "hostname": ["localhost",""],
+        "referer": ["baidu","in"],
+        "action":"deny"
+    }
+]

@@ -1,0 +1,14 @@
+{
+    "localhost":{
+        "state":"on",
+        "args_HPP":"on",
+        "posts_HPP":"on",
+        "g_version": 1
+    },
+    "localhost5460":{
+        "state":"on",
+        "args_HPP":"on",
+        "posts_HPP":"on",
+        "g_version": 0
+    }
+}

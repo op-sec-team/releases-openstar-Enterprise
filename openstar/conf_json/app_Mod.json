@@ -1,0 +1,159 @@
+[
+    {
+        "state": "on",
+        "id":"app_Mod-1001",
+        "des":"test-deny",
+        "waf":"other",
+        "action": "deny",
+        "hostname": ["localhost",""],
+        "uri": ["^/([\\w]{4}\\.html|deny\\.do|你好\\.html)$","jio"]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1002",
+        "des":"test-rehtml",
+        "waf":"other",
+        "action": "rehtml",
+        "rehtml": "<html>hi~!</html>",
+        "hostname": ["localhost",""],
+        "uri": ["/rehtml",""]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1003",
+        "des":"test-refile",
+        "waf":"other",
+        "action": "refile",
+        "refile": ["2.txt","text/html"],
+        "hostname": ["localhost",""],
+        "uri": ["/refile",""]
+    },
+    {
+        "state": "off",
+        "id":"app_Mod-1004",
+        "des":"test-black_ip",
+        "waf":"black_ip",
+        "action": "deny",
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/.*","jio"],
+        "app_ext":[
+            ["ip",[["106.37.236.170","1.1.1.1"],"list",true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1005",
+        "des":"test-js_debug",
+        "waf":"cc",
+        "action": "refile",
+        "refile": ["js_debug.txt","text/html"],
+        "hostname": ["localhost",""],
+        "uri": ["/api/debug",""],
+        "app_ext":[
+            ["args",["true","@token@",["cctoken"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1006",
+        "des":"test-len-check",
+        "waf":"other",
+        "action": "deny",
+        "hostname": ["localhost",""],
+        "uri": ["/len",""],
+        "app_ext":[
+            ["args",[[5,20],"len",["arg_len"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1007",
+        "des":"test-js_time",
+        "waf":"cc",
+        "action": "refile",
+        "refile":["js_time.txt","text/html"],
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/time",""],
+        "app_ext":[
+            ["args",["^[\\w]{6}$","jio",["keyby"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1008",
+        "des":"test-debug",
+        "action": "debug",
+        "hostname": ["localhost",""],
+        "uri": ["/debug",""]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1009",
+        "des":"test-post_js_time",
+        "waf":"other",
+        "action": "refile",
+        "refile":["js_time.txt","text/html"],
+        "hostname": [["www.abc.com","localhost"],"list"],
+        "uri": ["/api/time",""],
+        "app_ext":[
+            ["posts",["^[\\w]{6}$","jio",["p_key"],true]]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1010",
+        "des":"test-post_form",
+        "waf":"webshell",
+        "action": "deny",
+        "post_form":1024,
+        "hostname": ["localhost",""],
+        "uri": ["/api/test/debug",""],
+        "app_ext":[
+            ["post_form",["\\.(jpg|jpeg|png|webp|gif)$","jio",["image0",2],true],"or"],
+            ["post_form",["(;|-|/)","jio",["image0",2],false],"or"]
+        ]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1011",
+        "des":"test-sign_anti_reply",
+        "waf":"anti_reply",
+        "action": "func",
+        "func": ["sign_check",{
+                "sign":{
+                    "state":"on",
+                    "name":"$headers@x_app_sign",
+                    "tb_formart":[
+                        "$headers@x_app_timestamp",
+                        "$request_uri",
+                        "$headers@x_app_nonce",
+                        ""
+                    ]},
+                "timestamp":{
+                    "name":"$headers@x_app_timestamp",
+                    "abs_time":120
+                    },
+                "nonce":{
+                    "state":"on",
+                    "name":"$headers@x_app_nonce",
+                    "time":60
+                }
+            }],
+        "hostname": ["localhost",""],
+        "uri": ["/sign.test",""]
+    },
+    {
+        "state": "on",
+        "id":"app_Mod-1012",
+        "des":"test-cap",
+        "waf":"brute_force",
+        "action": "func",
+        "func": ["cap",{
+                    "AppID":"xxx",
+                    "AppSecret":"xxxxx",
+                    "form_name":"verify_token"
+                }],
+        "hostname": ["localhost",""],
+        "uri": ["/cap.test",""]
+    }
+]

@@ -1,0 +1,30 @@
+{
+    "file":{
+        "add":[
+            "update.json"
+            "lib/resty/logger/socket.lua"
+        ],
+        "del":[
+            "lib/resty/socket.lua"
+        ],
+        "set":[
+            "lib/stool.lua",
+            "api/v2/host_dict.lua",
+            "api/v2/cluster.lua",
+            "api/v2/nginx_Mod/add.lua",
+            "api/v2/nginx_Mod/addlist.lua",
+            "api/v2/nginx_Mod/setlist.lua",
+            "conf/nginx.conf",
+            "conf/waf.conf",
+            "log.lua",
+            "dist.ini"
+        ]
+    },
+    "folder":{
+        "add":[
+            "lib/resty/logger/"
+        ],
+        "del":[],
+        "set":[]
+    }
+}

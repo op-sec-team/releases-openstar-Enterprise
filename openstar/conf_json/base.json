@@ -1,0 +1,198 @@
+{
+    "Mod_state":"on",
+
+    "ngx_status":"on",
+
+    "add_headers_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "limit_rate_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "proxy_cache_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "realIpFrom_Mod":{
+        "state":"off",
+        "G_version":20200201
+    },
+
+    "ip_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "host_method_Mod":{
+        "state":"off",
+        "G_version":20200201
+    },
+
+    "rewrite_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "app_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "referer_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "uri_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "header_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "useragent_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "cookie_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "args_Mod":{
+        "state":"on",
+        "G_version":20200201,
+        "HPP_state":"on"
+        },
+
+    "post_Mod":{
+        "state":"on",
+        "G_version":20200201,
+        "HPP_state":"on"
+        },
+
+    "post_form":10240,
+
+    "network_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "replace_Mod":{
+        "state":"off",
+        "G_version":20200201
+    },
+
+    "log_Mod":{
+        "state":"off",
+        "G_version":20200201
+    },
+
+    "certs_Mod":{
+        "G_version":20200201
+    },
+
+    "root_certs_Mod":{
+        "G_version":20200201
+    },
+
+    "nginx_Mod":{
+        "G_version":20200201
+    },
+
+    "stream_Mod":{
+        "G_version":20200201
+    },
+
+    "plugin_Mod":{
+        "G_version":20200201
+    },
+
+    "debug_Mod":false,
+
+    "baseDir":"/opt/openresty/openstar/",
+
+    "logPath":"/opt/openresty/openstar/logs/",
+
+    "jsonPath":"/opt/openresty/openstar/conf_json/",
+
+    "htmlPath":"/opt/openresty/openstar/index/",
+
+    "redis_Mod":{
+        "state":"on",
+        "ip":"36.110.148.175",
+        "Port":6379,
+        "Password":"9f75a7509e707842a02aaa058c074c7a"
+    },
+    "autoSync":{
+        "state":"Master",
+        "timeAt":10,
+        "master":"127.0.0.1",
+        "slaves": []
+    },
+    "denyMsg":{
+        "state":"on",
+        "G_version":20200201,
+        "msg":"deny by openstar",
+        "http_code":403
+    },
+    "api_sign":{
+        "state":"on",
+        "checkMaster": "off",
+        "authority":{
+            "header_name":"sign",
+            "alg":"MD5",
+            "key":"isoda98xxxxxxxxxxxxxodfjuds",
+            "format_tb":[
+                    "$uri",
+                    "$http_time",
+                    "fuckyousign"
+                ]
+        }
+    },
+    "log_onLocal":{
+        "state":"on",
+        "path":"/tmp/waf_log.log",
+        "format_tb":[
+            "$remoteIp",
+            "$ip",
+            "$ngx_localtime",
+            "$host",
+            "$server_protocol",
+            "$method",
+            "$useragent",
+            "$referer",
+            "$request_uri",
+            "$posts_all",
+            "$rep_body",
+            "$waf_action:",
+            "$waf_mod",
+            "$waf_id",
+            "$waf_owasp",
+            "\n"
+        ],
+        "tb_concat":"\t"
+    },
+    "log_onRemote":{
+        "state":"off",
+        "sock_type":"tcp",
+        "pool_size":100,
+        "retry_interval":200,
+        "max_retry_times":10,
+        "flush_limit":4096,
+        "drop_limit":10485760,
+        "host":"123.59.126.190",
+        "port":16000,
+        "tb_concat":"\t",
+        "format_tb":[]
+    }
+}

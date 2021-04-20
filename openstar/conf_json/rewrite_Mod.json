@@ -1,0 +1,12 @@
+[
+    {
+        "state": "on",
+        "id":"rewrite_Mod-1001",
+        "des":"test-set_cookie-rewrite",
+        "waf":"cc",
+        "action": "set_cookie",
+        "set_cookie":["asjldisdafpopliu8909jk34jk","diy_name"],
+        "hostname": ["localhost",""],
+        "uri": ["/rewrite",""]
+    }
+]
