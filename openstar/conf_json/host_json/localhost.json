@@ -1,30 +1,27 @@
 {
-    "add_headers_Mod":[],
-    "limit_rate_Mod":[],
-    "proxy_cache_Mod":[],
-    "app_Mod":[
-        {
-            "state": "on",
-            "des":"1-test_form",
-            "waf":"webshell",
-            "action":"deny",
-            "uri": ["/post.html",""],
-            "post_form":1024,
-            "app_ext":[
-                ["post_form",["\\.(jpg|jpeg|png|webp|gif)$","jio",["image0",2],true],"or"],
-                ["post_form",["(;|-|/)","jio",["image0",2]]]
-            ]
-        }
-    ],
-    "network_Mod":[
-        {
-            "state": "on",
-            "des":"1-test_cc",
-            "waf":"brute_force",
-            "action":"deny",
-            "network":{"maxReqs":30,"pTime":10,"blackTime":600},
-            "uri": ["/login",""]
-        }
-    ],
-    "replace_Mod":[]
+  "add_headers_Mod": [],
+  "app_Mod": [ {
+    "action": "deny",
+    "app_ext": [ [ "post_form", [ "\\.(jpg|jpeg|png|webp|gif)$", "jio", [ "image0", 2 ], true ], "or" ], [ "post_form", [ "(;|-|/)", "jio", [ "image0", 2 ] ] ] ],
+    "des": "1-test_form",
+    "post_form": 1024,
+    "state": "on",
+    "uri": [ "/post.html", "" ],
+    "waf": "webshell"
+  } ],
+  "limit_rate_Mod": [],
+  "network_Mod": [ {
+    "action": "deny",
+    "des": "1-test_cc",
+    "network": {
+      "blackTime": 600,
+      "maxReqs": 30,
+      "pTime": 10
+    },
+    "state": "on",
+    "uri": [ "/login", "" ],
+    "waf": "brute_force"
+  } ],
+  "proxy_cache_Mod": [],
+  "replace_Mod": []
 }

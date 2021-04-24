@@ -1,14 +1,7 @@
-[
-    {
-        "state": "on",
-        "des":"1 cache static file",
-        "hostname": ["*",""],
-        "uri":[[".css",".js",".flv",".swf",".woff",".woff2",
-                 ".txt",".ttf",".svg",".eot",
-                 ".gif",".jpg",".png",".jpeg",".bmp",".ico",".webp"
-               ],
-            "reend_list"
-        ],
-        "tag":["all_Mod"]
-    }
-]
+[ {
+  "des": "1 cache static file",
+  "hostname": [ "*", "" ],
+  "state": "on",
+  "tag": [ "all_Mod" ],
+  "uri": [ [ ".css", ".js", ".flv", ".swf", ".woff", ".woff2", ".txt", ".ttf", ".svg", ".eot", ".gif", ".jpg", ".png", ".jpeg", ".bmp", ".ico", ".webp" ], "reend_list" ]
+} ]

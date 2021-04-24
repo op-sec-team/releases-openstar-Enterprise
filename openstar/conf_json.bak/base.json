@@ -178,10 +178,9 @@
             "$waf_action:",
             "$waf_mod",
             "$waf_id",
-            "$waf_owasp",
-            "\n"
+            "$waf_owasp"
         ],
-        "tb_concat":"\t"
+        "tb_concat":"json"
     },
     "log_onRemote":{
         "state":"off",

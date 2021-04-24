@@ -1,65 +1,48 @@
-[
-    {
-        "state": "on",
-        "id":"uri_Mod-1001",
-        "des":"1-static_file",
-        "hostname": ["*",""],
-        "uri":[[".css",".js",".flv",".swf",".woff",
-                 ".txt",".ttf",".svg",".eot",
-                 ".gif",".jpg",".png",".jpeg",".bmp",".ico",".webp"
-               ],
-            "reend_list"
-        ],
-        "action": "allow"
-    },
-    {
-        "state": "on",
-        "id":"uri_Mod-1002",
-        "des":"2-sensitive_uri",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "uri": ["\\.(svn/|git/|htaccess$|bash_history$)","jio"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"uri_Mod-1003",
-        "des":"3-sensitive_file",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "uri": [[".bak",".inc",".old",".mdb",".sql",".backup",".java",".class"],"reend_list"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"uri_Mod-1004",
-        "des":"4-backup_file",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "uri": ["(vhost|bbs|hostname|wwwroot|www|site|root|hytop|flashfxp).*.rar","jio"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"uri_Mod-1005",
-        "des":"5-management_uri",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "uri":[
-            ["phpmyadmin","jmx-console","jmxinvokerservlet"],"rein_list"
-        ],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"uri_Mod-1006",
-        "des":"6-danger_uri",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "uri": [
-            "/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)",
-            "jio"
-        ],
-        "action": "log"
-    }
-]
+[ {
+  "action": "allow",
+  "des": "1-static_file",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1001",
+  "state": "on",
+  "uri": [ [ ".css", ".js", ".flv", ".swf", ".woff", ".txt", ".ttf", ".svg", ".eot", ".gif", ".jpg", ".png", ".jpeg", ".bmp", ".ico", ".webp" ], "reend_list" ]
+}, {
+  "action": "deny",
+  "des": "2-sensitive_uri",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1002",
+  "state": "on",
+  "uri": [ "\\.(svn/|git/|htaccess$|bash_history$)", "jio" ],
+  "waf": "danger_path"
+}, {
+  "action": "deny",
+  "des": "3-sensitive_file",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1003",
+  "state": "on",
+  "uri": [ [ ".bak", ".inc", ".old", ".mdb", ".sql", ".backup", ".java", ".class" ], "reend_list" ],
+  "waf": "danger_path"
+}, {
+  "action": "deny",
+  "des": "4-backup_file",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1004",
+  "state": "on",
+  "uri": [ "(vhost|bbs|hostname|wwwroot|www|site|root|hytop|flashfxp).*.rar", "jio" ],
+  "waf": "danger_path"
+}, {
+  "action": "deny",
+  "des": "5-management_uri",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1005",
+  "state": "on",
+  "uri": [ [ "phpmyadmin", "jmx-console", "jmxinvokerservlet" ], "rein_list" ],
+  "waf": "danger_path"
+}, {
+  "action": "log",
+  "des": "6-danger_uri",
+  "hostname": [ "*", "" ],
+  "id": "uri_Mod-1006",
+  "state": "on",
+  "uri": [ "/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)", "jio" ],
+  "waf": "danger_path"
+} ]

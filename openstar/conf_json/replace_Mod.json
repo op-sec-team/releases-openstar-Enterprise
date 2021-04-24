@@ -1,29 +1,16 @@
-[
-    {
-        "state": "on",
-        "des":"1-simple",
-        "uri": ["^/api/ip_dict$","jio"],
-        "hostname": ["localhost5460",""],
-        "replace_list":
-            [
-             ["deny","","denyFUCK"],
-             ["allow","","allowPASS"],
-             ["lzcaptcha\\?key='\\s*\\+ key","jio","lzcaptcha?keY='+key+'&keytoken=@token@'"]
-            ]
-    },
-    {
-        "state": "on",
-        "des":"2-func",
-        "uri": ["/api/test/debug",""],
-        "hostname": ["localhost5460",""],
-        "replace_list":
-            [
-             ["replace_hello","func",
-                {
-                    "description":"参数使用demo",
-                    "len":4
-                }
-             ]
-            ]
-    }
-]
+[ {
+  "des": "1-simple",
+  "hostname": [ "localhost5460", "" ],
+  "replace_list": [ [ "deny", "", "denyFUCK" ], [ "allow", "", "allowPASS" ], [ "lzcaptcha\\?key='\\s*\\+ key", "jio", "lzcaptcha?keY='+key+'&keytoken=@token@'" ] ],
+  "state": "on",
+  "uri": [ "^/api/ip_dict$", "jio" ]
+}, {
+  "des": "2-func",
+  "hostname": [ "localhost5460", "" ],
+  "replace_list": [ [ "replace_hello", "func", {
+    "description": "参数使用demo",
+    "len": 4
+  } ] ],
+  "state": "on",
+  "uri": [ "/api/test/debug", "" ]
+} ]

@@ -1,10 +1,8 @@
-[
-    {
-        "state": "on",
-        "limit_rate":"200k",
-        "des":"zip gz ... limit_rate 200k",
-        "hostname": ["*",""],
-        "uri":[[".zip",".gz",".mp4"],"reend_list"],
-        "tag":["all_Mod"]
-    }
-]
+[ {
+  "des": "zip gz ... limit_rate 200k",
+  "hostname": [ "*", "" ],
+  "limit_rate": "200k",
+  "state": "on",
+  "tag": [ "all_Mod" ],
+  "uri": [ [ ".zip", ".gz", ".mp4" ], "reend_list" ]
+} ]

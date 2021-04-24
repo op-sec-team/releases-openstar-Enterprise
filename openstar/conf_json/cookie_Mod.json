@@ -1,128 +1,112 @@
-[
-    {
-        "state": "on",
-        "id":"cookie_Mod-1001",
-        "des":"1-Danger_path",
-        "waf":"danger_path",
-        "hostname": ["*",""],
-        "cookie": [["../",":$","${","/etc/passwd"],"in_list"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1002",
-        "des":"2-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["select.+(from|limit)","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1003",
-        "des":"3-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["union(.*?)select","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1004",
-        "des":"4-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": [["having","rongjitest"],"rein_list"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1005",
-        "des":"5-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["sleep\\((\\s*)(\\d*)(\\s*)\\)","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1006",
-        "des":"6-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["benchmark\\((.*)\\,(.*)\\)","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1007",
-        "des":"7-base64_decode",
-        "waf":"danger_keyword",
-        "hostname": ["*",""],
-        "cookie": [["base64_decode("],"rein_list"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1008",
-        "des":"8-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["(from\\W+information_schema\\W)","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1009",
-        "des":"9-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1010",
-        "des":"10-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["into(\\s+)+(dump|out)file\\s*","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1011",
-        "des":"11-sql",
-        "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": ["group\\s+by.+\\(","jio"],
-        "action": "log"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1012",
-        "des":"12-struts2",
-        "waf":"struts2",
-        "hostname": ["*",""],
-        "cookie": ["xwork.MethodAccessor","in"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1013",
-        "des":"13-Danger_keyword",
-        "waf":"Danger_keyword",
-        "hostname": ["*",""],
-        "cookie": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
-        "action": "deny"
-    },
-    {
-        "state": "on",
-        "id":"cookie_Mod-1014",
-        "id":"14-webshell",
-        "waf":"webshell",
-        "hostname": ["*",""],
-        "cookie": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
-        "action": "deny"
-    }
-]
+[ {
+  "action": "deny",
+  "cookie": [ [ "../", ":$", "${", "/etc/passwd" ], "in_list" ],
+  "des": "1-Danger_path",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1001",
+  "state": "on",
+  "waf": "danger_path"
+}, {
+  "action": "log",
+  "cookie": [ "select.+(from|limit)", "jio" ],
+  "des": "2-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1002",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "union(.*?)select", "jio" ],
+  "des": "3-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1003",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ [ "having", "rongjitest" ], "rein_list" ],
+  "des": "4-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1004",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "sleep\\((\\s*)(\\d*)(\\s*)\\)", "jio" ],
+  "des": "5-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1005",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "benchmark\\((.*)\\,(.*)\\)", "jio" ],
+  "des": "6-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1006",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "deny",
+  "cookie": [ [ "base64_decode(" ], "rein_list" ],
+  "des": "7-base64_decode",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1007",
+  "state": "on",
+  "waf": "danger_keyword"
+}, {
+  "action": "log",
+  "cookie": [ "(from\\W+information_schema\\W)", "jio" ],
+  "des": "8-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1008",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "(current_|user|database|schema|connection_id)\\s*\\(", "jio" ],
+  "des": "9-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1009",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "into(\\s+)+(dump|out)file\\s*", "jio" ],
+  "des": "10-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1010",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "log",
+  "cookie": [ "group\\s+by.+\\(", "jio" ],
+  "des": "11-sql",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1011",
+  "state": "on",
+  "waf": "sql"
+}, {
+  "action": "deny",
+  "cookie": [ "xwork.MethodAccessor", "in" ],
+  "des": "12-struts2",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1012",
+  "state": "on",
+  "waf": "struts2"
+}, {
+  "action": "deny",
+  "cookie": [ "(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(", "jio" ],
+  "des": "13-Danger_keyword",
+  "hostname": [ "*", "" ],
+  "id": "cookie_Mod-1013",
+  "state": "on",
+  "waf": "Danger_keyword"
+}, {
+  "action": "deny",
+  "cookie": [ "\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[", "jio" ],
+  "hostname": [ "*", "" ],
+  "id": "14-webshell",
+  "state": "on",
+  "waf": "webshell"
+} ]

@@ -1,14 +1,26 @@
 {
-    "localhost":{
-        "state":"on",
-        "args_HPP":"on",
-        "posts_HPP":"on",
-        "g_version": 1
-    },
-    "localhost5460":{
-        "state":"on",
-        "args_HPP":"on",
-        "posts_HPP":"on",
-        "g_version": 0
-    }
+  "localhost": {
+    "add_headers_Mod": "on",
+    "app_Mod": "on",
+    "args_HPP": "on",
+    "g_version": 1,
+    "limit_rate_Mod": "on",
+    "network_Mod": "on",
+    "posts_HPP": "on",
+    "proxy_cache_Mod": "on",
+    "replace_Mod": "on",
+    "state": "on"
+  },
+  "localhost5460": {
+    "add_headers_Mod": "on",
+    "app_Mod": "on",
+    "args_HPP": "on",
+    "g_version": 0,
+    "limit_rate_Mod": "on",
+    "network_Mod": "on",
+    "posts_HPP": "on",
+    "proxy_cache_Mod": "on",
+    "replace_Mod": "on",
+    "state": "on"
+  }
 }
