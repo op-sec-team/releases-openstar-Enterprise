@@ -1,97 +1,110 @@
-[ {
-  "action": "log",
-  "des": "1-Danger_path",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1001",
-  "post": [ [ "../", "/etc/passwd" ], "in_list" ],
-  "state": "on",
-  "waf": "danger_path"
-}, {
-  "action": "log",
-  "des": "2-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1002",
-  "post": [ "select.+(from|limit)", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "3-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1003",
-  "post": [ "union(.*?)select", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "4-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1004",
-  "post": [ [ "having", "rongjitest" ], "in_list" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "5-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1005",
-  "post": [ "from\\W+information_schema\\W", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "6-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1006",
-  "post": [ "(current_|user|database|schema|connection_id)\\s*\\(", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "deny",
-  "des": "7-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1007",
-  "post": [ "into(\\s+)+(?:dump|out)file\\s*", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "8-sql",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1008",
-  "post": [ "group\\s+by.+\\(", "jio" ],
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "des": "9-Danger_keyword",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1009",
-  "post": [ "(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(", "jio" ],
-  "state": "on",
-  "waf": "Danger_keyword"
-}, {
-  "action": "deny",
-  "des": "10-webshell",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1010",
-  "post": [ "\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[", "jio" ],
-  "state": "on",
-  "waf": "webshell"
-}, {
-  "action": "log",
-  "des": "11-xss",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1011",
-  "post": [ "\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)", "jio" ],
-  "state": "on",
-  "waf": "xss"
-}, {
-  "action": "log",
-  "des": "12-xss",
-  "hostname": [ "*", "" ],
-  "id": "post_Mod-1012",
-  "post": [ "(onmouseover|onerror|onload)\\=\t", "jio" ],
-  "state": "on",
-  "waf": "xss"
-} ]
+[
+    {
+        "state": "on",
+        "id":"post_Mod-1001",
+        "des":"1-Danger_path",
+        "waf":"danger_path",
+        "post": [["../","/etc/passwd"],"in_list"],
+        "hostname": ["*",""],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1002",
+        "des":"2-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["select.+(from|limit)","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1003",
+        "des":"3-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["union(.*?)select","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1004",
+        "des":"4-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": [["having","rongjitest"],"in_list"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1005",
+        "des":"5-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["from\\W+information_schema\\W","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1006",
+        "des":"6-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1007",
+        "des":"7-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["into(\\s+)+(?:dump|out)file\\s*","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1008",
+        "des":"8-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "post": ["group\\s+by.+\\(","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1009",
+        "des":"9-Danger_keyword",
+        "waf":"Danger_keyword",
+        "hostname": ["*",""],
+        "post": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1010",
+        "des":"10-webshell",
+        "waf":"webshell",
+        "hostname": ["*",""],
+        "post": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1011",
+        "des":"11-xss",
+        "waf":"xss",
+        "hostname": ["*",""],
+        "post": ["\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"post_Mod-1012",
+        "des":"12-xss",
+        "waf":"xss",
+        "hostname": ["*",""],
+        "post": ["(onmouseover|onerror|onload)\\=\t","jio"],
+        "action": "log"
+    }
+]

@@ -1,14 +1,22 @@
-[ {
-  "des": "white-host_mehtod",
-  "hostname": [ {
-    "localhost": true,
-    "localhost5460": true,
-    "www.g.com": true
-  }, "dict" ],
-  "id": "host_method_Mod-1001",
-  "method": [ {
-    "GET": true,
-    "POST": true
-  }, "dict" ],
-  "state": "on"
-} ]
+[
+    {
+        "state":"on",
+        "id":"host_method_Mod-1001",
+        "des":"white-host_mehtod",
+        "method":[
+            {
+                "POST":true,
+                "GET":true
+            },
+            "dict"
+        ],
+        "hostname":[
+            {
+                "localhost5460":true,
+                "localhost":true,
+                "www.g.com":true
+            },
+            "dict"
+        ]
+    }
+]

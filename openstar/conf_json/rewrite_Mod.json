@@ -1,10 +1,12 @@
-[ {
-  "action": "set_cookie",
-  "des": "test-set_cookie-rewrite",
-  "hostname": [ "localhost", "" ],
-  "id": "rewrite_Mod-1001",
-  "set_cookie": [ "asjldisdafpopliu8909jk34jk", "diy_name" ],
-  "state": "on",
-  "uri": [ "/rewrite", "" ],
-  "waf": "cc"
-} ]
+[
+    {
+        "state": "on",
+        "id":"rewrite_Mod-1001",
+        "des":"test-set_cookie-rewrite",
+        "waf":"cc",
+        "action": "set_cookie",
+        "set_cookie":["asjldisdafpopliu8909jk34jk","diy_name"],
+        "hostname": ["localhost",""],
+        "uri": ["/rewrite",""]
+    }
+]

@@ -1,25 +1,20 @@
-[ {
-  "des": "api_cc",
-  "hostname": [ [ "101.200.122.200", "localhost5460" ], "list" ],
-  "id": "network_Mod-1001",
-  "network": {
-    "blackTime": 600,
-    "maxReqs": 30,
-    "pTime": 10
-  },
-  "state": "on",
-  "uri": [ "/api/test/time_t", "" ],
-  "waf": "cc"
-}, {
-  "des": "ip_cc",
-  "hostname": [ "*", "" ],
-  "id": "network_Mod-1002",
-  "network": {
-    "blackTime": 120,
-    "maxReqs": 1000,
-    "pTime": 10
-  },
-  "state": "on",
-  "uri": [ "*", "" ],
-  "waf": "cc"
-} ]
+[
+    {
+        "state": "on",
+        "id":"network_Mod-1001",
+        "des":"api_cc",
+        "waf":"cc",
+        "network":{"maxReqs":30,"pTime":10,"blackTime":600},
+        "hostname": [["101.200.122.200","localhost5460"],"list"],
+        "uri": ["/api/test/time_t",""]
+    },
+    {
+        "state": "on",
+        "id":"network_Mod-1002",
+        "des":"ip_cc",
+        "waf":"cc",
+        "network":{"maxReqs":1000,"pTime":10,"blackTime":120},
+        "hostname": ["*",""],
+        "uri": ["*",""]
+    }
+]

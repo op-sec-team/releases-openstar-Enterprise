@@ -1,9 +1,9 @@
 {
-  "localhost": {
-    "deny_msg": "localhost request error!"
-  },
-  "localhost5460": {
-    "deny_msg": "deny 403",
-    "http_code": 406
-  }
+    "localhost":{
+        "deny_msg": "localhost request error!"
+    },
+    "localhost5460":{
+        "deny_msg": "deny 403",
+        "http_code": 406
+    }
 }

@@ -1,37 +1,30 @@
 {
-  "cap": {
-    "description": "_M.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
-    "disk_file": "ok",
-    "file": "acc_dxcap"
+  "sign_check":{
+      "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
+      "file":"acc_checkcafc"
+    },
+  "cap":{
+      "description":"_M.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
+      "file":"acc_dxcap"
   },
-  "disabled_gzip": {
-    "description": "_M.disabled_gzip 用于关闭gzip的插件，调用参数： table(没有使用)",
-    "disk_file": "ok",
-    "file": "acc_disabled_gzip"
+  "test":{
+      "description":"_M.test 用于插件测试，原样输出传递的参数 调用参数：[1,2...] ",
+      "file":"acc_test"
   },
-  "options": {
-    "description": "_M.options 用于对options操作 进行添加header头，方便跨域操作，调用参数： table(没有使用)",
-    "disk_file": "ok",
-    "file": "acc_options"
+  "replace_hello":{
+      "description":"_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
+      "file":"body_replace"
   },
-  "replace_hello": {
-    "description": "_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
-    "disk_file": "ok",
-    "file": "body_replace"
+  "tel_ast":{
+      "description":"_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
+      "file":"body_tel_ast"
   },
-  "sign_check": {
-    "description": "_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
-    "disk_file": "ok",
-    "file": "acc_checkcafc"
+  "options":{
+    "description":"_M.options 用于对options操作 进行添加header头，方便跨域操作，调用参数： table(没有使用)",
+    "file":"acc_options"
   },
-  "tel_ast": {
-    "description": "_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
-    "disk_file": "ok",
-    "file": "body_tel_ast"
-  },
-  "test": {
-    "description": "_M.test 用于插件测试，原样输出传递的参数 调用参数：[1,2...] ",
-    "disk_file": "ok",
-    "file": "acc_test"
+  "disabled_gzip":{
+    "description":"_M.disabled_gzip 用于关闭gzip的插件，调用参数： table(没有使用)",
+    "file":"acc_disabled_gzip"
   }
 }

@@ -1,20 +1,20 @@
 {
-  "jwt_Mod": {
-    "name2": {
-      "ext1": "bbb",
-      "ext2": "ccc",
-      "hmac": "",
-      "rule": "audit"
-    },
-    "unity-waf": {
-      "ext1": "bbb",
-      "ext2": "ccc",
-      "hmac": "aaabbbccc123",
-      "rule": "admin"
-    }
-  },
+  "username": "openstar" ,
+  "password": "passopenstar" ,
+  "time": "40" ,
   "login_uri": "/login.html",
-  "password": "2c08ed04b0c0e41d6271c14c3a268d79",
-  "time": "40",
-  "username": "openstar"
+  "jwt_Mod":{
+    "name1":{
+        "hmac":"",
+        "rule":"admin",
+        "ext1":"bbb",
+        "ext2":"ccc"
+      },
+    "name2":{
+        "hmac":"",
+        "rule":"audit",
+        "ext1":"bbb",
+        "ext2":"ccc"
+      }
+    }
 }

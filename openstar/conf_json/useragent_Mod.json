@@ -1,8 +1,18 @@
-[ {
-  "des": "常见扫描器特征...",
-  "hostname": [ "*", "" ],
-  "id": "useragent_Mod-1001",
-  "state": "on",
-  "useragent": [ [ "HTTrack", "harvest", "audit", "dirbuster", "pangolin", "nmap", "sqln", "-scan", "hydra", "Parser", "libwww", "BBBike", "sqlmap", "w3af", "owasp", "Nikto", "fimap", "havij", "PycURL", "zmeu", "BabyKrokodil", "netsparker", "httperf", "bench" ], "rein_list" ],
-  "waf": "scan"
-} ]
+[
+    {
+        "state": "on",
+        "id":"useragent_Mod-1001",
+        "des":"常见扫描器特征...",
+        "waf":"scan",
+        "useragent": [
+            ["HTTrack","harvest","audit","dirbuster",
+             "pangolin","nmap","sqln","-scan","hydra",
+             "Parser","libwww","BBBike","sqlmap","w3af",
+             "owasp","Nikto","fimap","havij","PycURL","zmeu",
+             "BabyKrokodil","netsparker","httperf","bench"
+            ],
+            "rein_list"
+        ],
+        "hostname": ["*",""]
+    }
+]

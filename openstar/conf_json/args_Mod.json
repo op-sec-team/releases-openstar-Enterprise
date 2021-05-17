@@ -1,97 +1,110 @@
-[ {
-  "action": "deny",
-  "args": [ [ "../", ":$", "${", "/etc/passwd" ], "in_list" ],
-  "des": "1-Danger_path",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1001",
-  "state": "on",
-  "waf": "danger_path"
-}, {
-  "action": "log",
-  "args": [ "select.+(from|limit)", "jio" ],
-  "des": "2-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1002",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "union(.*?)select", "jio" ],
-  "des": "3-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1003",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "having|rongjitest", "jio" ],
-  "des": "4-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1004",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "(from\\W+information_schema\\W)", "jio" ],
-  "des": "5-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1005",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "(current_|user|database|schema|connection_id)\\s*\\(", "jio" ],
-  "des": "6-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1006",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "into(\\s+)+(dump|out)file\\s*", "jio" ],
-  "des": "7-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1007",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "log",
-  "args": [ "group\\s+by.+\\(", "jio" ],
-  "des": "8-sql",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1008",
-  "state": "on",
-  "waf": "sql"
-}, {
-  "action": "deny",
-  "args": [ "(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(", "jio" ],
-  "des": "9-Danger_keyword",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1009",
-  "state": "on",
-  "waf": "Danger_keyword"
-}, {
-  "action": "deny",
-  "args": [ "\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[", "jio" ],
-  "des": "10-webshell",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1010",
-  "state": "on",
-  "waf": "webshell"
-}, {
-  "action": "log",
-  "args": [ "\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)", "jio" ],
-  "des": "11-xss",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1011",
-  "state": "on",
-  "waf": "xss"
-}, {
-  "action": "log",
-  "args": [ "(onmouseover|onerror|onload)\\=\t", "jio" ],
-  "des": "12-xss",
-  "hostname": [ "*", "" ],
-  "id": "args_Mod-1012",
-  "state": "on",
-  "waf": "xss"
-} ]
+[
+    {
+        "state": "on",
+        "id":"args_Mod-1001",
+        "des":"1-Danger_path",
+        "waf":"danger_path",
+        "hostname": ["*",""],
+        "args": [["../",":$","${","/etc/passwd"],"in_list"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1002",
+        "des":"2-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["select.+(from|limit)","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1003",
+        "des":"3-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["union(.*?)select","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1004",
+        "des":"4-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["having|rongjitest","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1005",
+        "des":"5-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["(from\\W+information_schema\\W)","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1006",
+        "des":"6-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1007",
+        "des":"7-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["into(\\s+)+(dump|out)file\\s*","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1008",
+        "des":"8-sql",
+        "waf":"sql",
+        "hostname": ["*",""],
+        "args": ["group\\s+by.+\\(","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1009",
+        "des":"9-Danger_keyword",
+        "waf":"Danger_keyword",
+        "hostname": ["*",""],
+        "args": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1010",
+        "des":"10-webshell",
+        "waf":"webshell",
+        "hostname": ["*",""],
+        "args": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
+        "action": "deny"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1011",
+        "des":"11-xss",
+        "waf":"xss",
+        "hostname": ["*",""],
+        "args": ["\\<(iframe|script|body|img|layer|div|meta|style|base|object|input)","jio"],
+        "action": "log"
+    },
+    {
+        "state": "on",
+        "id":"args_Mod-1012",
+        "des":"12-xss",
+        "waf":"xss",
+        "hostname": ["*",""],
+        "args": ["(onmouseover|onerror|onload)\\=\t","jio"],
+        "action": "log"
+    }
+]

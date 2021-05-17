@@ -1,19 +1,22 @@
-[ {
-  "action": "deny",
-  "des": "1-csrf_test",
-  "hostname": [ "pass.game.com", "" ],
-  "id": "referer_Mod-1001",
-  "referer": [ "^.*/(www\\.hao123\\.com|www3\\.hao123\\.com)$", "jio", true ],
-  "state": "off",
-  "uri": [ "^/abc.do$", "jio" ],
-  "waf": "csrf"
-}, {
-  "action": "deny",
-  "des": "2-denyFromBaidu_pic",
-  "hostname": [ "localhost", "" ],
-  "id": "referer_Mod-1002",
-  "referer": [ "baidu", "in" ],
-  "state": "off",
-  "uri": [ "\\.(gif|jpg|png|jpeg|bmp|webp|ico)$", "jio" ],
-  "waf": "stealing_link"
-} ]
+[
+    {
+        "state": "off",
+        "id":"referer_Mod-1001",
+        "des":"1-csrf_test",
+        "waf":"csrf",
+        "uri": ["^/abc.do$","jio"],
+        "hostname": ["pass.game.com",""],
+        "referer": ["^.*/(www\\.hao123\\.com|www3\\.hao123\\.com)$","jio",true],
+        "action":"deny"
+    },
+    {
+        "state": "off",
+        "id":"referer_Mod-1002",
+        "des":"2-denyFromBaidu_pic",
+        "waf":"stealing_link",
+        "uri": ["\\.(gif|jpg|png|jpeg|bmp|webp|ico)$","jio"],
+        "hostname": ["localhost",""],
+        "referer": ["baidu","in"],
+        "action":"deny"
+    }
+]
