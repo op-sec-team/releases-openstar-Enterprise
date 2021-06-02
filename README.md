@@ -131,3 +131,5 @@ base_msg.request_time           请求的执行时间 （ngx.now() - ngx.req.sta
 QQ号：2194788831
 
 QQ群：331447905
+入群领取 web 管理后台的包
+
