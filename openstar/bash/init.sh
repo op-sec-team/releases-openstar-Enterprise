@@ -1,5 +1,5 @@
 #!/bin/bash
-# 该脚本在WAF启动时执行
+# 该脚本在 WAF 启动时执行
 # 脚本版本号
 version=0.3
 install_path=/opt/openresty

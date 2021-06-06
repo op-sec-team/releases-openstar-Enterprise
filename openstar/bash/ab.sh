@@ -10,7 +10,9 @@ forn=10
 rpsall=0
 ptimeall=0
 if [ "$1" = "install" ];then
-     yum install -y httpd-tools bc
+    # centos 安装
+    # ubuntu apt-get install apache2-utils bc
+    yum install -y httpd-tools bc
 elif [ "$1" = "test" ]; then
     for((i=1;i<=${forn};i++));do
         if [ "$2" = "k" ];then

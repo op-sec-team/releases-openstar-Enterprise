@@ -50,14 +50,14 @@ resty_luadown(){
 }
 resty_luadown
 
-# openresty 安装的版本 1.17.8.2 不要用，目前还有 bug ！！！
-install_or_version=1.15.8.3
+install_or_version=1.19.3.2
 # openresty 对应 nginx 版本说明
 # 1.15.8.3 nginx 1.15.8  819a31fa6e9cc8c5aa4838384a9717a7
 # 1.17.8.2 nginx 1.17.8  ae9cdb51cabe42b0e3f46313da003d51
+# 1.19.3.2 nginx 1.19.8  e515e3f8c2015551bce076079630a3af
 # openresty 下载路径
 openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar.gz
-openresty_md5=819a31fa6e9cc8c5aa4838384a9717a7
+openresty_md5=e515e3f8c2015551bce076079630a3af
 # 1.15.8.3 版本的 md5
 down_openresty(){
     cd ${build_path}
