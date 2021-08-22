@@ -358,6 +358,7 @@ function openresty_install(){
 
 #waf对应ngx配置文件覆盖
 function waf_ngx_conf(){
+    ln -sf ${install_path}/openstar/conf/firewall.conf ${install_path}/nginx/conf/firewall.conf
     ln -sf ${install_path}/openstar/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
@@ -505,6 +506,7 @@ function check(){
     chmod u+s ${install_path}/nginx/sbin/nginx
     chown nobody:nobody ${install_path}/nginx/logs/*
     mv -f ${install_path}/nginx/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf.bak
+    ln -sf ${install_path}/openstar/conf/firewall.conf ${install_path}/nginx/conf/firewall.conf
     ln -sf ${install_path}/openstar/conf/nginx.conf ${install_path}/nginx/conf/nginx.conf
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf

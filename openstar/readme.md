@@ -2,10 +2,8 @@
 
 该版本是基于开源版 [openstar ](https://github.com/starjun/openstar) 开发的企业版。
 
-openstar-Enterprise 是一个 **收费产品**
-
- 如果您暂时不考虑收费的产品，可以参考： **免费开源** 的版本 -----》  [openstar ](https://github.com/starjun/openstar)
-
+个人的一些开发实践，有需要的朋友可以加入下
+![xq][1]
 
 *****
 国内开源极其不易，请大家支持
@@ -117,9 +115,8 @@ base_msg.request_time           请求的执行时间 （ngx.now() - ngx.req.sta
 
 
 ## 费用
-目前公测阶段免费使用3个月（企业）；
 
-基础使用：个人免费   企业收费
+基础使用：个人免费   企业免费
 
 技术服务：另议
 
@@ -131,3 +128,5 @@ base_msg.request_time           请求的执行时间 （ngx.now() - ngx.req.sta
 QQ号：2194788831
 
 QQ群：331447905
+
+[1]: ./doc/xq.jpg "xq.jpg"
