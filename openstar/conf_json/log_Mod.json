@@ -12,5 +12,25 @@
                     "plugin_name":"zj",
                     "des":"我是测试插件"
                 }]
+    },
+    {
+        "state": "on",
+        "des":"2-logCheckscan",
+        "app_ext":[
+            ["host",["*",""]]
+        ],
+        "func": ["ckscan",{
+                    "isDeny":"off",
+                    "webhook":{
+                        "state":"off",
+                        "uri":"https://open.feishu.cn/open-apis/bot/v2/hook/xxxx"
+                    },
+                    "log_Mod":{
+                        "path":"/tmp/log_Mod.scan",
+                        "state":"on"
+                    },
+                    "network":{"maxReqs":100,"pTime":10,"blackTime":120},
+                    "ngx_status":[404,403,405]   
+        }]
     }
 ]

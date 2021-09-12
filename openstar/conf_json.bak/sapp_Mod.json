@@ -1,0 +1,31 @@
+[
+    {
+        "state": "on",
+        "id":"sapp_Mod-1000",
+        "des":"test-tcp",
+        "waf":"tcptest",
+        "action": "func",
+        "func": ["tcpfunc",{
+                    "des":"我是描述信息",
+                    "tcp":"输出一下信息",
+                    "name":"openstar"
+                }],
+        "server_port": ["9898",""],
+        "ip": [["47.96.166.101"],"list"]
+    },
+    {
+        "state": "on",
+        "id":"sapp_Mod-1001",
+        "des":"test-udpdnshook",
+        "waf":"tcptest",
+        "action": "func",
+        "func": ["udpdnshook",{
+                    "logtag":false,
+                    "debug": false,
+                    "des":"将所有 dns query 全部劫持到下面 2 个服务器上",
+                    "answer_ips":["192.168.1.111","192.168.1.100"]
+                }],
+        "server_port": ["53",""],
+        "ip": ["*",""]
+    }
+]

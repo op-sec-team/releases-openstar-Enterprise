@@ -1,0 +1,18 @@
+[
+    {
+        "state": "on",
+        "id":"snetwork_Mod-1001",
+        "des":"tcpA_cc",
+        "waf":"cc",
+        "network":{"maxReqs":3,"pTime":10,"blackTime":600},
+        "server_port": [["5566","9898"],"list"]
+    },
+    {
+        "state": "on",
+        "id":"snetwork_Mod-1002",
+        "des":"tcpALL_cc",
+        "waf":"cc",
+        "network":{"maxReqs":1000,"pTime":10,"blackTime":120},
+        "server_port": ["*",""]
+    }
+]

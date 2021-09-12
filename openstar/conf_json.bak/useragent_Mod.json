@@ -2,7 +2,7 @@
     {
         "state": "on",
         "id":"useragent_Mod-1001",
-        "des":"³£¼ûÉ¨ÃèÆ÷ÌØÕ÷...",
+        "des":"å¸¸è§æ‰«æå™¨ç‰¹å¾...",
         "waf":"scan",
         "useragent": [
             ["HTTrack","harvest","audit","dirbuster",

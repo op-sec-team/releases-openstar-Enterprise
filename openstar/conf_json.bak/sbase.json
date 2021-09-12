@@ -1,0 +1,23 @@
+{
+    "Mod_state":"on",
+
+    "sip_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "sapp_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+    
+    "snetwork_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
+    "splugin_Mod":{
+        "G_version":20200201
+    }
+
+}

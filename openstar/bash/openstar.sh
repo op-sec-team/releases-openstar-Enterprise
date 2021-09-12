@@ -50,14 +50,14 @@ resty_luadown(){
 }
 resty_luadown
 
-install_or_version=1.19.3.2
+install_or_version=1.19.9.1
 # openresty 对应 nginx 版本说明
 # 1.15.8.3 nginx 1.15.8  819a31fa6e9cc8c5aa4838384a9717a7
 # 1.17.8.2 nginx 1.17.8  ae9cdb51cabe42b0e3f46313da003d51
 # 1.19.3.2 nginx 1.19.8  e515e3f8c2015551bce076079630a3af
 # openresty 下载路径
 openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar.gz
-openresty_md5=e515e3f8c2015551bce076079630a3af
+openresty_md5=ca013bd756f4e2a723c84cbf05dd0bdd
 # 1.15.8.3 版本的 md5
 down_openresty(){
     cd ${build_path}
@@ -275,7 +275,7 @@ luarocks_install(){
 function openresty_install(){
     if [[ "${release}" == "centos" ]]; then
         yum install -y epel-release
-        mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+        # mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
         wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-${version}.repo
         # yum install -y http://rpms.famillecollet.com/enterprise/remi-release-${version}.rpm
         yum clean all
@@ -320,7 +320,7 @@ function openresty_install(){
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
-    # jemalloc_install 关闭 jemalloc 内存优化
+    jemalloc_install
     cd ${build_path}
     git clone --depth=1 https://github.com/leev/ngx_http_geoip2_module.git || (echo "git clone ngx_http_geoip2_module Error" && exit 1)
     git clone --depth=1 https://github.com/api7/lua-var-nginx-module.git || (echo "git clone lua-var-nginx-module Error" && exit 1)
@@ -335,11 +335,12 @@ function openresty_install(){
     rm -rf openresty-${install_or_version}
     tar zxf openresty-${install_or_version}.tar.gz || (echo "${Error}tar -xvf openresty-${install_or_version}.tar.gz Error" && exit 1)
     cd openresty-${install_or_version}
-    ############################### --with-ld-opt='-ljemalloc' --add-module=${build_path}/lua-var-nginx-module \
+    ###############################  --add-module=${build_path}/lua-var-nginx-module \
+    ## --add-module=${build_path}/nginx-module-vts \
     ./configure --prefix=${install_path} \
                 --add-module=${build_path}/ngx_http_geoip2_module \
-                --add-module=${build_path}/nginx-module-vts \
                 --add-module=${build_path}/ngx_cache_purge-${purge_version} \
+                --with-ld-opt='-ljemalloc' \
                 --without-luajit-gc64 \
                 --with-http_realip_module \
                 --with-http_stub_status_module \

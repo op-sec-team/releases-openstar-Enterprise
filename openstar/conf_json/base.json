@@ -3,6 +3,11 @@
 
     "ngx_status":"on",
 
+    "timer_Mod":{
+        "state":"on",
+        "G_version":20200201
+    },
+
     "add_headers_Mod":{
         "state":"on",
         "G_version":20200201

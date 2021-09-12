@@ -1,9 +1,0 @@
-{
-    "stream_tcp_2020":{
-        "port" : 2020,
-        "des" : "stream 2020 TCP",
-        "proxy_connect_timeout" : "5s",
-        "proxy_timeout" : "30s",
-        "ips" : "192.168.28.26,192.168.28.27:88,192.168.28.28"
-    }
-}

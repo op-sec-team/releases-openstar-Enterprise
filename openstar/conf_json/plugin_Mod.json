@@ -26,5 +26,17 @@
   "disabled_gzip":{
     "description":"_M.disabled_gzip 用于关闭gzip的插件，调用参数： table(没有使用)",
     "file":"acc_disabled_gzip"
+  },
+  "ckscan":{
+    "description":"_M.ckscan 用于LOG阶段检测扫描行为的插件，调用参数： {\"isDeny\":\"off\",\"webhook\":{\"state\":\"off\",\"uri\":\"钉钉/飞书高级 webhook uri\"},\"log_Mod\":{\"path\":\"/tmp/log_Mod.scan\",\"state\":\"on\"},\"network\":{\"maxReqs\":100,\"pTime\":10,\"blackTime\":120},\"ngx_status\":[404,403,405]}",
+    "file":"log_scan"
+  },
+  "diylogfunc":{
+    "description":"_M.diylogfunc 用于LOG阶段检测扫描行为的插件，调用参数： table(没有使用)",
+    "file":"log_test"
+  },
+  "timer_test":{
+    "description":"_M.timer_test 用于 i_worker 阶段使用的插件，调用参数： ...",
+    "file":"timer_test"
   }
 }

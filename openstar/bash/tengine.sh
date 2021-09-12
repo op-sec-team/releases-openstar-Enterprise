@@ -331,7 +331,7 @@ function tengine_install(){
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
-    # jemalloc_install 关闭 jemalloc 内存优化
+    jemalloc_install
     jit_git_install
     openresty_down
     cd ${build_path} && rm -rf openresty-${or_version} && tar -xzf openresty-${or_version}.tar.gz
@@ -350,9 +350,9 @@ function tengine_install(){
 
     cd ${build_path}/openresty-${or_version}/bundle/tengine-${tengine_version}
     ## --add-module=../lua-var-nginx-module \
+    ## --add-module=../nginx-module-vts \
     ./configure --prefix=${install_path}/nginx \
         --with-cc-opt=-O2 \
-        --add-module=../nginx-module-vts \
         --add-module=../ngx_devel_kit-0.3.1rc1 \
         --add-module=../headers-more-nginx-module-0.33 \
         --add-module=../ngx_cache_purge-${purge_version} \
@@ -364,10 +364,10 @@ function tengine_install(){
         --with-stream_ssl_module \
         --with-stream_ssl_preread_module \
         --with-http_ssl_module \
+        --with-ld-opt='-ljemalloc' \
         --with-luajit-lib=/usr/local/lib/ \
         --with-luajit-inc=/usr/local/include/luajit-2.1/ \
         --with-ld-opt=-Wl,-rpath,/usr/local/lib ||(echo "configure tengine error" && exit 1)
-    ## --with-ld-opt='-ljemalloc'
     make && make install
     chown nobody:nobody -R ${install_path}
     cd ${install_path}
