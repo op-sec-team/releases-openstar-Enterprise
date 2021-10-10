@@ -357,13 +357,16 @@ function tengine_install(){
         --add-module=../headers-more-nginx-module-0.33 \
         --add-module=../ngx_cache_purge-${purge_version} \
         --add-module=../ngx_http_geoip2_module \
+        --with-debug \
+        --with-threads \
+        --with-stream \
         --with-http_lua_module \
         --with-http_realip_module \
         --with-http_v2_module \
-        --with-stream \
+        --with-http_ssl_module \
+        --with-stream_realip_module \
         --with-stream_ssl_module \
         --with-stream_ssl_preread_module \
-        --with-http_ssl_module \
         --with-ld-opt='-ljemalloc' \
         --with-luajit-lib=/usr/local/lib/ \
         --with-luajit-inc=/usr/local/include/luajit-2.1/ \
@@ -384,6 +387,7 @@ function waf_ngx_conf(){
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
+    ln -sf ${install_path}/openstar/conf/proxy.conf ${install_path}/nginx/conf/proxy.conf
     ln -sf ${install_path}/openstar/conf/geoip2.conf ${install_path}/nginx/conf/geoip2.conf
 }
 
@@ -522,6 +526,7 @@ function check(){
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
+    ln -sf ${install_path}/openstar/conf/proxy.conf ${install_path}/nginx/conf/proxy.conf
     ln -sf ${install_path}/openstar/conf/geoip2.conf ${install_path}/nginx/conf/geoip2.conf
     # ln -sf ${install_path}/luarocks/lib/lua/5.1/cjson.so ${install_path}/openstar/lib/cjson.so
     cd ${install_path}/nginx/html && (ls |grep "favicon.ico" || wget https://www.nginx.org/favicon.ico)

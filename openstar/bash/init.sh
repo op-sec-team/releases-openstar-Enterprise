@@ -23,6 +23,7 @@ if [ "$1" = "start" ];then
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
     ln -sf ${install_path}/openstar/conf/geoip2.conf ${install_path}/nginx/conf/geoip2.conf
+    ln -sf ${install_path}/openstar/conf/proxy.conf ${install_path}/nginx/conf/proxy.conf
     ln -sf ${install_path}/openstar/conf/firewall.conf ${install_path}/nginx/conf/firewall.conf
     cat /etc/profile |grep 'openresty' ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
 else

@@ -341,7 +341,12 @@ function openresty_install(){
                 --add-module=${build_path}/ngx_http_geoip2_module \
                 --add-module=${build_path}/ngx_cache_purge-${purge_version} \
                 --with-ld-opt='-ljemalloc' \
+                --with-debug \
+                --with-threads \
                 --without-luajit-gc64 \
+                --with-stream_realip_module \
+                --with-stream_ssl_module \
+                --with-stream_ssl_preread_module \
                 --with-http_realip_module \
                 --with-http_stub_status_module \
                 --with-http_v2_module || (echo "configure openresty Error!!" && exit 1)
@@ -364,6 +369,7 @@ function waf_ngx_conf(){
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
+    ln -sf ${install_path}/openstar/conf/proxy.conf ${install_path}/nginx/conf/proxy.conf
     ln -sf ${install_path}/openstar/conf/geoip2.conf ${install_path}/nginx/conf/geoip2.conf
 }
 
@@ -512,6 +518,7 @@ function check(){
     ln -sf ${install_path}/openstar/conf/waf.conf ${install_path}/nginx/conf/waf.conf
     ln -sf ${install_path}/openstar/conf/gzip.conf ${install_path}/nginx/conf/gzip.conf
     ln -sf ${install_path}/openstar/conf/realip.conf ${install_path}/nginx/conf/realip.conf
+    ln -sf ${install_path}/openstar/conf/proxy.conf ${install_path}/nginx/conf/proxy.conf
     ln -sf ${install_path}/openstar/conf/geoip2.conf ${install_path}/nginx/conf/geoip2.conf
     cd ${install_path}/nginx/html && (ls |grep "favicon.ico" || mv -f ${install_path}/openstar/favicon.ico ./)
     cp -rf ${install_path}/nginx/html/favicon.ico ${install_path}/nginx/html/view-private/
