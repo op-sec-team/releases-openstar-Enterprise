@@ -11,7 +11,7 @@ export PATH
 #=================================================
 
 #set -x
-sh_ver="0.0.8"
+sh_ver="0.0.9"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/tengine"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -31,6 +31,27 @@ mkdir -p ${install_path}
 old_path="${install_path}/openstar.bak/"
 resty="${install_path}/bin/resty -I ${install_path}/openstar/lib/ ${install_path}/openstar/bash/openstar.lua ${old_path}"
 
+resty_lua_uri=http://${github}/openstar/bash/openstar.lua
+resty_lua_md5=d7e9f3b94516f2eed4933481d025e0b5
+resty_luadown(){
+    if [ ! -f "${install_path}/openstar/bash/openstar.lua" ]; then
+        echo "resty_lua [openstar.lua] 文件不存在  需要下载！"
+        mkdir -p ${install_path}/openstar/bash/ && cd ${install_path}/openstar/bash/
+        wget ${resty_lua_uri} || (echo "wget resty_lua Error" && exit 1)
+    else
+        # 文件存在检查 md5
+        cd ${install_path}/openstar/bash/
+        resty_lua_now=`md5sum openstar.lua|awk '{print $1}'`
+        if [ "${resty_lua_now}" = "${resty_lua_md5}" ]; then
+            echo "resty_lua [openstar.lua] md5 ok!"
+        else
+            echo "resty_lua [openstar.lua] 文件 md5 不正确"
+            rm -rf openstar.lua && wget ${resty_lua_uri} || (echo "wget resty_lua Error" && exit 1)
+        fi
+    fi
+}
+resty_luadown
+
 # 没有用到 这个下载的链接
 jit_version=2.1.0-beta3
 luajit_uri=http://luajit.org/download/LuaJIT-${jit_version}.tar.gz
@@ -47,10 +68,13 @@ jit_git_install(){
     ldconfig
 }
 
-or_version=1.15.8.3
+or_version=1.19.9.1
+# openresty 对应 nginx 版本说明
+# 1.15.8.3 nginx 1.15.8  819a31fa6e9cc8c5aa4838384a9717a7
+# 1.17.8.2 nginx 1.17.8  ae9cdb51cabe42b0e3f46313da003d51
+# 1.19.3.2 nginx 1.19.8  e515e3f8c2015551bce076079630a3af
 openresty_uri=https://openresty.org/download/openresty-${or_version}.tar.gz
-openresty_md5=819a31fa6e9cc8c5aa4838384a9717a7
-# 1.15.8.3 版本的 md5
+openresty_md5=ca013bd756f4e2a723c84cbf05dd0bdd
 openresty_down(){
     cd ${build_path}
     if [ ! -f "openresty-${or_version}.tar.gz" ]; then
@@ -315,19 +339,62 @@ function tengine_install(){
         apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop dos2unix bzip2
         apt-get install -y sysstat goaccess libmaxminddb-devel
     elif [[ "${release}" == "ubuntu" ]]; then
+        ## https://developer.aliyun.com/mirror/ubuntu?spm=a2c6h.13651102.0.0.3e221b116xLcCg
+        sudo apt-get install -y python-software-properties
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:maxmind/ppa
         mv /etc/apt/sources.list /etc/apt/sources.list.bak
-        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >/etc/apt/sources.list
-        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse" >>/etc/apt/sources.list
-        echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        if [[ "${version}" == "14" ]]; then
+            echo -e "deb https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >/etc/apt/sources.list
+            echo -e "deb-src https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        elif [[ "${version}" == "16" ]]; then
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial main" >/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial main" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial universe" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial-security main" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe" >>/etc/apt/sources.list
+        elif [[ "${version}" == "18" ]]; then
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        elif [[ "${version}" == "20" ]]; then
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse" >/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >>/etc/apt/sources.list
+            echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >>/etc/apt/sources.list
+        else
+            echo "替换 阿里源 失败，后续安装可能失败~"
+        fi
+        apt-get update
+        apt-get upgrade
         apt-get install -y libpcre3-dev libssl-dev perl make build-essential curl git unzip zip htop dos2unix bzip2
-        apt-get install -y sysstat goaccess libmaxminddb-devel
+        apt-get install -y sysstat goaccess libmaxminddb-dev
     else
         echo -e "${Error} openstar脚本不支持当前系统 ${release} ${version} ${bit} !" && exit 1
     fi
@@ -364,6 +431,7 @@ function tengine_install(){
         --with-http_realip_module \
         --with-http_v2_module \
         --with-http_ssl_module \
+        --with-http_slice_module \
         --with-stream_realip_module \
         --with-stream_ssl_module \
         --with-stream_ssl_preread_module \
