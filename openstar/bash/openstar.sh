@@ -11,7 +11,7 @@ export PATH
 #=================================================
 
 #set -x
-sh_ver="2.1.2"
+sh_ver="2.1.3"
 github="raw.githubusercontent.com/op-sec-team/releases-openstar-Enterprise/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -444,7 +444,7 @@ openstar_menu(){
     ${Green_font_prefix}0.${Font_color_suffix} 保留 nginx.conf waf.conf waf规则(conf_json/.*)
     ${Green_font_prefix}1.${Font_color_suffix} 保留 waf规则(conf_json/.*)
     ${Green_font_prefix}2.${Font_color_suffix} 保留 nginx.conf waf.conf
-    ${Green_font_prefix}3.${Font_color_suffix} 保留 base.json admin_Mod.json nginx_Mod.json certs_Mod plugin_Mod
+    ${Green_font_prefix}3.${Font_color_suffix} 保留 [base(s) admin_Mod nginx_Mod certs_Mod (s)plugin_Mod].json info.lua
     ${Green_font_prefix}4.${Font_color_suffix} 返回主界面
     ————————————————————————————————" && echo
     read -p " 请输入数字 [0-4]:" num
@@ -477,7 +477,7 @@ openstar_menu(){
             cp -Rf ${install_path}/openstar.bak/conf/* ${install_path}/openstar/conf/
             return
         ;;
-        3) # 保留 base.json admin_Mod.json nginx_Mod.json certs_Mod plugin_Mod
+        3) # 保留 base.json admin_Mod.json nginx_Mod.json certs_Mod plugin_Mod splugin_Mod info.lua
             cp -Rf ${install_path}/openstar.bak/regsn.json ${install_path}/openstar/
             # cp -Rf ${install_path}/openstar/conf_json/base.json ${install_path}/openstar/conf_json/base.json.bak
             # cp -Rf ${install_path}/openstar/conf_json/admin_Mod.json ${install_path}/openstar/conf_json/admin_Mod.json.bak
@@ -489,6 +489,8 @@ openstar_menu(){
             cp -Rf ${install_path}/openstar.bak/conf_json/certs_Mod.json ${install_path}/openstar/conf_json/
             cp -Rf ${install_path}/openstar.bak/conf_json/root_certs_Mod.json ${install_path}/openstar/conf_json/
             cp -Rf ${install_path}/openstar.bak/conf_json/plugin_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/conf_json/splugin_Mod.json ${install_path}/openstar/conf_json/
+            cp -Rf ${install_path}/openstar.bak/api/test/info.lua ${install_path}/openstar/api/test/
             cp -Rf ${install_path}/openstar.bak/lib/plugin/* ${install_path}/openstar/lib/plugin/
             return
         ;;
