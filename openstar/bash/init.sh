@@ -28,5 +28,5 @@ if [ "$1" = "start" ];then
     cat /etc/profile |grep 'openresty' ||(echo "PATH=${install_path}/nginx/sbin:\$PATH" >> /etc/profile && source /etc/profile)
 else
     #pass
-    echo "./init.sh start"
+    echo "pls run as :[ ./init.sh start ]"
 fi

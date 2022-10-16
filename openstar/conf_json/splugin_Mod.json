@@ -1,10 +1,12 @@
 {
   "tcpfunc":{
-      "description":"_M.tcpfunc say hello!,调用参数：[...] 暂未使用",
-      "file":"pre_tcp"
+    "phase":"preread",
+    "description":"_M.tcpfunc say hello!,调用参数：[...] 暂未使用",
+    "file":"pre_tcp"
   },
   "udpdnshook":{
-      "description":"_M.udpdnshook hook all,调用参数：{\"logtag\":false,     \"debug\":true,     \"answer_ips\":[\"1.1.1.1\",\"2.2.2.2\"] }",
-      "file":"pre_udpDns"
+    "phase":"preread",
+    "description":"_M.udpdnshook hook all,调用参数：{\"logtag\":false,     \"debug\":true,     \"answer_ips\":[\"1.1.1.1\",\"2.2.2.2\"] }",
+    "file":"pre_udpDns"
   }
 }

@@ -1,41 +1,51 @@
 {
   "sign_check":{
-      "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
-      "file":"acc_checkcafc"
+    "phase":"access",
+    "description":"_M.sign_check 用于检测 header 头中的 x-app-sign(可配置) 算法碰撞是否合法,调用参数：{\"sign\":{\"state\":\"off\",\"name\":\"$headers@x_app_sign\",\"tb_formart\":[\"$headers@x_app_timestamp\",\"$request_uri\",\"$headers@x_app_nonce\",\"\"]},\"timestamp\":{\"name\":\"$headers@x_app_timestamp\",\"abs_time\":120},\"nonce\":{\"state\":\"off\",\"name\":\"$headers@x_app_nonce\",\"time\":60}}",
+    "file":"acc_checkcafc"
     },
   "cap":{
-      "description":"_M.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
-      "file":"acc_dxcap"
+    "phase":"access",
+    "description":"_M.cap 用于顶象验证码检查,调用参数：[AppID,AppSecret,form_name]",
+    "file":"acc_dxcap"
   },
   "test":{
-      "description":"_M.test 用于插件测试，原样输出传递的参数 调用参数：[1,2...] ",
-      "file":"acc_test"
+    "phase":"access",
+    "description":"_M.test 用于插件测试，原样输出传递的参数 调用参数：[1,2...] ",
+    "file":"acc_test"
   },
   "replace_hello":{
-      "description":"_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
-      "file":"body_replace"
+    "phase":"body",
+    "description":"_M.replace_hello 用于在body_filter阶段，对返回内容进行替换操作演示，调用参数：table(没有使用)",
+    "file":"body_replace"
   },
   "tel_ast":{
-      "description":"_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
-      "file":"body_tel_ast"
+    "phase":"body",
+    "description":"_M.tel_ast 用于在body_filter阶段 对返回内容中的手机号进行脱敏操作，调用参数： table(没有使用)",
+    "file":"body_tel_ast"
   },
   "options":{
+    "phase":"access",
     "description":"_M.options 用于对options操作 进行添加header头，方便跨域操作，调用参数： table(没有使用)",
     "file":"acc_options"
   },
   "disabled_gzip":{
+    "phase":"access",
     "description":"_M.disabled_gzip 用于关闭gzip的插件，调用参数： table(没有使用)",
     "file":"acc_disabled_gzip"
   },
   "ckscan":{
+    "phase":"log",
     "description":"_M.ckscan 用于LOG阶段检测扫描行为的插件，调用参数： {\"isDeny\":\"off\",\"webhook\":{\"state\":\"off\",\"uri\":\"钉钉/飞书高级 webhook uri\"},\"log_Mod\":{\"path\":\"/tmp/log_Mod.scan\",\"state\":\"on\"},\"network\":{\"maxReqs\":100,\"pTime\":10,\"blackTime\":120},\"ngx_status\":[404,403,405]}",
     "file":"log_scan"
   },
   "diylogfunc":{
+    "phase":"log",
     "description":"_M.diylogfunc 用于LOG阶段检测扫描行为的插件，调用参数： table(没有使用)",
     "file":"log_test"
   },
   "timer_test":{
+    "phase":"i_worker",
     "description":"_M.timer_test 用于 i_worker 阶段使用的插件，调用参数： ...",
     "file":"timer_test"
   }

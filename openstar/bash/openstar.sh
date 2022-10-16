@@ -55,6 +55,7 @@ install_or_version=1.19.9.1
 # 1.15.8.3 nginx 1.15.8  819a31fa6e9cc8c5aa4838384a9717a7
 # 1.17.8.2 nginx 1.17.8  ae9cdb51cabe42b0e3f46313da003d51
 # 1.19.3.2 nginx 1.19.8  e515e3f8c2015551bce076079630a3af
+# 1.21.4.1 nginx 1.21.4  3e8650584d2d92ad82ff34568a3d3008
 # openresty 下载路径
 openresty_uri=https://openresty.org/download/openresty-${install_or_version}.tar.gz
 openresty_md5=ca013bd756f4e2a723c84cbf05dd0bdd
@@ -381,6 +382,7 @@ function openresty_install(){
     cd openresty-${install_or_version}
     ###############################  --add-module=${build_path}/lua-var-nginx-module \
     ## --add-module=${build_path}/nginx-module-vts \
+    #### build_path = /opt/down 
     ./configure --prefix=${install_path} \
                 --add-module=${build_path}/ngx_http_geoip2_module \
                 --add-module=${build_path}/ngx_cache_purge-${purge_version} \
