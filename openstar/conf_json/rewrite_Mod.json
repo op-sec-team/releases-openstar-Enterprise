@@ -6,7 +6,7 @@
         "waf":"cc",
         "action": "set_cookie",
         "set_cookie":["asjldisdafpopliu8909jk34jk","diy_name"],
-        "hostname": ["localhost",""],
-        "uri": ["/rewrite",""]
+        "hostname": ["localhost","="],
+        "uri": ["/rewrite","="]
     }
 ]

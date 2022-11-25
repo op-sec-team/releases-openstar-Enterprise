@@ -3,8 +3,8 @@
         "state": "on",
         "limit_rate":"200k",
         "des":"zip gz ... limit_rate 200k",
-        "hostname": ["*",""],
-        "uri":[[".zip",".gz",".mp4"],"reend_list"],
+        "hostname": ["*","="],
+        "uri":[[".zip",".gz",".mp4"],"uend_list"],
         "tag":["all_Mod"]
     }
 ]

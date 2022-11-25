@@ -3,7 +3,7 @@
         "state": "on",
         "des":"1-simple",
         "uri": ["^/api/ip_dict$","jio"],
-        "hostname": ["localhost5460",""],
+        "hostname": ["localhost5460","="],
         "replace_list":
             [
              ["deny","","denyFUCK"],
@@ -14,8 +14,8 @@
     {
         "state": "on",
         "des":"2-func",
-        "uri": ["/api/test/debug",""],
-        "hostname": ["localhost5460",""],
+        "uri": ["/api/test/debug","="],
+        "hostname": ["localhost5460","="],
         "replace_list":
             [
              ["replace_hello","func",

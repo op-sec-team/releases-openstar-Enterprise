@@ -5,9 +5,9 @@
         "des":"AWVS_Scan",
         "waf":"scan",
         "action":"deny",
-        "uri": ["*",""],
-        "hostname": ["*",""],
-        "header": ["*","",["Acunetix_Aspect"]]
+        "uri": ["*","="],
+        "hostname": ["*","="],
+        "header": ["*","=",["Acunetix_Aspect"]]
     },
     {
         "state": "on",
@@ -15,9 +15,9 @@
         "des":"X_Scan",
         "waf":"scan",
         "action":"log",
-        "uri": ["*",""],
-        "hostname": ["*",""],
-        "header": ["*","",["X_Scan_Memo","any"]]
+        "uri": ["*","="],
+        "hostname": ["*","="],
+        "header": ["*","=",["X_Scan_Memo","any"]]
     }
 
 ]

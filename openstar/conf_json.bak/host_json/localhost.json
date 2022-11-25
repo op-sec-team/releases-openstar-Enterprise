@@ -5,10 +5,11 @@
     "app_Mod":[
         {
             "state": "on",
+            "id":"host_Mod.app_Mod-1000",
             "des":"1-test_form",
             "waf":"webshell",
             "action":"deny",
-            "uri": ["/post.html",""],
+            "uri": ["/post.html","="],
             "post_form":1024,
             "app_ext":[
                 ["post_form",["\\.(jpg|jpeg|png|webp|gif)$","jio",["image0",2],true],"or"],
@@ -23,7 +24,7 @@
             "waf":"brute_force",
             "action":"deny",
             "network":{"maxReqs":30,"pTime":10,"blackTime":600},
-            "uri": ["/login",""]
+            "uri": ["/login","="]
         }
     ],
     "replace_Mod":[]

@@ -8,6 +8,16 @@ mkdir -p ${down_path_redis}
 redis_version=6.2.5
 down_url=http://download.redis.io/releases/redis-${redis_version}.tar.gz
 redis_md5=db8a2b45eafbf1ead4353044fb70f581
+
+rds_cfg_file=/opt/redis/redis-${redis_version}/redis.conf
+install_path_redis=/opt/redis/redis-${redis_version}
+redis_cli=${install_path_redis}/src/redis-cli
+redis_server=${install_path_redis}/src/redis-server
+
+ip=127.0.0.1
+psd=nihaoredis123
+port=6379
+
 down_redis(){
     cd ${down_path_redis}
     if [ ! -f "redis-${redis_version}.tar.gz" ]; then
@@ -26,25 +36,18 @@ down_redis(){
     fi
 }
 
-install_path_redis=/opt/redis/redis-${redis_version}
-redis_cli=${install_path_redis}/src/redis-cli
-redis_server=${install_path_redis}/src/redis-server
-ip=127.0.0.1
-psd=nihaoredis123
-port=6379
 sed_conf(){
-    file=/opt/redis/redis-${redis_version}/redis.conf
     # 修改监听IP    bind 127.0.0.1
-    sed -i "s/^bind .*/bind ${ip}/g" ${file}
+    sed -i "s/^bind .*/bind ${ip}/g" ${rds_cfg_file}
     # 修改监听PORT    port 6379
-    sed -i "s/^port .*/port ${port}/g" ${file}
+    sed -i "s/^port .*/port ${port}/g" ${rds_cfg_file}
     # 修改密码 # requirepass foobared
-    sed -i "s/^# requirepass .*/requirepass ${psd}/g" ${file}
-    sed -i "s/^requirepass .*/requirepass ${psd}/g" ${file}
+    sed -i "s/^# requirepass .*/requirepass ${psd}/g" ${rds_cfg_file}
+    sed -i "s/^requirepass .*/requirepass ${psd}/g" ${rds_cfg_file}
     # 修改dump路径  dir ./
-    sed -i "s#^dir .*#dir ${down_path_redis}/#g" ${file}
+    sed -i "s#^dir .*#dir ${down_path_redis}/#g" ${rds_cfg_file}
     # 修改log路径 logfile ""
-    sed -i "s#^logfile .*#logfile \"${down_path_redis}/redis.log\"#g" ${file}
+    sed -i "s#^logfile .*#logfile \"${down_path_redis}/redis.log\"#g" ${rds_cfg_file}
 }
 
 if [ "$1" = "start" ];then

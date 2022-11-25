@@ -2,8 +2,8 @@
     {
         "state": "on",
         "des":"字体等资源跨域...",
-        "hostname": ["*",""],
-        "uri":[[".woff",".woff2",".ttf",".eot",".svg"],"reend_list"],
+        "hostname": ["*","="],
+        "uri":[[".woff",".woff2",".ttf",".eot",".svg"],"uend_list"],
         "add_headers":[
              ["Access-Control-Allow-Headers","X-ABC-TraceId,x-ABC-deviceid"],
              ["Access-Control-Allow-Origin","*"]

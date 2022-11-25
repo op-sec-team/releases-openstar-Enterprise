@@ -13,6 +13,6 @@
         "des":"tcpALL_cc",
         "waf":"cc",
         "network":{"maxReqs":1000,"pTime":10,"blackTime":120},
-        "server_port": ["*",""]
+        "server_port": ["*","="]
     }
 ]

@@ -6,7 +6,7 @@
         "waf":"cc",
         "network":{"maxReqs":30,"pTime":10,"blackTime":600},
         "hostname": [["101.200.122.200","localhost5460"],"list"],
-        "uri": ["/api/test/time_t",""]
+        "uri": ["/api/test/time_t","="]
     },
     {
         "state": "on",
@@ -14,7 +14,7 @@
         "des":"ip_cc",
         "waf":"cc",
         "network":{"maxReqs":1000,"pTime":10,"blackTime":120},
-        "hostname": ["*",""],
-        "uri": ["*",""]
+        "hostname": ["*","="],
+        "uri": ["*","="]
     }
 ]

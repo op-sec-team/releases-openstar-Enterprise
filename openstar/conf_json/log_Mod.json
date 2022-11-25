@@ -4,7 +4,7 @@
         "des":"1-logFunc",
         "app_ext":[
             ["ip",[["106.37.236.170","1.1.1.1"],"list",true],"and"],
-            ["host",["localhost","",false],"and"],
+            ["host",["localhost","=",false],"and"],
             ["uri",[["/logtest","/log.log"],"list",false],"and"]
         ],
         "func": ["diylogfunc",{
@@ -17,7 +17,7 @@
         "state": "on",
         "des":"2-logCheckscan",
         "app_ext":[
-            ["host",["*",""]]
+            ["host",["*","="]]
         ],
         "func": ["ckscan",{
                     "isDeny":"off",

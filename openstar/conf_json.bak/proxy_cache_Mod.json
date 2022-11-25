@@ -2,12 +2,12 @@
     {
         "state": "on",
         "des":"1 cache static file",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "uri":[[".css",".js",".flv",".swf",".woff",".woff2",
                  ".txt",".ttf",".svg",".eot",
                  ".gif",".jpg",".png",".jpeg",".bmp",".ico",".webp"
                ],
-            "reend_list"
+            "uend_list"
         ],
         "tag":["all_Mod"]
     }

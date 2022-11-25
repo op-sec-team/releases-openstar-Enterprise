@@ -5,7 +5,7 @@
         "des":"test-deny",
         "waf":"other",
         "action": "deny",
-        "hostname": ["localhost",""],
+        "hostname": ["localhost","="],
         "uri": ["^/([\\w]{4}\\.html|deny\\.do|你好\\.html)$","jio"]
     },
     {
@@ -15,8 +15,8 @@
         "waf":"other",
         "action": "rehtml",
         "rehtml": "<html>hi~!</html>",
-        "hostname": ["localhost",""],
-        "uri": ["/rehtml",""]
+        "hostname": ["localhost","="],
+        "uri": ["/rehtml","="]
     },
     {
         "state": "on",
@@ -25,8 +25,8 @@
         "waf":"other",
         "action": "refile",
         "refile": ["2.txt","text/html"],
-        "hostname": ["localhost",""],
-        "uri": ["/refile",""]
+        "hostname": ["localhost","="],
+        "uri": ["/refile","="]
     },
     {
         "state": "off",
@@ -47,8 +47,8 @@
         "waf":"cc",
         "action": "refile",
         "refile": ["js_debug.txt","text/html"],
-        "hostname": ["localhost",""],
-        "uri": ["/api/debug",""],
+        "hostname": ["localhost","="],
+        "uri": ["/api/debug","="],
         "app_ext":[
             ["args",["true","@token@",["cctoken"],true]]
         ]
@@ -59,8 +59,8 @@
         "des":"test-len-check",
         "waf":"other",
         "action": "deny",
-        "hostname": ["localhost",""],
-        "uri": ["/len",""],
+        "hostname": ["localhost","="],
+        "uri": ["/len","="],
         "app_ext":[
             ["args",[[5,20],"len",["arg_len"],true]]
         ]
@@ -73,7 +73,7 @@
         "action": "refile",
         "refile":["js_time.txt","text/html"],
         "hostname": [["www.abc.com","localhost"],"list"],
-        "uri": ["/api/time",""],
+        "uri": ["/api/time","="],
         "app_ext":[
             ["args",["^[\\w]{6}$","jio",["keyby"],true]]
         ]
@@ -83,8 +83,8 @@
         "id":"app_Mod-1008",
         "des":"test-debug",
         "action": "debug",
-        "hostname": ["localhost",""],
-        "uri": ["/debug",""]
+        "hostname": ["localhost","="],
+        "uri": ["/debug","="]
     },
     {
         "state": "on",
@@ -94,7 +94,7 @@
         "action": "refile",
         "refile":["js_time.txt","text/html"],
         "hostname": [["www.abc.com","localhost"],"list"],
-        "uri": ["/api/time",""],
+        "uri": ["/api/time","="],
         "app_ext":[
             ["posts",["^[\\w]{6}$","jio",["p_key"],true]]
         ]
@@ -106,8 +106,8 @@
         "waf":"webshell",
         "action": "deny",
         "post_form":1024,
-        "hostname": ["localhost",""],
-        "uri": ["/api/test/debug",""],
+        "hostname": ["localhost","="],
+        "uri": ["/api/test/debug","="],
         "app_ext":[
             ["post_form",["\\.(jpg|jpeg|png|webp|gif)$","jio",["image0",2],true],"or"],
             ["post_form",["(;|-|/)","jio",["image0",2],false],"or"]
@@ -139,8 +139,8 @@
                     "time":60
                 }
             }],
-        "hostname": ["localhost",""],
-        "uri": ["/sign.test",""]
+        "hostname": ["localhost","="],
+        "uri": ["/sign.test","="]
     },
     {
         "state": "on",
@@ -153,7 +153,7 @@
                     "AppSecret":"xxxxx",
                     "form_name":"verify_token"
                 }],
-        "hostname": ["localhost",""],
-        "uri": ["/cap.test",""]
+        "hostname": ["localhost","="],
+        "uri": ["/cap.test","="]
     }
 ]

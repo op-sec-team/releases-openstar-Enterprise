@@ -4,7 +4,7 @@
         "id":"cookie_Mod-1001",
         "des":"1-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["select.+(from|limit)","jio"],
         "action": "deny"
     },
@@ -13,7 +13,7 @@
         "id":"cookie_Mod-1002",
         "des":"2-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["union(.*?)select","jio"],
         "action": "deny"
     },
@@ -22,8 +22,8 @@
         "id":"cookie_Mod-1003",
         "des":"3-sql",
         "waf":"sql",
-        "hostname": ["*",""],
-        "cookie": [["having","rongjitest"],"rein_list"],
+        "hostname": ["*","="],
+        "cookie": [["having","rongjitest"],"uin_list"],
         "action": "deny"
     },
     {
@@ -31,7 +31,7 @@
         "id":"cookie_Mod-1004",
         "des":"4-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["sleep\\((\\s*)(\\d*)(\\s*)\\)","jio"],
         "action": "deny"
     },
@@ -40,7 +40,7 @@
         "id":"cookie_Mod-1005",
         "des":"5-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["benchmark\\((.*)\\,(.*)\\)","jio"],
         "action": "deny"
     },
@@ -49,8 +49,8 @@
         "id":"cookie_Mod-1006",
         "des":"6-base64_decode",
         "waf":"danger_keyword",
-        "hostname": ["*",""],
-        "cookie": [["base64_decode("],"rein_list"],
+        "hostname": ["*","="],
+        "cookie": [["base64_decode("],"uin_list"],
         "action": "deny"
     },
     {
@@ -58,7 +58,7 @@
         "id":"cookie_Mod-1007",
         "des":"7-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["(from\\W+information_schema\\W)","jio"],
         "action": "deny"
     },
@@ -67,7 +67,7 @@
         "id":"cookie_Mod-1008",
         "des":"8-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["(current_|user|database|schema|connection_id)\\s*\\(","jio"],
         "action": "deny"
     },
@@ -76,7 +76,7 @@
         "id":"cookie_Mod-1009",
         "des":"9-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["into(\\s+)+(dump|out)file\\s*","jio"],
         "action": "deny"
     },
@@ -85,7 +85,7 @@
         "id":"cookie_Mod-1010",
         "des":"10-sql",
         "waf":"sql",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["group\\s+by.+\\(","jio"],
         "action": "deny"
     },
@@ -94,7 +94,7 @@
         "id":"cookie_Mod-1011",
         "des":"11-Danger_keyword",
         "waf":"Danger_keyword",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["(define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\\(","jio"],
         "action": "deny"
     },
@@ -103,7 +103,7 @@
         "id":"cookie_Mod-1012",
         "id":"12-webshell",
         "waf":"webshell",
-        "hostname": ["*",""],
+        "hostname": ["*","="],
         "cookie": ["\\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\\[","jio"],
         "action": "deny"
     }
