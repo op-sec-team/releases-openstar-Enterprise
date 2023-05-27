@@ -30,7 +30,7 @@
                         "state":"on"
                     },
                     "network":{"maxReqs":100,"pTime":10,"blackTime":120},
-                    "ngx_status":[404,403,405]   
+                    "ngx_status":[404,403,405]
         }]
     }
 ]

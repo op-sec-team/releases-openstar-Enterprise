@@ -5,7 +5,7 @@ local stool = require("stool")
 
 --[[
 {
-    "path":"/tmp/logfunc.log" 
+    "path":"/tmp/logfunc.log"
 }
 --]]
 

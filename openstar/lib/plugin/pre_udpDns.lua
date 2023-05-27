@@ -73,7 +73,7 @@ local function udpdnshook(_base_msg , _tb_args)
             return "break"
         end
     else
-        dns:create_soa_answer("test.com", 600, "a.root-test.com", 
+        dns:create_soa_answer("test.com", 600, "a.root-test.com",
             "vislee.test.com", 1515161223, 1800, 900, 604800, 86400)
     end
     local resp = dns:encode_response()

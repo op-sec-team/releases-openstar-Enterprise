@@ -1,12 +1,35 @@
 [
     {
         "state": "on",
-        "des":"字体等资源跨域...",
+        "des":"字体等资源[响应头]跨域...",
         "hostname": ["*","="],
         "uri":[[".woff",".woff2",".ttf",".eot",".svg"],"uend_list"],
         "add_headers":[
              ["Access-Control-Allow-Headers","X-ABC-TraceId,x-ABC-deviceid"],
              ["Access-Control-Allow-Origin","*"]
-        ]
+        ],
+        "add_req_headers":[]
+    },
+    {
+        "state": "on",
+        "des":"添加/删除[请求头];...",
+        "hostname": ["*","="],
+        "uri":["/req","="],
+        "add_req_headers":[
+             ["x-wafadd-req_name","$ip"],
+             ["cookie","$delete"]
+        ],
+        "add_headers":[]
+    },
+    {
+        "state": "on",
+        "des":"添加/删除[响应头];...",
+        "hostname": ["*","="],
+        "uri":["/rep","="],
+        "add_headers":[
+             ["x-my-name","$ip"],
+             ["XZ001","$delete"]
+        ],
+        "add_req_headers":[]
     }
 ]

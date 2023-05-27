@@ -8,6 +8,6 @@
             "timerName":"TEST TIMER",
             "des":"每 100s 执行一次",
             "path":"/tmp/timer.log"
-        }]        
+        }]
     }
 ]

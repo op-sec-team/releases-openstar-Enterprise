@@ -18,7 +18,7 @@ local ip_dict = ngx.shared.ip_dict
         "state":"on"
     },
     "network":{"maxReqs":100,"pTime":10,"blackTime":120},
-    "ngx_status":[404,403,405]   
+    "ngx_status":[404,403,405]
 }
 --]]
 
@@ -57,7 +57,7 @@ local function ckscan(_base_msg, _tb_args)
         if network_ck(network , mod_ip) then
             local waf_log
             if _tb_args.isDeny == "on" then
-                local blacktime = network.blackTime or 10 * 60                
+                local blacktime = network.blackTime or 10 * 60
                 ip_dict:safe_set(ip , "log_Mod.scan" , blacktime)
                 waf_log = " deny "..mod_ip
             else
@@ -65,7 +65,7 @@ local function ckscan(_base_msg, _tb_args)
             end
             -- 执行 告警
             local _msg = ngx.localtime()..waf_log.." [host] ".._base_msg.host
-            if _tb_args.webhook and _tb_args.webhook.state == "on" then                
+            if _tb_args.webhook and _tb_args.webhook.state == "on" then
                 webhook.Send_text(_tb_args.webhook.uri,_msg)
             end
             if _tb_args.log_Mod and  _tb_args.log_Mod.state == "on" then

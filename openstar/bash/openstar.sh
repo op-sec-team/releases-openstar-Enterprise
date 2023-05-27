@@ -356,7 +356,7 @@ function openresty_install(){
             echo -e "deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >>/etc/apt/sources.list
         else
             echo "替换 阿里源 失败，后续安装可能失败~"
-        fi                
+        fi
         sudo ln -s /usr/bin/make /usr/bin/gmake
         apt-get update
         apt-get upgrade
@@ -382,7 +382,7 @@ function openresty_install(){
     cd openresty-${install_or_version}
     ###############################  --add-module=${build_path}/lua-var-nginx-module \
     ## --add-module=${build_path}/nginx-module-vts \
-    #### build_path = /opt/down 
+    #### build_path = /opt/down
     ./configure --prefix=${install_path} \
                 --add-module=${build_path}/ngx_http_geoip2_module \
                 --add-module=${build_path}/ngx_cache_purge-${purge_version} \
